@@ -6,9 +6,8 @@
 
 using namespace std;
 
-class ParsingRule
+struct ParsingRule
 {
-public:
     string name;
 
 	ParsingRule(string name)
@@ -22,9 +21,8 @@ public:
 };
 
 
-class Parser
+struct Parser
 {
-	public:
 
 	vector<unique_ptr<ParsingRule>>	rules;
 	const char 						*path;
