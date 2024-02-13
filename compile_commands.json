@@ -1,0 +1,7 @@
+[
+    {
+        "command": "clang++ -std=c++2b -fmodules-ts -fprebuilt-module-path=.tmp src/main.cpp -include-pch ./.tmp/pch lib/libcedilla.a -o bin/main",
+        "directory": "/Users/mfaussur/Desktop/cpp_cedc",
+        "file": "/Users/mfaussur/Desktop/cpp_cedc/src/main.cpp"
+    }
+]

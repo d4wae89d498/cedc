@@ -1,0 +1,8 @@
+.vscode
+*.pcm
+*.o
+*.a
+a.out
+main
+*.swp
+.DS_Store
