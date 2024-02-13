@@ -28,8 +28,8 @@ Upon compilation, our Makefile generates a `compile_commands.json` file, which f
 2. Enable the `clangd` extension within VSCode.
 3. Ensure the MS Makefile extension is disabled to prevent any interference with our Makefile configurations.
 4. Install `jq` for handling `compile_commands.json`. This can typically be done through your package manager (e.g., `apt` for Ubuntu, `brew` for macOS).
-5. Create a file association for .cppm to C++ in VSCode settings
-
+5. Create a new file association in VSCode settings, key: `*.cppm` value: `cpp`
+   
 We welcome contributions from all members of the community. Whether you're fixing bugs, adding new features, or improving documentation, your help is greatly appreciated in making Cedilla a more robust and versatile tool for developers everywhere.
 
 For more detailed information on how to contribute, please refer to our contributing guidelines (link to guidelines).
