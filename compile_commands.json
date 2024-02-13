@@ -1,7 +1,27 @@
 [
-    {
-        "command": "clang++ -std=c++2b -fmodules-ts -fprebuilt-module-path=.tmp src/main.cpp -include-pch ./.tmp/pch lib/libcedilla.a -o bin/main",
-        "directory": "/Users/mfaussur/Desktop/cpp_cedc",
-        "file": "/Users/mfaussur/Desktop/cpp_cedc/src/main.cpp"
-    }
+  {
+    "directory": "/Users/mfaussur/Desktop/cpp_cedc",
+    "command": "clang++ -std=c++26 -fprebuilt-module-path=tmp -include-pch tmp/pch --precompile src/Std.cppm -o tmp/Std.pcm",
+    "file": "src/Std.cpp"
+  },
+  {
+    "directory": "/Users/mfaussur/Desktop/cpp_cedc",
+    "command": "clang++ -std=c++26 -fprebuilt-module-path=tmp -include-pch tmp/pch --precompile src/Serializable.cppm -o tmp/Serializable.pcm",
+    "file": "src/Serializable.cpp"
+  },
+  {
+    "directory": "/Users/mfaussur/Desktop/cpp_cedc",
+    "command": "clang++ -std=c++26 -fprebuilt-module-path=tmp -include-pch tmp/pch --precompile src/LinkedList.cppm -o tmp/LinkedList.pcm",
+    "file": "src/LinkedList.cpp"
+  },
+  {
+    "directory": "/Users/mfaussur/Desktop/cpp_cedc",
+    "command": "clang++ -std=c++26 -fprebuilt-module-path=tmp -include-pch tmp/pch --precompile src/Tree.cppm -o tmp/Tree.pcm",
+    "file": "src/Tree.cpp"
+  },
+  {
+    "directory": "/Users/mfaussur/Desktop/cpp_cedc",
+    "command": "clang++ -std=c++26 -fprebuilt-module-path=tmp -include-pch tmp/pch src/main.cpp lib/libcedilla.a -o bin/main",
+    "file": "src/main.cpp"
+  }
 ]

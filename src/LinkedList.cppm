@@ -1,20 +1,6 @@
-/*-----------------------------------------------------*/
-//
-//	CedC
-//
-/*-----------------------------------------------------*/
-
-//#include <stdio.h>
-//#include <memory>
-
-//using namespace std;
-
-/*-----------------------------------------------------*/
-
 export module LinkedList;
 
 import Serializable;
-
 
 export
 void sayHello()
@@ -35,4 +21,5 @@ struct LinkedList : public Serializable
 {
 //	unique_ptr<T>	first;
 	T 				last;
+	string str;
 };

@@ -1,14 +1,15 @@
 export module Serializable;
 
-/*
-#include "iostream"
-
-using namespace std;*/
+import Std;
 
 export struct Serializable
 {
 	static void	serialize()
 	{
-		cout << "hii" << endl;
+		unique_ptr<int> p;
+	//	string str;
+		//(void) dlopen("", 777);
+		//dwadw
+		//cout << "hii" << endl;
 	}
 };

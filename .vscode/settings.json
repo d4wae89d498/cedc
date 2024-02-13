@@ -1,5 +1,6 @@
 {
 	"files.associations": {
 		"*.cppm": "cpp"
-	}
+	},
+	"clangd.path": "/usr/local/opt/llvm/bin/clangd"
 }

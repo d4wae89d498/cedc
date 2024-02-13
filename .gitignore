@@ -1,8 +1,16 @@
+# Project binaries
+.tmp
+.bin
+.lib
+
+# Compilers
+.cache
+
+# Text editors
+compile_commands.json
+.idea
 .vscode
-*.pcm
-*.o
-*.a
-a.out
-main
 *.swp
+
+# OS
 .DS_Store
