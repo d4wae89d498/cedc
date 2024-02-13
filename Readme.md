@@ -1,4 +1,4 @@
-# Cedilla: An Experimental Language Project
+# Cedilla: An Experimental Extensible Single-Pass Transpiler
 
 Cedilla is an experimental initiative designed to push the boundaries of C++ syntax. This project furnishes a comprehensive suite of tools enabling enthusiasts and developers alike to craft their own programming languages, which can then be compiled back to C/C++ for broad applicability and integration.
 
