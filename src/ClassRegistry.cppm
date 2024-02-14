@@ -1,16 +1,18 @@
+module;
+
+#include <functional>
+#include <string>
+#include <memory>
+#include <unordered_map>
+
+using namespace std;
+
 export module ClassRegistry;
 
-import Std;
-
-template <typename T>
+export template <typename T>
 class ClassRegistry {
 public:
     using FactoryFunction = function<unique_ptr<T>()>;
-
-    static ClassRegistry& get() {
-        static ClassRegistry instance;
-        return instance;
-    }
 
     void registerClass(const string& key, FactoryFunction func) {
         registry[key] = func;
@@ -23,18 +25,10 @@ public:
         }
         return nullptr;
     }
+    ClassRegistry() {}
 
 private:
-    map<string, FactoryFunction> registry;
-    ClassRegistry() {}
+    unordered_map<string, FactoryFunction> registry;
 };
 
-#define REGISTER_CLASS(TYPE, CLASS) \
-    namespace { \
-        struct Registrator_ ## TYPE ## CLASS { \
-            Registrator_ ## TYPE ## CLASS() { \
-                TYPE ## Registry ::get().registerClass(#CLASS, []() -> std::unique_ptr<CLASS> { return make_unique<CLASS>();  }); \
-            } \
-        }; \
-        static Registrator_ ## TYPE ## CLASS registrator_ ## TYPE ## CLASS; \
-    }
+

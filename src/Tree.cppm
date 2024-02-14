@@ -1,10 +1,19 @@
-export module Tree;
+module;
 
 import LinkedList;
 
-export struct Tree
+export module Tree;
+
+export
+template <typename T>
+struct TreeNode : public LinkedListNode<T>
 {
-	vector<int> i;
-	string 		str;
-	//LinkedList<Tree> childs;
+	LinkedList<T>	childs;
 };
+
+export
+template <typename T>
+struct Tree : public LinkedList<T>
+{
+};
+

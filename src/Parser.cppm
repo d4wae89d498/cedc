@@ -1,6 +1,13 @@
-export module Parser;
+module;
 
-import Std;
+#include <sstream>
+#include <iostream>
+#include <fstream>
+#include <vector>
+
+using namespace std;
+
+export module Parser;
 
 struct ParsingRule
 {

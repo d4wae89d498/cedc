@@ -1,15 +1,14 @@
+module;
+
+#include <string>
+
+using namespace std;
+
 export module Serializable;
 
-import Std;
+//int smallchange;
 
 export struct Serializable
 {
-	static void	serialize()
-	{
-		unique_ptr<int> p;
-	//	string str;
-		//(void) dlopen("", 777);
-		//dwadw
-		//cout << "hii" << endl;
-	}
+	virtual string	serialize() = 0;
 };

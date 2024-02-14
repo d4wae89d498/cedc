@@ -1,28 +1,47 @@
+//import Tree;
+module;
+
+import Serializable;
+import Box;
+import LinkedList;
+import Tree;
+import ClassRegistry;
+
+#include <string>
+#include <memory>
+
+using namespace std;
+
 export module Ast;
 
-import Std;
-import Tree;
-import Box;
-import Serializable;
-//import AstNodeRegistry;
 
-struct AstNode : public TreeNode<AstNode>, public Serializable
+export
+struct AstNode;
+
+export
+struct AstNodeRegistry : public ClassRegistry<AstNode>
+{
+    static AstNodeRegistry& get() {
+        static AstNodeRegistry instance;
+        return instance;
+    }
+};
+
+export
+struct AstNode: public TreeNode<AstNode>, public Serializable
 {
 	const string		name;
-	BoxArray			data;
-
-	virtual ~AstNode() = default;
-	virtual string compile() = 0;
+	//BoxArray			data;
 
 	AstNode(const string& name) : name(name)
 	{
 	}
 
-	string	serialize()
+	string serialize()
 	{
 		return "{"
 			"name: \"" + this->name + "\","
-			"data: " + data.serialize() + ","
+	//		"data: " + data.serialize() + ","
 			"childs: " + this->childs.serialize() +
 		"}";
 	}
@@ -54,19 +73,15 @@ struct AstNode : public TreeNode<AstNode>, public Serializable
         name = str.substr(start, index - start);
         ++index; // Skip '"'
 
-		//out = AstNodeRegistry::createInstance(name);
+		//out = astNodeRegistry.createInstance(name);
 
 
         return out;
 	}
+
+	virtual ~AstNode() = default;
+	virtual string compile() = 0;
+	//static unique_ptr<AstNode> unserialize(string str);
 };
 
-struct Ast : public LinkedList<AstNode>
-{
 
-};
-
-struct AstNodeRegistry : public ClassRegistry<AstNode>
-{
-
-};

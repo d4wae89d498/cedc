@@ -1,31 +1,29 @@
-export module LinkedList;
+module;
 
-import Std;
 import Serializable;
 
-export
-void sayHello()
-{
-//	printf("hello\n");
-}
+#include <string>
+#include <memory>
 
-export
-template <typename T>
-struct Node
+using namespace  std;
+
+export module LinkedList;
+
+export template <typename T>
+struct LinkedListNode
 {
 	unique_ptr<T>	next;
 	T				*prev;
 };
 
-export
-template <typename T>
-struct LinkedList : public Serializable
+export template <typename T>
+struct LinkedList  : public Serializable
 {
 	unique_ptr<T>	first;
-	T 				last;
+	T 				*last;
 
 	string serialize()
 	{
-
+		return string("");
 	}
 };

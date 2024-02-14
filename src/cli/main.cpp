@@ -1,9 +1,32 @@
 import LinkedList;
-import Serializable;
+import Ast;
+
+#include "./../include/common.hpp"
+#include <memory>
+#include <iostream>
+
+using namespace std;
+
+struct Identifier : public AstNode
+{
+	Identifier() : AstNode(__func__)
+	{
+
+	}
+
+	string compile()
+	{
+		return "";
+	}
+};
+REGISTER_CLASS(AstNode, Identifier);
+
 
 int main()
 {
-	printf("... hello\n");
+	cout << AstNodeRegistry::get().createInstance("Identifier") << endl;
+
+	//printf("... hello\n");
 	unique_ptr<int> p;
 /*
 	cout << "" << endl;
@@ -12,6 +35,5 @@ int main()
 
 	unique_ptr<string> pp;
 */
-	sayHello();
-	Serializable::serialize();
+//	Serializable::serialize();
 }
