@@ -1,8 +1,7 @@
-#include <any>
+export module Box;
 
-#include "./Serializable.hpp"
-
-using namespace std;
+import Std;
+import Serializable;
 
 struct Box : public Serializable
 {

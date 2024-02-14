@@ -1,8 +1,6 @@
 export module Tree;
 
-
 import LinkedList;
-
 
 export struct Tree
 {

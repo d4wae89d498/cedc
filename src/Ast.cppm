@@ -1,15 +1,10 @@
-#pragma once
-#include <vector>
-#include <any>
-#include <unordered_map>
-#include <string>
+export module Ast;
 
-#include "./Tree.hpp"
-#include "./Box.hpp"
-#include "./Serializable.hpp"
-//#include "./AstNodeRegistry.hpp"
-
-using namespace std;
+import Std;
+import Tree;
+import Box;
+import Serializable;
+//import AstNodeRegistry;
 
 struct AstNode : public TreeNode<AstNode>, public Serializable
 {
@@ -67,6 +62,11 @@ struct AstNode : public TreeNode<AstNode>, public Serializable
 };
 
 struct Ast : public LinkedList<AstNode>
+{
+
+};
+
+struct AstNodeRegistry : public ClassRegistry<AstNode>
 {
 
 };

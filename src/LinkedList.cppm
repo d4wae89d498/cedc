@@ -1,5 +1,6 @@
 export module LinkedList;
 
+import Std;
 import Serializable;
 
 export
@@ -12,14 +13,19 @@ export
 template <typename T>
 struct Node
 {
-
+	unique_ptr<T>	next;
+	T				*prev;
 };
 
 export
 template <typename T>
 struct LinkedList : public Serializable
 {
-//	unique_ptr<T>	first;
+	unique_ptr<T>	first;
 	T 				last;
-	string str;
+
+	string serialize()
+	{
+
+	}
 };

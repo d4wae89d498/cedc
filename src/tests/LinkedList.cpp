@@ -1,11 +1,4 @@
-#include <vector>
-#include <iostream>
-#include <stdlib.h>
-
-#include "./../src/LinkedList.hpp"
-
-
-using namespace std;
+import Std;
 
 class IntNode : public Node<IntNode>
 {

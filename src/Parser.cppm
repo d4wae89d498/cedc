@@ -1,10 +1,6 @@
-#pragma once
-#include <stdlib.h>
-#include <vector>
-#include <fstream>
-#include <sstream>
+export module Parser;
 
-using namespace std;
+import Std;
 
 struct ParsingRule
 {

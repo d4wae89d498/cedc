@@ -1,12 +1,4 @@
-#include <vector>
-#include <iostream>
-#include <stdlib.h>
-
-#include "./../src/LinkedList.hpp"
-#include "./../src/Tree.hpp"
-#include "./../src/Ast.hpp"
-
-using namespace std;
+import Std;
 
 struct Identifier : public AstNode
 {

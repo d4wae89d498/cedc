@@ -1,10 +1,6 @@
-#include <iostream>
-#include <map>
-#include <string>
-#include <functional>
-#include <memory>
+export module ClassRegistry;
 
-using namespace std;
+import Std;
 
 template <typename T>
 class ClassRegistry {

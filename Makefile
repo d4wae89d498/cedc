@@ -1,66 +1,75 @@
+# Project structure
+BIN_DIR := 	bin
+LIB_DIR := 	lib
+SRC_DIR := 	src
+TMP_DIR := 	tmp
+
+# Compilation flags
+CXX :=		clang++
+CXXFLAGS :=	-std=c++26 -fprebuilt-module-path=$(TMP_DIR)
+CXXDB := 	compile_commands.json
+
+# Project sources
 SRCS :=		Std.cppm\
 			Serializable.cppm\
 			LinkedList.cppm\
 			Tree.cppm
-
-PCH :=		pch
-
-TMP_DIR := 	tmp
-LIB_DIR := 	lib
-BIN_DIR := 	bin
-SRC_DIR := 	src
-
 SRCS := 	$(SRCS:%=$(SRC_DIR)/%)
-PCH := 		$(PCH:%=$(TMP_DIR)/%)
 OBJS := 	$(SRCS:$(SRC_DIR)/%.cppm=$(TMP_DIR)/%.o)
 PCMS := 	$(SRCS:$(SRC_DIR)/%.cppm=$(TMP_DIR)/%.pcm)
 
-DEPS := 	Makefile $(PCH)
-
-
+# Project library
 NAME :=		$(LIB_DIR)/libcedilla.a
-MAIN :=		$(BIN_DIR)/main
 
+# Project executables
+MAINS :=	cli/main.cpp
+MAINS :=	$(MAINS:%=$(SRC_DIR)/%)
+EXECS :=	$(MAINS:$(SRC_DIR)/%.cpp=$(BIN_DIR)/%.out)
 
-CXX :=		clang++
-CXXFLAGS :=	-std=c++26 -fprebuilt-module-path=$(TMP_DIR)
+# Project Precompiled headers
+HEADERS :=	include/pch.hpp
+HEADERS := 	$(HEADERS:%=$(SRC_DIR)/%)
+PCHS	:=	$(HEADERS:$(SRC_DIR)/%.hpp=$(TMP_DIR)/%.pch)
+INCPCHS :=	$(PCHS:%=-include-pch %)
 
-CXXDB := compile_commands.json
+# Common dependancies
+DEPS := 	makefile
 
+#-------------------------------------------------#
 
 .SUFFIXES:
 .PRECIOUS: 	$(PCH) $(TMP_DIR)/%.pcm
 .PHONY: 	all clean fclean re
 
-all: $(DEPS) $(NAME) $(MAIN) $(CXXDB)
+all: $(NAME) $(EXECS) $(CXXDB)
 	which $(CXX)
 
-$(PCH): src/include/pch.hpp
+$(TMP_DIR)/%.pch: $(SRC_DIR)/%.hpp $(DEPS)
 	@mkdir -p $(@D)
 	$(CXX) -x c++-header $(CXXFLAGS) -o $@ $<
 
-$(TMP_DIR)/%.pcm: $(SRC_DIR)/%.cppm $(DEPS)
+$(TMP_DIR)/%.pcm: $(SRC_DIR)/%.cppm $(PCHS)
 	@mkdir -p $(@D)
-	$(CXX) $(CXXFLAGS) -include-pch $(PCH) --precompile $< -o $@
+	$(CXX) $(CXXFLAGS) $(INCPCHS) --precompile $< -o $@
 
-$(TMP_DIR)/%.o: $(TMP_DIR)/%.pcm $(DEPS)
+$(TMP_DIR)/%.o: $(TMP_DIR)/%.pcm
 	@mkdir -p $(@D)
 	$(CXX) $(CXXFLAGS)  -c $< -o $@
 
-$(NAME): $(OBJS) $(DEPS)
+$(NAME): $(OBJS)
 	@mkdir -p $(@D)
 	ar -rcs $@ $(OBJS)
 
-$(MAIN): $(NAME) $(DEPS)
+$(BIN_DIR)/%.out: $(SRC_DIR)/%.cpp $(OBJS)
 	@mkdir -p $(@D)
-	$(CXX) $(CXXFLAGS) -include-pch $(PCH) $(SRC_DIR)/main.cpp $(NAME) -o $@
+	$(CXX) $(CXXFLAGS) $(INCPCHS) $< $(NAME) -o $@
 
 clean:
-	rm -f $(OBJS) $(PCMS) $(PCH)
+	rm -f $(OBJS) $(PCMS) $(PCHS)
 
 fclean: clean
-	rm -f $(MAIN)
 	rm -f $(NAME)
+	rm -f $(EXECS)
 
 re: fclean all
 
