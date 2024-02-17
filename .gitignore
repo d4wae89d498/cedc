@@ -2,8 +2,8 @@
 .libcxx_made
 
 # Project binaries
-tmp
-bin
+tmp/*
+bin/*
 *.a
 
 # Compilers
