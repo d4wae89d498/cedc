@@ -45,7 +45,7 @@ INCPCHS :=	$(PCHS:%=-include-pch %)
 # Deps
 DEPS 	:= 	$(SRCS:$(SRC_DIR)/%.cppm=$(DEP_DIR)/%.d)
 
-# Common dependancies
+# Submodules libraries marker
 LIBCXX_MADE_MARKER=.libcxx_made
 
 #-------------------------------------------------#
@@ -56,6 +56,7 @@ LIBCXX_MADE_MARKER=.libcxx_made
 
 $(LIBCXX_MADE_MARKER):
 	make -C lib/libcxx-pcm
+	@ln -sf $(shell pwd)/lib/libcxx-pcm/lib/libcxx.a lib/libcxx.a
 	@touch $(LIBCXX_MADE_MARKER)
 
 all: $(LIBCXX_MADE_MARKER) $(NAME) $(EXECS)
@@ -82,7 +83,7 @@ $(NAME): $(OBJS)
 
 $(BIN_DIR)/%.out: $(SRC_DIR)/%.cpp $(OBJS)
 	@mkdir -p $(@D)
-	$(CXX) $(CXXFLAGS) $< $(NAME) -o $@ $(INCPCHS) lib/libcxx-pcm/lib/libcxx.a -w
+	$(CXX) $(CXXFLAGS) $< -o $@ $(INCPCHS) $(NAME) lib/libcxx.a -w
 	@make $(CXXDB)
 
 $(CXXDB): $(EXECS)
