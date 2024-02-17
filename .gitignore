@@ -2,12 +2,9 @@
 .libcxx_made
 
 # Project binaries
-.tmp
-.bin
-.lib
-
-# Project symlinks
-lib/libcxx.a
+tmp
+bin
+*.a
 
 # Compilers
 .cache
