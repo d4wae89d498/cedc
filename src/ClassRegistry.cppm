@@ -1,12 +1,6 @@
 module;
 
-#include <functional>
-
-#include <functional>
-#include <string>
-#include <memory>
-#include <unordered_map>
-
+import std;
 
 using namespace std;
 

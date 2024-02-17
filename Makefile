@@ -4,9 +4,16 @@ LIB_DIR := 	lib
 SRC_DIR := 	src
 TMP_DIR := 	tmp
 
+# Tmp subdirs
+OBJ_DIR := $(TMP_DIR)/obj
+PCM_DIR := $(TMP_DIR)/pcm
+PCH_DIR := $(TMP_DIR)/pch
+DEP_DIR := $(TMP_DIR)/dep
+
 # Compilation flags
-CXX :=		clang++
-CXXFLAGS :=	-std=c++26 -fprebuilt-module-path=$(TMP_DIR)/pcm
+CXX :=		clang++ -std=c++26
+CXXFLAGS :=	-nostdinc++ -fprebuilt-module-path=$(PCM_DIR) -fprebuilt-module-path=lib/libcxx-pcm/lib
+
 CXXDB := 	compile_commands.json
 
 # Project sources
@@ -18,8 +25,8 @@ SRCS :=		Serializable.cppm\
 			Ast.cppm
 
 SRCS := 	$(SRCS:%=$(SRC_DIR)/%)
-OBJS := 	$(SRCS:$(SRC_DIR)/%.cppm=$(TMP_DIR)/obj/%.o)
-PCMS := 	$(SRCS:$(SRC_DIR)/%.cppm=$(TMP_DIR)/pcm/%.pcm)
+OBJS := 	$(SRCS:$(SRC_DIR)/%.cppm=$(OBJ_DIR)/%.o)
+PCMS := 	$(SRCS:$(SRC_DIR)/%.cppm=$(PCM_DIR)/%.pcm)
 
 # Project library
 NAME :=		$(LIB_DIR)/libcedilla.a
@@ -32,36 +39,39 @@ EXECS :=	$(MAINS:$(SRC_DIR)/%.cpp=$(BIN_DIR)/%.out)
 # Project headers
 HEADERS :=	include/common.hpp
 HEADERS := 	$(HEADERS:%=$(SRC_DIR)/%)
-PCHS	:=	$(HEADERS:$(SRC_DIR)/%.hpp=$(TMP_DIR)/pch/%.pch)
+PCHS	:=	$(HEADERS:$(SRC_DIR)/%.hpp=$(PCH_DIR)/%.pch)
 INCPCHS :=	$(PCHS:%=-include-pch %)
 
 # Deps
-DEPS 	:= 	$(SRCS:$(SRC_DIR)/%.cppm=$(TMP_DIR)/deps/%.d)
+DEPS 	:= 	$(SRCS:$(SRC_DIR)/%.cppm=$(DEP_DIR)/%.d)
 
 # Common dependancies
+LIBCXX_MADE_MARKER=.libcxx_made
 
 #-------------------------------------------------#
 
 .SUFFIXES:
-.PRECIOUS: 	$(PCHS) $(TMP_DIR)/%.pcm
+.PRECIOUS: 	$(PCHS) $(PCMS)
 .PHONY: 	all clean fclean re
 
-all: $(NAME) $(EXECS)
-	which $(CXX)
-	echo $(DEPS)
+$(LIBCXX_MADE_MARKER):
+	make -C lib/libcxx-pcm
+	@touch $(LIBCXX_MADE_MARKER)
 
-$(TMP_DIR)/pch/%.pch: $(SRC_DIR)/%.hpp makefile
+all: $(LIBCXX_MADE_MARKER) $(NAME) $(EXECS)
+
+$(PCH_DIR)/%.pch: $(SRC_DIR)/%.hpp makefile
 	@mkdir -p $(@D)
 	$(CXX) -x c++-header -DCLANGD $(CXXFLAGS) -o $@ $<
 
 -include tmp/dep/*.d
 
-$(TMP_DIR)/pcm/%.pcm: $(SRC_DIR)/%.cppm $(PCHS)
+$(PCM_DIR)/%.pcm: $(SRC_DIR)/%.cppm $(PCHS)
 	@mkdir -p $(@D)
-	@mkdir -p $(TMP_DIR)/dep
-	$(CXX) $(CXXFLAGS) -MMD -MF $(patsubst $(TMP_DIR)/pcm/%.pcm,$(TMP_DIR)/dep/%.d,$(@)) --precompile $< -o $@ $(INCPCHS)
+	@mkdir -p $(DEP_DIR)
+	$(CXX) $(CXXFLAGS) -MMD -MF $(patsubst $(PCM_DIR)/%.pcm,$(DEP_DIR)/%.d,$(@)) --precompile $< -o $@ $(INCPCHS)
 
-$(TMP_DIR)/obj/%.o: $(TMP_DIR)/pcm/%.pcm
+$(OBJ_DIR)/%.o: $(PCM_DIR)/%.pcm
 	@mkdir -p $(@D)
 	$(CXX) $(CXXFLAGS)  -c $< -o $@
 
@@ -72,7 +82,7 @@ $(NAME): $(OBJS)
 
 $(BIN_DIR)/%.out: $(SRC_DIR)/%.cpp $(OBJS)
 	@mkdir -p $(@D)
-	$(CXX) $(CXXFLAGS) $< $(NAME) -o $@ $(INCPCHS)
+	$(CXX) $(CXXFLAGS) $< $(NAME) -o $@ $(INCPCHS) lib/libcxx-pcm/lib/libcxx.a -w
 	@make $(CXXDB)
 
 $(CXXDB): $(EXECS)
@@ -82,10 +92,13 @@ $(CXXDB): $(EXECS)
 	> $(CXXDB)
 
 clean:
-	rm -f $(OBJS) $(PCMS) $(PCHS) $(CXXDB)
+	rm -f $(DEPS) $(OBJS) $(CXXDB)
 
 fclean: clean
 	rm -f $(NAME)
 	rm -f $(EXECS)
-
+	rm -f $(PCMS)
+	rm -f $(PCHS)
+	rm -f $(LIBCXX_MADE_MARKER)
+	make fclean -C lib/libcxx-pcm
 re: fclean all

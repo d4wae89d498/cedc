@@ -1,7 +1,6 @@
 module;
 
-
-#include <string>
+import std;
 
 using namespace std;
 

@@ -2,9 +2,10 @@ import LinkedList;
 import Ast;
 //import Std;
 
-#include "./../include/common.hpp"
+import std;
 
-#include <iostream>
+
+//#include <iostream>
 
 using namespace std;
 
@@ -25,6 +26,7 @@ REGISTER_CLASS(AstNode, Identifier);
 
 int main()
 {
+	print("hello");
 	//cout << AstNodeRegistry::get().createInstance("Identifier") << endl;
 
 	//printf("... hello\n");

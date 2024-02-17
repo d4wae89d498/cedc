@@ -1,3 +1,6 @@
+# Proejct markers
+.libcxx_made
+
 # Project binaries
 .tmp
 .bin
