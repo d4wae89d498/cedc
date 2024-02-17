@@ -6,7 +6,7 @@ TMP_DIR := 	tmp
 
 # Compilation flags
 CXX :=		clang++
-CXXFLAGS :=	-std=c++26 -fprebuilt-module-path=$(TMP_DIR)
+CXXFLAGS :=	-std=c++26 -fprebuilt-module-path=$(TMP_DIR)/pcm
 CXXDB := 	compile_commands.json
 
 # Project sources
@@ -18,8 +18,8 @@ SRCS :=		Serializable.cppm\
 			Ast.cppm
 
 SRCS := 	$(SRCS:%=$(SRC_DIR)/%)
-OBJS := 	$(SRCS:$(SRC_DIR)/%.cppm=$(TMP_DIR)/%.o)
-PCMS := 	$(SRCS:$(SRC_DIR)/%.cppm=$(TMP_DIR)/%.pcm)
+OBJS := 	$(SRCS:$(SRC_DIR)/%.cppm=$(TMP_DIR)/obj/%.o)
+PCMS := 	$(SRCS:$(SRC_DIR)/%.cppm=$(TMP_DIR)/pcm/%.pcm)
 
 # Project library
 NAME :=		$(LIB_DIR)/libcedilla.a
@@ -32,12 +32,13 @@ EXECS :=	$(MAINS:$(SRC_DIR)/%.cpp=$(BIN_DIR)/%.out)
 # Project headers
 HEADERS :=	include/common.hpp
 HEADERS := 	$(HEADERS:%=$(SRC_DIR)/%)
-PCHS	:=	$(HEADERS:$(SRC_DIR)/%.hpp=$(TMP_DIR)/%.pch)
-#INCPCHS2 :=	$(PCHS:%=-include-pch %)
+PCHS	:=	$(HEADERS:$(SRC_DIR)/%.hpp=$(TMP_DIR)/pch/%.pch)
 INCPCHS :=	$(PCHS:%=-include-pch %)
 
+# Deps
+DEPS 	:= 	$(SRCS:$(SRC_DIR)/%.cppm=$(TMP_DIR)/deps/%.d)
+
 # Common dependancies
-DEPS := 	makefile
 
 #-------------------------------------------------#
 
@@ -47,17 +48,20 @@ DEPS := 	makefile
 
 all: $(NAME) $(EXECS)
 	which $(CXX)
+	echo $(DEPS)
 
-$(TMP_DIR)/%.pch: $(SRC_DIR)/%.hpp $(DEPS)
+$(TMP_DIR)/pch/%.pch: $(SRC_DIR)/%.hpp makefile
 	@mkdir -p $(@D)
 	$(CXX) -x c++-header -DCLANGD $(CXXFLAGS) -o $@ $<
 
+-include tmp/dep/*.d
 
-$(TMP_DIR)/%.pcm: $(SRC_DIR)/%.cppm $(PCHS)
+$(TMP_DIR)/pcm/%.pcm: $(SRC_DIR)/%.cppm $(PCHS)
 	@mkdir -p $(@D)
-	$(CXX) $(CXXFLAGS) --precompile $< -o $@
+	@mkdir -p $(TMP_DIR)/dep
+	$(CXX) $(CXXFLAGS) -MMD -MF $(patsubst $(TMP_DIR)/pcm/%.pcm,$(TMP_DIR)/dep/%.d,$(@)) --precompile $< -o $@ $(INCPCHS)
 
-$(TMP_DIR)/%.o: $(TMP_DIR)/%.pcm
+$(TMP_DIR)/obj/%.o: $(TMP_DIR)/pcm/%.pcm
 	@mkdir -p $(@D)
 	$(CXX) $(CXXFLAGS)  -c $< -o $@
 
@@ -68,7 +72,7 @@ $(NAME): $(OBJS)
 
 $(BIN_DIR)/%.out: $(SRC_DIR)/%.cpp $(OBJS)
 	@mkdir -p $(@D)
-	$(CXX) $(CXXFLAGS) $< $(NAME) -o $@
+	$(CXX) $(CXXFLAGS) $< $(NAME) -o $@ $(INCPCHS)
 	@make $(CXXDB)
 
 $(CXXDB): $(EXECS)

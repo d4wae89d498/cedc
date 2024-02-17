@@ -1,8 +1,9 @@
 import LinkedList;
 import Ast;
+//import Std;
 
 #include "./../include/common.hpp"
-#include <memory>
+
 #include <iostream>
 
 using namespace std;
@@ -24,7 +25,7 @@ REGISTER_CLASS(AstNode, Identifier);
 
 int main()
 {
-	cout << AstNodeRegistry::get().createInstance("Identifier") << endl;
+	//cout << AstNodeRegistry::get().createInstance("Identifier") << endl;
 
 	//printf("... hello\n");
 	unique_ptr<int> p;
