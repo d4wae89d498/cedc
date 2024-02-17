@@ -1,10 +1,13 @@
-# Proejct markers
+# Project markers
 .libcxx_made
 
 # Project binaries
 .tmp
 .bin
 .lib
+
+# Project symlinks
+lib/libcxx.a
 
 # Compilers
 .cache
