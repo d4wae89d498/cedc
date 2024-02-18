@@ -1,8 +1,8 @@
-export module cedilla:parser;
+export module ucbl.cedilla:parser;
 
 import :common;
 
-export namespace std {
+export namespace cedilla {
 	struct ParsingRule
 	{
 		string name;

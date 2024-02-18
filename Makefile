@@ -21,7 +21,7 @@ CXXFLAGS =	-nostdinc++ -fprebuilt-module-path=lib/libcxx-pcm/lib -Wno-unqualifie
 CXXDB := 	compile_commands.json
 
 # Project modules
-MODULES :=	ucbl/cedilla/common.cppm\
+MODULES := 	ucbl/cedilla/common.cppm\
 			ucbl/cedilla/interface/iterator.cppm\
 			ucbl/cedilla/serializable.cppm\
 			ucbl/cedilla/linked_list.cppm\
@@ -31,7 +31,7 @@ MODULES :=	ucbl/cedilla/common.cppm\
 			ucbl/cedilla/ast.cppm\
 			ucbl/cedilla.cppm
 
-MODULES := 	$(MODULES:%=$(MOD_DIR)/%)
+#MODULES := 	$(MODULES:%=$(MOD_DIR)/%)
 OBJS := 	$(MODULES:$(SRC_DIR)/%.cppm=$(OBJ_DIR)/%.o)
 PCMS := 	$(MODULES:$(SRC_DIR)/%.cppm=$(PCM_DIR)/%.pcm)
 
