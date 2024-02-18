@@ -1,4 +1,6 @@
+import ucbl.cedilla;
 
+using namespace cedilla;
 
 struct Identifier : public AstNode
 {

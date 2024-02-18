@@ -7,3 +7,5 @@
         }; \
         static Registrator_ ## TYPE ## CLASS registrator_ ## TYPE ## CLASS; \
     }
+
+#define fn auto

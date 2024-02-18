@@ -1,13 +1,6 @@
-import LinkedList;
-import Ast;
-//import Std;
+import ucbl.cedilla;
 
-import std;
-
-
-//#include <iostream>
-
-using namespace std;
+using namespace cedilla;
 
 struct Identifier : public AstNode
 {
@@ -26,7 +19,7 @@ REGISTER_CLASS(AstNode, Identifier);
 
 int main()
 {
-	print("hello");
+	print("hello {}\n", f());
 	//cout << AstNodeRegistry::get().createInstance("Identifier") << endl;
 
 	//printf("... hello\n");

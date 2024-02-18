@@ -6,7 +6,7 @@ tmp/*
 bin/*
 *.a
 
-# Compilers
+# Clangd
 .cache
 
 # Text editors
