@@ -38,7 +38,12 @@ PCMS := 	$(MODULES:$(SRC_DIR)/%.cppm=$(PCM_DIR)/%.pcm)
 NAME :=		$(LIB_DIR)/libcedilla.a
 
 # Project executables
-MAINS :=	cli/main.cpp test/ast.cpp test/linked_list.cpp
+MAINS :=	cli/main.cpp\
+			\
+			test/ast.cpp\
+			test/linked_list.cpp\
+			test/tree.cpp
+
 MAINS :=	$(MAINS:%=$(SRC_DIR)/%)
 EXECS :=	$(MAINS:$(SRC_DIR)/%.cpp=$(BIN_DIR)/%.out)
 

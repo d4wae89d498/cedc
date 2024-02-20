@@ -137,7 +137,6 @@ export namespace cedilla
 			return last;
 		}
 	};
-
 };
 
 
