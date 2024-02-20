@@ -5,25 +5,30 @@ import :common;
 export namespace cedilla
 {
 	template <typename T>
-	class ClassRegistry {
-	public:
+	struct ClassRegistry
+	{
 		using FactoryFunction = function<unique_ptr<T>()>;
 
-		void registerClass(const string& key, FactoryFunction func) {
+		unordered_map<string, FactoryFunction> registry;
+
+		void registerClass(const string& key, FactoryFunction func)
+		{
 			registry[key] = func;
 		}
 
-		unique_ptr<T> createInstance(const string& key) const {
+		unique_ptr<T> createInstance(const string& key) const
+		{
 			auto it = registry.find(key);
-			if (it != registry.end()) {
+			if (it != registry.end())
+			{
 				return it->second();
 			}
 			return nullptr;
 		}
-		ClassRegistry() {}
 
-	private:
-		unordered_map<string, FactoryFunction> registry;
+		ClassRegistry()
+		{
+		}
 	};
 };
 

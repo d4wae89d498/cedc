@@ -1,7 +1,6 @@
 export module ucbl.cedilla:box;
 
 import :common;
-import :serializable;
 
 export namespace cedilla {
 	struct Box // : public Serializable
@@ -11,7 +10,7 @@ export namespace cedilla {
 		virtual ~Box() = default;
 	};
 
-	struct BoxArray : unordered_map<string, unique_ptr<Box>>, public Serializable
+	struct BoxArray : unordered_map<string, unique_ptr<Box>>
 	{
 		string serialize()
 		{

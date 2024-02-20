@@ -2,7 +2,8 @@ export module ucbl.cedilla:parser;
 
 import :common;
 
-export namespace cedilla {
+export namespace cedilla
+{
 	struct ParsingRule
 	{
 		string name;
@@ -13,8 +14,12 @@ export namespace cedilla {
 			this->name = name;
 		}
 
-		virtual size_t f(const string) = 0;
-		virtual ~ParsingRule() {}
+		virtual fn f(const string) -> size_t = 0;
+
+		virtual ~ParsingRule()
+		{
+
+		}
 	};
 
 
@@ -32,7 +37,8 @@ export namespace cedilla {
 		void parse()
 		{
 			ifstream file(this->path);
-			if (!file.is_open()) {
+			if (!file.is_open())
+			{
 				cerr << "Failed to open file: " << this->path << endl;
 				exit(1);
 			}

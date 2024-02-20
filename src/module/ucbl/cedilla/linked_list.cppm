@@ -1,12 +1,11 @@
 export module ucbl.cedilla:linked_list;
 
 import :common;
-import :serializable;
-import :iterator;
 
-export namespace cedilla {
+export namespace cedilla
+{
 	template <typename T>
-	struct LinkedList  : public Serializable, public IIterator
+	struct LinkedList
 	{
 		unique_ptr<T>	first = nullptr;
 		T 				*last = nullptr;
@@ -86,10 +85,12 @@ export namespace cedilla {
 		{
 			T* current;
 
-			Iterator(T* node) : current(node) {}
+			Iterator(T* node) : current(node)
+			{
 
+			}
 
-			fn operator*() const ->  T&
+			fn operator*() const -> T&
 			{
 				return *current;
 			}

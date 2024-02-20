@@ -2,7 +2,8 @@ export module ucbl.cedilla:tree;
 
 import :linked_list;
 
-export namespace cedilla {
+export namespace cedilla
+{
 
 	template <typename T>
 	struct TreeNode : public LinkedListNode<T>
@@ -19,4 +20,4 @@ export namespace cedilla {
 	{
 		return 21;
 	}
-}
+};

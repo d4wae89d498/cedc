@@ -3,20 +3,21 @@ export module ucbl.cedilla:ast;
 import :common;
 import :class_registry;
 import :tree;
-import :serializable;
 
-export namespace cedilla {
+export namespace cedilla
+{
 	struct AstNode;
 
 	struct AstNodeRegistry : public ClassRegistry<AstNode>
 	{
-		static AstNodeRegistry& get() {
+		static fn get() -> AstNodeRegistry&
+		{
 			static AstNodeRegistry instance;
 			return instance;
 		}
 	};
 
-	struct AstNode: public TreeNode<AstNode>, public Serializable
+	struct AstNode: public TreeNode<AstNode>
 	{
 		const string		name;
 		//BoxArray			data;
@@ -44,7 +45,8 @@ export namespace cedilla {
 			// Skip leading white spaces
 			while (index < str.length() && isspace(str[index])) ++index;
 
-			if (str[index] != '{') {
+			if (str[index] != '{')
+			{
 				throw runtime_error("Invalid format: Expected '{'");
 			}
 			++index; // Skip '{'
@@ -68,7 +70,9 @@ export namespace cedilla {
 		}
 
 		virtual ~AstNode() = default;
+
 		virtual fn compile() -> string = 0;
+
 		//static unique_ptr<AstNode> unserialize(string str);
 	};
 };

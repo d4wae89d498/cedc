@@ -22,8 +22,6 @@ CXXDB := 	compile_commands.json
 
 # Project modules
 MODULES := 	ucbl/cedilla/common.cppm\
-			ucbl/cedilla/interface/iterator.cppm\
-			ucbl/cedilla/serializable.cppm\
 			ucbl/cedilla/linked_list.cppm\
 			ucbl/cedilla/tree.cppm\
 			ucbl/cedilla/box.cppm\
@@ -31,7 +29,7 @@ MODULES := 	ucbl/cedilla/common.cppm\
 			ucbl/cedilla/ast.cppm\
 			ucbl/cedilla.cppm
 
-#MODULES := 	$(MODULES:%=$(MOD_DIR)/%)
+MODULES := 	$(MODULES:%=$(MOD_DIR)/%)
 OBJS := 	$(MODULES:$(SRC_DIR)/%.cppm=$(OBJ_DIR)/%.o)
 PCMS := 	$(MODULES:$(SRC_DIR)/%.cppm=$(PCM_DIR)/%.pcm)
 
@@ -51,7 +49,7 @@ PCHS	:=	$(HEADERS:$(SRC_DIR)/%.hpp=$(PCH_DIR)/%.pch)
 INCPCHS :=	$(PCHS:%=-include-pch %)
 
 # Deps
-DEPS 	:= 	$(MODULES:$(SRC_DIR)/%.cppm=$(SRC_DIR)/%.d)
+DEPS 	:= 	$(MODULES:$(SRC_DIR)/%.cppm=$(DEP_DIR)/%.d)
 
 # Submodules libraries marker
 LIBCXX_MADE_MARKER=.libcxx_made
