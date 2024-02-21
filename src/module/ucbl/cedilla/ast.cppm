@@ -12,8 +12,8 @@ export namespace cedilla
 	{
 		static fn get() -> AstNodeRegistry&
 		{
-			static AstNodeRegistry instance;
-			return instance;
+			static AstNodeRegistry s_instance;
+			return s_instance;
 		}
 	};
 
@@ -43,13 +43,14 @@ export namespace cedilla
 			string name;
 
 			// Skip leading white spaces
-			while (index < str.length() && isspace(str[index])) ++index;
+			while (index < str.length() && isspace(str[index]))
+				index += 1;
 
 			if (str[index] != '{')
 			{
 				throw runtime_error("Invalid format: Expected '{'");
 			}
-			++index; // Skip '{'
+			index += 1;
 
 
 

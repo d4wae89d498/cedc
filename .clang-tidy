@@ -1,0 +1,40 @@
+Checks: >
+  -*,
+  readability-identifier-naming,
+  modernize-use-auto
+WarningsAsErrors: >
+  readability-identifier-naming
+HeaderFilterRegex: ''
+FormatStyle: file
+CheckOptions:
+  # Naming conventions
+  - key: readability-identifier-naming.TemplateParameterCase
+    value: UPPER_CASE
+  - key: readability-identifier-naming.NamespaceCase
+    value: 'lower_case'
+  - key: readability-identifier-naming.ConstexprFunctionCase
+    value: 'UPPER_CASE'
+  - key: readability-identifier-naming.ConstexprMethodCase
+    value: 'UPPER_CASE'
+  - key: readability-identifier-naming.ConstexprVariableCase
+    value: 'UPPER_CASE'
+  - key: readability-identifier-naming.EnumConstantCase
+    value: 'UPPER_CASE'
+  - key: readability-identifier-naming.GlobalConstantCase
+    value: 'UPPER_CASE'
+  - key: readability-identifier-naming.PrivateMemberPrefix
+    value: ''
+  - key: readability-identifier-naming.PrivateMemberCase
+    value: 'lower_case'
+  - key: readability-identifier-naming.PublicMemberCase
+    value: 'lower_case'
+  - key: readability-identifier-naming.VariableCase
+    value: 'lower_case'
+  - key: readability-identifier-naming.GlobalVariablePrefix
+    value: 'g_'
+  - key: readability-identifier-naming.StaticVariablePrefix
+    value: 's_'
+  - key: readability-identifier-naming.ClassCase
+    value: 'CamelCase'
+  - key: readability-identifier-naming.FunctionCase
+    value: 'lower_case'

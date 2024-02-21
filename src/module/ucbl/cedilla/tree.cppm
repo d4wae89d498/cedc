@@ -4,17 +4,23 @@ import :linked_list;
 
 export namespace cedilla
 {
-	template <typename T>
-	struct TreeNode : public LinkedListNode<T>
-	{
-		LinkedList<T>	childs;
-	};
-
-	fn f()
-	{
-		return 21;
-	}
+template <typename T>
+struct TreeNode : public LinkedListNode<T>
+{
+    LinkedList<T> childs;
+    //	dadw
 };
+
+fn f()
+{
+	if (true)
+	{
+
+	}
+    int f;
+    return 21;
+}
+} // namespace cedilla
 
 /*
 A  <- cursor
