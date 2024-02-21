@@ -10,19 +10,32 @@ export namespace cedilla
 		unique_ptr<T>	first = nullptr;
 		T 				*last = nullptr;
 
+		fn link_before(T* node, unique_ptr<T> new_node)
+		{
+			if (!node || !new_node)
+			 	return;
+			new_node->next = move(node->prev ? node->prev->next : first);
+			new_node->prev = node->prev;
+			if (node->prev)
+				node->prev->next = move(new_node);
+			else
+				first = move(new_node);
+			node->prev = new_node.get();
+			if (!node->next)
+				last = node;
+		}
+
 		fn replace_node(T* old_node, unique_ptr<T> new_node)
 		{
 			if (old_node->prev)
 				old_node->prev->next = move(new_node);
 			else
 				first = move(new_node);
-
 			if (old_node->next)
 			{
 				first->next->prev = first.get();
 				first->prev = old_node->prev;
 			}
-
 			if (old_node == last)
 				last = first.get();
 		}
@@ -42,21 +55,6 @@ export namespace cedilla
 				node->next = move(new_node);
 				node->next->next->prev = node->next.get();
 			}
-		}
-
-		fn link_before(T* node, unique_ptr<T> new_node)
-		{
-			new_node->next = unique_ptr<T>(node);
-			if (node->prev)
-			{
-				node->prev->next = move(new_node);
-				new_node->prev = node->prev;
-			}
-			else
-			{
-				first = move(new_node);
-			}
-			node->prev = first.get();
 		}
 
 		fn delete_node(T* node)

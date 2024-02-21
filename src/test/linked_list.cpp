@@ -38,15 +38,31 @@ fn main() -> int
 	lst.link_back(make_unique<IntNode>(22));
 	lst.link_back(make_unique<IntNode>(-888));
 
+	IntNode *tmp;
+	for (auto& itm : lst)
+	{
+		if (itm.x == -888)
+		{
+			tmp = &itm;
+		}
+	}
+
+
+
+	tmp->x = 775;
+
+	lst.link_after(tmp, make_unique<IntNode>(444));
+
+
+	lst.del_if([](const IntNode &i){
+		return i.x < 0;
+	});
+
 
 	for (auto& itm : lst)
 	{
 		print(" value : {}\n", itm.x);
 	}
-
-	lst.del_if([](const IntNode &i){
-		return i.x < 0;
-	});
 
 	assert(lst.first->x == 21);
 	assert(lst.first->next->x == 12);
