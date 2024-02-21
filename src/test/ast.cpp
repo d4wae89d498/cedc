@@ -15,10 +15,10 @@ struct Identifier : public AstNode
 		return value;
 	}
 };
-//REGISTER_CLASS(AstNode, Identifier);
+REGISTER_CLASS(AstNode, Identifier);
 
 
-int main()
+fn main() -> int
 {
 
 

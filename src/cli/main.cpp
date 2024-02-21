@@ -9,7 +9,7 @@ struct Identifier : public AstNode
 
 	}
 
-	string compile()
+	fn compile() -> string
 	{
 		return "";
 	}
@@ -17,7 +17,7 @@ struct Identifier : public AstNode
 REGISTER_CLASS(AstNode, Identifier);
 
 
-int main()
+fn main() -> int
 {
 	print("hello {}\n", f());
 	//cout << AstNodeRegistry::get().createInstance("Identifier") << endl;

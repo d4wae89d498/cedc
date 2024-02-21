@@ -44,7 +44,7 @@ class IntTreeNode : public TreeNode<IntTreeNode>
 };
 
 
-int main()
+fn main() -> int
 {
 
 	LinkedList<IntTreeNode> lst;

@@ -1,7 +1,8 @@
 Checks: >
   -*,
   readability-identifier-naming,
-  modernize-use-auto
+  modernize-use-auto,
+  modernize-use-trailing-return-type
 WarningsAsErrors: >
   readability-identifier-naming
 HeaderFilterRegex: ''

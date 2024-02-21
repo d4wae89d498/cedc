@@ -22,7 +22,7 @@ class IntNode : public LinkedListNode<IntNode>
 };
 
 
-int main()
+fn main() -> int
 {
 
 	LinkedList<IntNode> lst;

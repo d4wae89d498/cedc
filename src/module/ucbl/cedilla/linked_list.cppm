@@ -142,8 +142,7 @@ export namespace cedilla
 			return string("");
 		}
 
-		struct
-		Iterator
+		struct Iterator
 		{
 			T* current;
 
