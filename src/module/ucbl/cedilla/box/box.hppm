@@ -12,7 +12,7 @@ export namespace cedilla {
 
 	struct BoxArray : unordered_map<string, unique_ptr<Box>>
 	{
-		string serialize()
+		fn serialize() -> string
 		{
 			return "[]";
 		}

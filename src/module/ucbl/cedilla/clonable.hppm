@@ -7,11 +7,11 @@ export namespace cedilla
 	template <typename T>
 	struct Clonable
 	{
-		fn	clone() -> unique_ptr<T>;
+		virtual fn	clone() const -> unique_ptr<T> = 0;
 	};
 
 	template <typename T>
-	struct MayBeClonable
+	struct MaybeClonable
 	{
  		virtual fn clone() const -> unique_ptr<T>
 		{

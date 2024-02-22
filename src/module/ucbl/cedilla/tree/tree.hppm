@@ -11,7 +11,7 @@ export namespace cedilla
         //	dadw
     };
 
-    fn f() -> int;
+    fn f() -> int { return 4; };
 }
  // namespace cedilla
 

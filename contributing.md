@@ -69,3 +69,7 @@ namespace namespace_name
 	}
 }
 ```
+
+## VS Code configuration
+
+we provided .vscode/extension file to suggest you to install clangd ext. Also, we used a file assoc fromn hppm to objectivec++ to distinguish implementation from interface. Its a hack, its working. We did that because VS Code dont allow us to specify header (hpp) as file association. So we used objc++ instead.
