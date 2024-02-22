@@ -1,0 +1,6 @@
+{
+	"files.associations": {
+		"*.cppm": "cpp",
+		"*.hppm": "objective-cpp"
+	}
+}
