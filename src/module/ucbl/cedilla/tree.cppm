@@ -11,15 +11,9 @@ export namespace cedilla
         //	dadw
     };
 
-    fn f()
-    {
-        if (true)
-        {
-        }
-        int f;
-        return 21;
-    }
-} // namespace cedilla
+    fn f() -> int;
+}
+ // namespace cedilla
 
 /*
 A  <- cursor

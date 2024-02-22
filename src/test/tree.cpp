@@ -49,9 +49,11 @@ fn main() -> int
 
 	LinkedList<IntTreeNode> lst;
 
+	print("okok\n");
 
 	lst.link_front(make_unique<IntTreeNode>(-1));
 	lst.link_back(make_unique<IntTreeNode>(21));
+	print("okok\n");
 
 	lst.link_back(make_unique<IntTreeNode>(12));
 	lst.link_front(make_unique<IntTreeNode>(-1));
@@ -60,11 +62,12 @@ fn main() -> int
 	lst.link_back(make_unique<IntTreeNode>(22));
 	lst.link_back(make_unique<IntTreeNode>(-888));
 
+	print("okok\n");
 
 	lst.first->next->next->childs.link_back(make_unique<IntTreeNode>(42));
 
 
-	lst.del_if([](const IntTreeNode &i){
+	lst.del_all([](const IntTreeNode &i){
 		return i.x < 0;
 	});
 

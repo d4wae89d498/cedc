@@ -14,30 +14,23 @@ export namespace cedilla
 		{
 			if (!node || !new_node)
 			 	return;
-			new_node->next = move(node->prev ? node->prev->next : first);
-			new_node->prev = node->prev;
-			if (node->prev)
-				node->prev->next = move(new_node);
-			else
-				first = move(new_node);
-			node->prev = new_node.get();
-			if (!node->next)
-				last = node;
-		}
-
-		fn replace_node(T* old_node, unique_ptr<T> new_node)
-		{
-			if (old_node->prev)
-				old_node->prev->next = move(new_node);
-			else
-				first = move(new_node);
-			if (old_node->next)
+			const auto new_node_last = new_node->last();
+			if (!node->prev)
 			{
-				first->next->prev = first.get();
-				first->prev = old_node->prev;
+				new_node_last->next = move(first);
+				new_node_last->next->prev = new_node_last;
+				first = move(new_node);
 			}
-			if (old_node == last)
-				last = first.get();
+			else
+			{
+				const auto old_prev = node->prev;
+				new_node_last->next = unique_ptr<T>(node);
+				new_node_last->next->prev = new_node_last;
+				new_node->prev = old_prev;
+
+				old_prev->next.release();
+				old_prev->next = move(new_node);
+			}
 		}
 
 		fn link_after(T* node, unique_ptr<T> new_node)
@@ -57,31 +50,18 @@ export namespace cedilla
 			}
 		}
 
-		fn delete_node(T* node)
-		{
-			if (node->prev)
-				node->prev->next = move(node->next);
-			else
-				first = move(node->next);
-
-			if (node->next)
-				node->next->prev = node->prev;
-			else
-				last = node->prev;
-		}
-
 		fn link_back(unique_ptr<T> node)
 		{
 			if (!first)
 			{
 				first = move(node);
-				this->last = first.get();
+				last = first.get();
 			}
 			else
 			{
-				this->last->next = move(node);
-				this->last->next->prev = this->last;
-				this->last = this->last->next.get();
+				last->next = move(node);
+				last->next->prev = last;
+				last = last->next.get();
 			}
 		}
 
@@ -100,39 +80,45 @@ export namespace cedilla
 			}
 		}
 
-		fn del_if(function<bool(const T&)> predicate)
+		fn del_one(T* node)
+		{
+			if (node->next)
+				node->next->prev = node->prev;
+			else
+				last = node->prev;
+			if (node->prev)
+				node->prev->next = move(node->next);
+			else
+				first = move(node->next);
+		}
+
+		fn del_all(function<bool(const T&)> predicate)
 		{
 			T* current = first.get();
 			T* prev = nullptr;
 
-			while (current != nullptr)
+			while (current)
 			{
+				T* next = current->next.get();
 				if (predicate(*current))
-				{
-					if (prev)
-					{
-						prev->next = move(current->next);
-						if (prev->next)
-							prev->next->prev = prev;
-						else
-							last = prev;
-					}
-					else
-					{
-						first = move(current->next);
-						if (first)
-							first->prev = nullptr;
-						else
-							last = nullptr;
-					}
-					current = (prev) ? prev->next.get() : first.get();
-				}
-				else
-				{
-					prev = current;
-					current = current->next.get();
-				}
+					del_one(current);
+ 				current = next;
 			}
+		}
+
+		fn replace_one(T* old_node, unique_ptr<T> new_node)
+		{
+			if (old_node->prev)
+				old_node->prev->next = move(new_node);
+			else
+				first = move(new_node);
+			if (old_node->next)
+			{
+				first->next->prev = first.get();
+				first->prev = old_node->prev;
+			}
+			if (old_node == last)
+				last = first.get();
 		}
 
 		fn serialize() -> string

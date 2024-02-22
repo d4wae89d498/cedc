@@ -15,15 +15,18 @@ DEP_DIR := $(TMP_DIR)/dep
 
 # Compilation flags
 CXX :=		clang++ -std=c++26
-CXXFLAGS =	-nostdinc++ -fprebuilt-module-path=lib/libcxx-pcm/lib -Wno-unqualified-std-cast-call -fprebuilt-module-path=$(PCM_DIR)
+CXXFLAGS =	-g -nostdinc++ -fprebuilt-module-path=lib/libcxx-pcm/lib -Wno-unqualified-std-cast-call -fprebuilt-module-path=$(PCM_DIR)
 #				$(shell find $(PCM_DIR) -type d | sed 's/^/-fprebuilt-module-path=/' | tr '\n' ' ')
 
 CXXDB := 	compile_commands.json
 
 # Project modules
 MODULES := 	ucbl/cedilla/common.cppm\
+			ucbl/cedilla/interface/clonable.cppm\
+			ucbl/cedilla/interface/serializable.cppm\
 			ucbl/cedilla/linked_list.cppm\
 			ucbl/cedilla/tree.cppm\
+			ucbl/cedilla/tree.impl.cppm\
 			ucbl/cedilla/box.cppm\
 			ucbl/cedilla/class_registry.cppm\
 			ucbl/cedilla/ast.cppm\
