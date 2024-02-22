@@ -16,6 +16,9 @@ Prefixes :
 Braces :
 Always use ANSI C++ style.
 
+Modules : 
+Dont use private fragments. use a separate impl file for easier build system that uses timestamp.
+
 ```C++
 module;
 
