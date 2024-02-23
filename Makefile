@@ -62,7 +62,7 @@ PCHS	:=	$(HEADERS:$(SRC_DIR)/%.hpp=$(PCH_DIR)/%.pch)
 INCPCHS :=	$(PCHS:%=-include-pch %)
 
 # Deps
-DEPS 	:= 	$(MODULES:$(SRC_DIR)/%=$(DEP_DIR)/%.d)
+DEPS 	:= 	$(MODULES:$(SRC_DIR)/%=$(DEP_DIR)/%.d) $(IMPLS:$(SRC_DIR)/%=$(DEP_DIR)/%.d)
 
 # Submodules libraries marker
 LIBCXX_MADE_MARKER=.libcxx_made
@@ -88,8 +88,8 @@ $(PCH_DIR)/%.pch: $(SRC_DIR)/%.hpp makefile
 
 $(PCM_DIR)/%.pcm: $(SRC_DIR)/%.hppm $(PCHS)
 	@mkdir -p $(@D)
-	@mkdir -p $(shell dirname $(patsubst $(PCM_DIR)/%,$(DEP_DIR)/%.d,$(@)))
-	$(CXX) -x c++-module $(CXXFLAGS) -MMD -MF $(patsubst $(PCM_DIR)/%,$(DEP_DIR)/%.d,$(@)) --precompile $< -o $@ $(INCPCHS)
+	@mkdir -p $(shell dirname $(patsubst $(PCM_DIR)/%.pcm,$(DEP_DIR)/%.hppm.d,$(@)))
+	$(CXX) -x c++-module $(CXXFLAGS) -MMD -MF $(patsubst $(PCM_DIR)/%.pcm,$(DEP_DIR)/%.hppm.d,$(@)) --precompile $< -o $@ $(INCPCHS)
 	@if [[ "$<" == $(MOD_DIR)/* ]]; then \
 		path="$<"; \
 		prefix="$(MOD_DIR)/"; \
@@ -97,10 +97,10 @@ $(PCM_DIR)/%.pcm: $(SRC_DIR)/%.hppm $(PCHS)
 		vendor_name=$$(echo "$$stripped_path" | cut -d'/' -f1); \
 		num_folders=$$(echo "$$stripped_path" | tr -cd '/' | wc -c); \
 		if [[ $$num_folders -eq 1 ]]; then \
-			cp $@ $(PCM_DIR)/$$vendor_name.$(notdir $@); \
+			cp -f $@ $(PCM_DIR)/$$vendor_name.$(notdir $@); \
 		else \
 			project_name=$$(echo "$$stripped_path" | cut -d'/' -f2); \
-			cp $@ $(PCM_DIR)/$$vendor_name.$$project_name-$(notdir $@); \
+			cp -f $@ $(PCM_DIR)/$$vendor_name.$$project_name-$(notdir $@);  \
 		fi; \
 	fi
 
@@ -108,10 +108,17 @@ $(OBJ_DIR)/%.hppm.o: $(PCM_DIR)/%.pcm
 	@mkdir -p $(@D)
 	$(CXX) $(CXXFLAGS)  -c $< -o $@
 
+debug:
+	echo IMPLS : $(IMPLS)
+	echo "---"
+	echo PCMS : $(PCMS)
+	echo "---"
+	echo OBJS : $(OBJS)
+
 $(OBJ_DIR)/%.cppm.o: $(SRC_DIR)/%.cppm
 	@mkdir -p $(@D)
-	@mkdir -p $(shell dirname $(patsubst $(OBJ_DIR)/%,$(DEP_DIR)/%.d,$(@)))
-	$(CXX) -x c++-module $(CXXFLAGS) -MMD -MF $(patsubst $(OBJ_DIR)/%,$(DEP_DIR)/%.d,$(@))  -c $< -o $@ $(INCPCHS)
+	@mkdir -p $(shell dirname $(patsubst $(OBJ_DIR)/%.cppm.o,$(DEP_DIR)/%.cppm.d,$(@)))
+	$(CXX) -x c++-module $(CXXFLAGS) -MMD -MF $(patsubst $(OBJ_DIR)/%.cppm.o,$(DEP_DIR)/%.cppm.d,$(@))  -c $< -o $@ $(INCPCHS)
 
 $(NAME): $(OBJS)
 	@mkdir -p $(@D)
