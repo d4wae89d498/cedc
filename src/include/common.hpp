@@ -9,3 +9,4 @@
     }
 
 #define fn auto
+#define TEST21 42

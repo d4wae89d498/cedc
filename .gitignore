@@ -6,9 +6,6 @@ tmp/*
 bin/*
 *.a
 
-# Clangd
-.cache
-
 # Text editors
 compile_commands.json
 .idea

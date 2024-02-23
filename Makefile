@@ -18,7 +18,7 @@ CXX :=		clang++ -std=c++26
 CXXFLAGS =	-g -nostdinc++ -fprebuilt-module-path=lib/libcxx-pcm/lib -Wno-unqualified-std-cast-call -fprebuilt-module-path=$(PCM_DIR)
 #				$(shell find $(PCM_DIR) -type d | sed 's/^/-fprebuilt-module-path=/' | tr '\n' ' ')
 
-CXXDB := 	compile_commands.json
+CXXDB := 	$(TMP_DIR)/compile_commands.json
 
 # Project modules interfaces
 
@@ -65,7 +65,7 @@ INCPCHS :=	$(PCHS:%=-include-pch %)
 DEPS 	:= 	$(MODULES:$(SRC_DIR)/%=$(DEP_DIR)/%.d) $(IMPLS:$(SRC_DIR)/%=$(DEP_DIR)/%.d)
 
 # Submodules libraries marker
-LIBCXX_MADE_MARKER=.libcxx_made
+LIBCXX_MADE_MARKER=$(TMP_DIR)/.libcxx_made
 
 #-------------------------------------------------#
 
@@ -73,14 +73,15 @@ LIBCXX_MADE_MARKER=.libcxx_made
 .PRECIOUS: 	$(PCHS) $(PCMS)
 .PHONY: 	all clean fclean re
 
+all: $(LIBCXX_MADE_MARKER) $(NAME) $(EXECS)
+
 $(LIBCXX_MADE_MARKER):
 	make -C lib/libcxx-pcm
+	@mkdir -p $(@D)
 	@ln -sf $(shell pwd)/lib/libcxx-pcm/lib/libcxx.a lib/libcxx.a
 	@touch $(LIBCXX_MADE_MARKER)
 
-all: $(LIBCXX_MADE_MARKER) $(NAME) $(EXECS)
-
-$(PCH_DIR)/%.pch: $(SRC_DIR)/%.hpp makefile
+$(PCH_DIR)/%.pch: $(SRC_DIR)/%.hpp
 	@mkdir -p $(@D)
 	$(CXX) -x c++-header -DCLANGD $(CXXFLAGS) -o $@ $<
 
@@ -108,17 +109,10 @@ $(OBJ_DIR)/%.hppm.o: $(PCM_DIR)/%.pcm
 	@mkdir -p $(@D)
 	$(CXX) $(CXXFLAGS)  -c $< -o $@
 
-debug:
-	echo IMPLS : $(IMPLS)
-	echo "---"
-	echo PCMS : $(PCMS)
-	echo "---"
-	echo OBJS : $(OBJS)
-
-$(OBJ_DIR)/%.cppm.o: $(SRC_DIR)/%.cppm
+$(OBJ_DIR)/%.cppm.o: $(SRC_DIR)/%.cppm $(PCHS)
 	@mkdir -p $(@D)
 	@mkdir -p $(shell dirname $(patsubst $(OBJ_DIR)/%.cppm.o,$(DEP_DIR)/%.cppm.d,$(@)))
-	$(CXX) -x c++-module $(CXXFLAGS) -MMD -MF $(patsubst $(OBJ_DIR)/%.cppm.o,$(DEP_DIR)/%.cppm.d,$(@))  -c $< -o $@ $(INCPCHS)
+	$(CXX) -x c++ $(CXXFLAGS) -MMD -MF $(patsubst $(OBJ_DIR)/%.cppm.o,$(DEP_DIR)/%.cppm.d,$(@))  -c $< -o $@ $(INCPCHS)
 
 $(NAME): $(OBJS)
 	@mkdir -p $(@D)
@@ -133,7 +127,7 @@ $(BIN_DIR)/%.out: $(SRC_DIR)/%.cpp $(OBJS)
 $(CXXDB): $(EXECS)
 	@make --always-make --dry-run \
 	| grep -wE 'clang\+\+' \
-	| jq -nR '[inputs | {directory: env.PWD, command: (. + " -DCLANGD") , file: (match("\\S+\\.(cpp|cppm|hppm)").string)}]' \
+	| jq -nR '[inputs | {directory: env.PWD, command: (. + " -DCLANGD") , file: (match("\\S+\\.(cpp|cppm|hppm|hpp)(?=\\s|$$)").string)}]' \
 	> $(CXXDB)
 
 clean:

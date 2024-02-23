@@ -1,5 +1,6 @@
 export module ucbl.cedilla:tree;
 
+import :common;
 import :linked_list;
 
 export namespace cedilla
@@ -12,15 +13,12 @@ export namespace cedilla
     };
 
 
+    fn f() -> int;
 
-	int g_f;
-	int pp;
-
-    fn f() -> int {
-		int k;
-		int pp;
-		return 9099009;
-	};
+	fn test()
+	{
+		print("{}", TEST21);
+	}
 }
  // namespace cedilla
 
