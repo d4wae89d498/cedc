@@ -43,7 +43,9 @@ fn main() -> int
 	lst.link_back(make_unique<IntNode>(22));
 	lst.link_back(make_unique<IntNode>(-888));
 
-	print("F: {}", f());
+	Test<int> p;
+
+	p.f(4);
 
 	IntNode *tmp;
 	for (auto& itm : lst)

@@ -19,7 +19,6 @@ REGISTER_CLASS(AstNode, Identifier);
 
 fn main() -> int
 {
-	print("hello {}\n", f());
 	//cout << AstNodeRegistry::get().createInstance("Identifier") << endl;
 
 	//printf("... hello\n");

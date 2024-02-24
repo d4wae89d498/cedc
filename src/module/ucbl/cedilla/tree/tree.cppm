@@ -1,11 +1,13 @@
-module ucbl.cedilla:tree;
+export module ucbl.cedilla:tree;
 
 import :common;
+import :linked_list;
 
-namespace cedilla
+export namespace cedilla
 {
-	fn f() -> int
-	{
-		return 21;
-	}
+    template <typename T>
+    struct TreeNode : public LinkedListNode<T>
+    {
+        LinkedList<T> childs;
+    };
 }

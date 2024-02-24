@@ -20,27 +20,25 @@ CXXFLAGS =	-g -nostdinc++ -fprebuilt-module-path=lib/libcxx-pcm/lib -Wno-unquali
 
 CXXDB := 	$(TMP_DIR)/compile_commands.json
 
-# Project modules interfaces
+# Project modules
 
-MODULES := 	ucbl/cedilla/common.hppm\
-			ucbl/cedilla/clonable.hppm\
-			ucbl/cedilla/serializable.hppm\
-			ucbl/cedilla/linked_list/linked_list.hppm\
-			ucbl/cedilla/tree/tree.hppm\
-			ucbl/cedilla/box/box.hppm\
-			ucbl/cedilla/class_registry/class_registry.hppm\
-			ucbl/cedilla/ast/ast.hppm\
-			ucbl/cedilla.hppm
+MODULES := 	ucbl/cedilla/common.cppm\
+			ucbl/cedilla/clonable.cppm\
+			ucbl/cedilla/serializable.cppm\
+			ucbl/cedilla/linked_list/linked_list.cppm\
+			ucbl/cedilla/tree/tree.cppm\
+			ucbl/cedilla/box/box.cppm\
+			ucbl/cedilla/class_registry/class_registry.cppm\
+			ucbl/cedilla/ast/ast.cppm\
+			\
+			ucbl/cedilla/linked_list/linked_list.impl.cppm\
+			\
+			ucbl/cedilla.cppm
 
 MODULES := 	$(MODULES:%=$(MOD_DIR)/%)
-OBJS := 	$(MODULES:$(SRC_DIR)/%.hppm=$(OBJ_DIR)/%.hppm.o)
-PCMS := 	$(MODULES:$(SRC_DIR)/%.hppm=$(PCM_DIR)/%.pcm)
 
-# Project modules implementations
-
-IMPLS :=	$(shell find "src/module" -type f -name "*.cppm")
-
-OBJS :=		$(OBJS) $(IMPLS:$(SRC_DIR)/%.cppm=$(OBJ_DIR)/%.cppm.o)
+OBJS := 	$(MODULES:$(SRC_DIR)/%.cppm=$(OBJ_DIR)/%.cppm.o)
+PCMS := 	$(MODULES:$(SRC_DIR)/%.cppm=$(PCM_DIR)/%.pcm)
 
 # Project library
 NAME :=		$(LIB_DIR)/libcedilla.a
@@ -81,16 +79,16 @@ $(LIBCXX_MADE_MARKER):
 	@ln -sf $(shell pwd)/lib/libcxx-pcm/lib/libcxx.a lib/libcxx.a
 	@touch $(LIBCXX_MADE_MARKER)
 
-$(PCH_DIR)/%.pch: $(SRC_DIR)/%.hpp
+$(PCH_DIR)/%.pch: $(SRC_DIR)/%.hpp makefile
 	@mkdir -p $(@D)
 	$(CXX) -x c++-header -DCLANGD $(CXXFLAGS) -o $@ $<
 
 -include $(DEPS)
 
-$(PCM_DIR)/%.pcm: $(SRC_DIR)/%.hppm $(PCHS)
+$(PCM_DIR)/%.pcm: $(SRC_DIR)/%.cppm $(PCHS)
 	@mkdir -p $(@D)
-	@mkdir -p $(shell dirname $(patsubst $(PCM_DIR)/%.pcm,$(DEP_DIR)/%.hppm.d,$(@)))
-	$(CXX) -x c++-module $(CXXFLAGS) -MMD -MF $(patsubst $(PCM_DIR)/%.pcm,$(DEP_DIR)/%.hppm.d,$(@)) --precompile $< -o $@ $(INCPCHS)
+	@mkdir -p $(shell dirname $(patsubst $(PCM_DIR)/%.pcm,$(DEP_DIR)/%.cppm.d,$(@)))
+	$(CXX) -x c++-module $(CXXFLAGS) -MMD -MF $(patsubst $(PCM_DIR)/%.pcm,$(DEP_DIR)/%.cppm.d,$(@)) --precompile $< -o $@ $(INCPCHS)
 	@if [[ "$<" == $(MOD_DIR)/* ]]; then \
 		path="$<"; \
 		prefix="$(MOD_DIR)/"; \
@@ -105,14 +103,9 @@ $(PCM_DIR)/%.pcm: $(SRC_DIR)/%.hppm $(PCHS)
 		fi; \
 	fi
 
-$(OBJ_DIR)/%.hppm.o: $(PCM_DIR)/%.pcm
+$(OBJ_DIR)/%.cppm.o: $(PCM_DIR)/%.pcm
 	@mkdir -p $(@D)
 	$(CXX) $(CXXFLAGS)  -c $< -o $@
-
-$(OBJ_DIR)/%.cppm.o: $(SRC_DIR)/%.cppm $(PCHS)
-	@mkdir -p $(@D)
-	@mkdir -p $(shell dirname $(patsubst $(OBJ_DIR)/%.cppm.o,$(DEP_DIR)/%.cppm.d,$(@)))
-	$(CXX) -x c++ $(CXXFLAGS) -MMD -MF $(patsubst $(OBJ_DIR)/%.cppm.o,$(DEP_DIR)/%.cppm.d,$(@))  -c $< -o $@ $(INCPCHS)
 
 $(NAME): $(OBJS)
 	@mkdir -p $(@D)
@@ -127,7 +120,7 @@ $(BIN_DIR)/%.out: $(SRC_DIR)/%.cpp $(OBJS)
 $(CXXDB): $(EXECS)
 	@make --always-make --dry-run \
 	| grep -wE 'clang\+\+' \
-	| jq -nR '[inputs | {directory: env.PWD, command: (. + " -DCLANGD") , file: (match("\\S+\\.(cpp|cppm|hppm|hpp)(?=\\s|$$)").string)}]' \
+	| jq -nR '[inputs | {directory: env.PWD, command: (. + " -DCLANGD") , file: (match("\\S+\\.(cpp|cppm|hpp)(?=\\s|$$)").string)}]' \
 	> $(CXXDB)
 
 clean:
