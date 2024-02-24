@@ -1,7 +1,6 @@
 {
 	"files.associations": {
-		"*.cppm": "cpp",
-		"*.hppm": "objective-cpp"
+		"*.cppm": "cpp"
 	},
 	"search.exclude": {
         "**/.git": true,
