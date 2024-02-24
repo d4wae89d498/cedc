@@ -1,7 +1,7 @@
-export module ucbl.cedilla:tree;
+export module ucbl.cedilla:tree_node;
 
-import :common;
 import :linked_list;
+import :linked_list_node;
 
 export namespace cedilla
 {

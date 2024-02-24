@@ -16,8 +16,12 @@ Prefixes :
 Braces :
 Always use ANSI C++ style.
 
-Modules : 
-Dont use private fragments. use a separate impl file for easier build system that uses timestamp.
+Modules :
+Dont use private fragments. use a separate impl file for easier build system that uses timestamp. Implementation module name shall ends with `.impl`. Implementations should export import their interfaces, implementations shall not export anything else.
+One class per module. Group impl and intrfaces within a dir named according class name but in snake case. If interface only, file goes at root of project without a directory.
+
+Containers :
+Iterators should stay in hpp
 
 ```C++
 module;
@@ -75,4 +79,4 @@ namespace namespace_name
 
 ## VS Code configuration
 
-we provided .vscode/extension file to suggest you to install clangd ext. Also, we used a file assoc fromn hppm to objectivec++ to distinguish implementation from interface. Its a hack, its working. We did that because VS Code dont allow us to specify header (hpp) as file association. So we used objc++ instead.
+we provided .vscode/extension file to suggest you to install clangd ext.

@@ -11,24 +11,9 @@ export namespace cedilla
 
 		unordered_map<string, FactoryFunction> registry;
 
-		void register_class(const string& key, FactoryFunction func)
-		{
-			registry[key] = func;
-		}
-
-		unique_ptr<T> create_instance(const string& key) const
-		{
-			auto it = registry.find(key);
-			if (it != registry.end())
-			{
-				return it->second();
-			}
-			return nullptr;
-		}
-
-		ClassRegistry()
-		{
-		}
+		fn register_class(const string& key, FactoryFunction func) -> void;
+		fn create_instance(const string& key) const -> unique_ptr<T>;
+		ClassRegistry();
 	};
 };
 

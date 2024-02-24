@@ -43,9 +43,7 @@ fn main() -> int
 	lst.link_back(make_unique<IntNode>(22));
 	lst.link_back(make_unique<IntNode>(-888));
 
-	Test<int> p;
-
-	p.f(4);
+	print("Serialized: {}\n", lst.serialize());
 
 	IntNode *tmp;
 	for (auto& itm : lst)

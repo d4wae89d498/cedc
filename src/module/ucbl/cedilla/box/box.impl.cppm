@@ -1,1 +1,1 @@
-module ucbl.cedilla:box;
+export module ucbl.cedilla:box.impl;

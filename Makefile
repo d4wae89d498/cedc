@@ -25,14 +25,19 @@ CXXDB := 	$(TMP_DIR)/compile_commands.json
 MODULES := 	ucbl/cedilla/common.cppm\
 			ucbl/cedilla/clonable.cppm\
 			ucbl/cedilla/serializable.cppm\
+			ucbl/cedilla/linked_list_node/linked_list_node.cppm\
 			ucbl/cedilla/linked_list/linked_list.cppm\
-			ucbl/cedilla/tree/tree.cppm\
+			ucbl/cedilla/tree_node.cppm\
 			ucbl/cedilla/box/box.cppm\
 			ucbl/cedilla/class_registry/class_registry.cppm\
-			ucbl/cedilla/ast/ast.cppm\
+			ucbl/cedilla/ast_node/ast_node.cppm\
+			ucbl/cedilla/ast_node_registry/ast_node_registry.cppm\
 			\
+			ucbl/cedilla/class_registry/class_registry.impl.cppm\
+			ucbl/cedilla/linked_list_node/linked_list_node.impl.cppm\
 			ucbl/cedilla/linked_list/linked_list.impl.cppm\
-			\
+			ucbl/cedilla/ast_node/ast_node.impl.cppm\
+			ucbl/cedilla/ast_node_registry/ast_node_registry.impl.cppm\
 			ucbl/cedilla.cppm
 
 MODULES := 	$(MODULES:%=$(MOD_DIR)/%)
