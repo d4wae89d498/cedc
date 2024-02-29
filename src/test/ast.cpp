@@ -36,9 +36,9 @@ struct Int : public AstNode
 fn main() -> int
 {
 
-	auto myast = AstNodeRegistry::get().create_instance("Identifier");
+	auto myast = AstNodeRegistry::get().create_instance("Identifier", "salut");
 
-	myast->next =  AstNodeRegistry::get().create_instance("Int");
+	myast->next =  AstNodeRegistry::get().create_instance("Int", "4");
 
 	Identifier	id;
 	//assert()

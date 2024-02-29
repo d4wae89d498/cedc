@@ -12,11 +12,11 @@ namespace cedilla
 	}
 
 	template <typename T>
-	fn ClassRegistry<T>::create_instance(const string& key) const -> unique_ptr<T>
+	fn ClassRegistry<T>::create_instance(const string& key, const string& serialized_str) const -> unique_ptr<T>
 	{
 		auto it = registry.find(key);
 		if (it != registry.end())
-			return it->second();
+			return it->second(serialized_str);
 		return nullptr;
 	}
 

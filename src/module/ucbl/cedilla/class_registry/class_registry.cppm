@@ -11,7 +11,7 @@ export namespace cedilla
 		unordered_map<string, FactoryFunction> registry;
 
 		fn register_class(const string& key, FactoryFunction func) -> void;
-		fn create_instance(const string& key) const -> unique_ptr<T>;
+		fn create_instance(const string& key, const string& serialized_str) const -> unique_ptr<T>;
 		ClassRegistry();
 	};
 };
