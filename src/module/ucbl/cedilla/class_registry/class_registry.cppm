@@ -7,8 +7,7 @@ export namespace cedilla
 	template <typename T>
 	struct ClassRegistry
 	{
-		using FactoryFunction = function<unique_ptr<T>()>;
-
+		using FactoryFunction = function<unique_ptr<T>(string)>;
 		unordered_map<string, FactoryFunction> registry;
 
 		fn register_class(const string& key, FactoryFunction func) -> void;

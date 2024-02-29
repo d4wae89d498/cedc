@@ -4,9 +4,8 @@ import :common;
 
 export namespace cedilla
 {
-	template <typename T>
 	struct Serializable
 	{
-		fn	serialize() -> string;
+		virtual fn	serialize() const -> string = 0;
 	};
 }

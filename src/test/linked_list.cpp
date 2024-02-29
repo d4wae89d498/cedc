@@ -10,11 +10,6 @@ class IntNode : public LinkedListNode<IntNode>
 
 	int x;
 
-	IntNode()
-	{
-
-	}
-
 	IntNode(int v)
 	{
 		x = v;
@@ -31,6 +26,29 @@ class IntNode : public LinkedListNode<IntNode>
 };
 
 
+struct SInt : public State
+{
+	SInt(int value) : State(value)
+	{
+	}
+
+	fn clone() const -> unique_ptr<State>
+	{
+		return make_unique<SInt>(any_cast<int>(this->value));
+	}
+
+	fn serialize() const -> string
+	{
+		return format("CSInt({})", any_cast<int>(this->value));
+	}
+
+	static fn unserialize(string str) -> unique_ptr<State>
+	{
+		return make_unique<SInt>(19);
+	}
+};
+REGISTER_CLASS(State, SInt);
+
 fn main() -> int
 {
 	LinkedList<IntNode> lst;
@@ -44,6 +62,13 @@ fn main() -> int
 	lst.link_back(make_unique<IntNode>(-888));
 
 	print("Serialized: {}\n", lst.serialize());
+
+	auto pomme = SInt(4);
+
+
+	auto pomme2 = pomme.clone();
+
+	print("new value: {}\n",any_cast<int>(pomme2->value));
 
 	IntNode *tmp;
 	for (auto& itm : lst)

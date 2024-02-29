@@ -16,9 +16,7 @@ namespace cedilla
 	{
 		auto it = registry.find(key);
 		if (it != registry.end())
-		{
 			return it->second();
-		}
 		return nullptr;
 	}
 
