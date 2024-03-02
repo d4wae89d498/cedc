@@ -1,32 +1,28 @@
+
 import ucbl.cedilla;
 
 using namespace cedilla;
 
 fn main() -> int
 {
- 	string key;
+
+    string key;
     int value;
+	float v;
+	int rest;
+	float d = -1;
 
+	if (scan("23.2549 end","{} end", d))
+		println("OK VAL {}", d);
 
-    if (scan("answer = 42", "{} = {}", key, value)) {
-        cout << "Parsed successfully:\n";
-        cout << "Key: " << key << "\n";
-        cout << "Value: " << value << "\n";
-    } else {
-        cout << "Failed to parse the string.\n";
-    }
+	if (scan("test =", "{} =", key))
+		println("key: [{}]", key);
 
-
-	//cout << AstNodeRegistry::get().createInstance("Identifier") << endl;
-
-	//printf("... hello\n");
-	unique_ptr<int> p;
-/*
-	cout << "" << endl;
-
-	string a;
-
-	unique_ptr<string> pp;
-*/
-//	Serializable::serialize();
+    if (scan("test = 12 0.26", "{} = {} {}", key, value, d))
+		println("key: [{}]", key);
+	else
+		println("pasok");
+	println("k: {}", value);
+	println("d: {}", d);
+    return 0;
 }
