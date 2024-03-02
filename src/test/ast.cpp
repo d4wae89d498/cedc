@@ -30,8 +30,15 @@ struct Int : public AstNode
 	{
 		return format("{}", value);
 	}
+
+	static fn unserialize(const string &str) -> unique_ptr<AstNode>
+	{
+		int value;
+		//scan("{}", value);
+		return make_unique<Int>();
+	}
 };
-//REGISTER_CLASS(AstNode, Int);
+REGISTER_CLASS(AstNode, Int);
 
 fn main() -> int
 {

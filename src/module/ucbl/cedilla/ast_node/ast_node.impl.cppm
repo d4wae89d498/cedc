@@ -22,6 +22,7 @@ namespace cedilla
 		"}";
 	}
 
+/*
 	fn AstNode::unserialize(string str) -> unique_ptr<AstNode>
 	{
 		unique_ptr<AstNode> out;
@@ -49,7 +50,7 @@ namespace cedilla
 		index += 1;
 		return out;
     };
-
+*/
 /*
 	fn AstNodeRegistry::get() -> AstNodeRegistry &
 	{

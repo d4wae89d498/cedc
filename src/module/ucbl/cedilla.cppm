@@ -2,6 +2,7 @@ export module ucbl.cedilla;
 
 // interfaces
 export import :common;
+export import :scan;
 export import :serializable;
 export import :clonable;
 export import :linked_list_node;

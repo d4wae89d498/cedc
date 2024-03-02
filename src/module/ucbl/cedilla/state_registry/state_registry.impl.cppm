@@ -3,6 +3,7 @@ export import :state_registry;
 
 import :common;
 import :class_registry.impl;
+import :state;
 
 namespace cedilla
 {
