@@ -10,10 +10,5 @@ export namespace cedilla
 	struct AstNodeRegistry : public ClassRegistry<AstNode>
     {
         static fn get() -> AstNodeRegistry &;
-
-	/*	{
-			static AstNodeRegistry s_instance;
-			return s_instance;
-		}*/
     };
 }

@@ -5,7 +5,7 @@
 		{\
             Registrator_ ## TYPE ## CLASS()\
 			{\
-                TYPE ## Registry ::get().register_class(#CLASS, [](string str) -> std::unique_ptr<TYPE>\
+                TYPE ## Registry ::get().register_class(#CLASS, [](const string& str) -> std::unique_ptr<TYPE>\
 				{\
 					return CLASS  :: unserialize(str);\
 				});\

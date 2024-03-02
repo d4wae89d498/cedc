@@ -42,7 +42,7 @@ struct SInt : public State
 		return format("CSInt({})", any_cast<int>(this->value));
 	}
 
-	static fn unserialize(string str) -> unique_ptr<State>
+	static fn unserialize(const string& str) -> unique_ptr<State>
 	{
 		return make_unique<SInt>(19);
 	}

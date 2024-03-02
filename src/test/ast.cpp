@@ -10,12 +10,18 @@ struct Identifier : public AstNode
 	{
 	}
 
-	string	compile()
+	fn	compile() const -> string
 	{
 		return value;
 	}
+
+	static fn unserialize(const string& str) -> unique_ptr<AstNode>
+	{
+		//scan("{}", value);
+		return nullptr;//make_unique<Int>();
+	}
 };
-//REGISTER_CLASS(AstNode, Identifier);
+REGISTER_CLASS(AstNode, Identifier);
 
 
 struct Int : public AstNode
@@ -26,16 +32,16 @@ struct Int : public AstNode
 	{
 	}
 
-	string	compile()
+	fn	compile() const -> string
 	{
 		return format("{}", value);
 	}
 
-	static fn unserialize(const string &str) -> unique_ptr<AstNode>
+	static fn unserialize(const string& str) -> unique_ptr<AstNode>
 	{
 		int value;
 		//scan("{}", value);
-		return make_unique<Int>();
+		return nullptr;//make_unique<Int>();
 	}
 };
 REGISTER_CLASS(AstNode, Int);

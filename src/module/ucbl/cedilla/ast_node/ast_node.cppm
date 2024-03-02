@@ -9,18 +9,12 @@ export namespace cedilla
     struct AstNode : public TreeNode<AstNode>
     {
         const string name;
-        // BoxArray			data;
+        // StateArray			data;
 
         virtual ~AstNode() = default;
-        virtual fn compile() -> string = 0;
+        virtual fn compile() const -> string = 0;
         explicit AstNode(const string &name);
         fn serialize() -> string;
         static fn unserialize(string str) -> unique_ptr<AstNode>;
 	};
-
-/*
-	struct AstNodeRegistry : public ClassRegistry<AstNode>
-    {
-        static fn get() -> AstNodeRegistry &;
-    };*/
 }

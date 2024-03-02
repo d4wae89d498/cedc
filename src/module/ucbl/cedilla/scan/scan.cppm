@@ -21,7 +21,7 @@ export namespace cedilla
 	}
 
 	/*
-	* Assign to value the conversion of string str to T
+	* Assign string str to T value and returns true if success
 	*/
 	template<typename T>
 	fn string_to(const string &str, T& value) -> bool

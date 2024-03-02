@@ -3,8 +3,6 @@ export import :linked_list;
 
 import :common;
 
-//export import :linked_list_node.impl;
-
 namespace cedilla
 {
 	template<typename T>
@@ -171,12 +169,4 @@ namespace cedilla
 	{
 		return "[]";
 	}
-
-
-	template <typename T>
-	fn LinkedList<T>::hi() -> string
-	{
-		return "hi";
-	}
-
 }

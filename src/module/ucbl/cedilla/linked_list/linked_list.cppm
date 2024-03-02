@@ -2,8 +2,6 @@ export module ucbl.cedilla:linked_list;
 
 import :common;
 
-//export import :linked_list_node;
-
 export namespace cedilla
 {
 	template <typename T>
@@ -33,8 +31,6 @@ export namespace cedilla
 		fn del_all(function<bool(const T&)> predicate) -> void;
 		fn replace_one(T* old_node, unique_ptr<T> new_node) -> void;
 		fn serialize() -> string;
-
-		fn hi() -> string;
 	};
 };
 
