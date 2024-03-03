@@ -3,8 +3,8 @@ export module ucbl.cedilla:ast_node;
 import :common;
 import :tree_node;
 
-export
-namespace cedilla {
+export namespace cedilla
+{
  	struct AstNode : public TreeNode<AstNode>
     {
         const string name;

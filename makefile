@@ -18,12 +18,12 @@ CXX :=		clang++ -std=c++26
 CXXFLAGS =	-g -nostdinc++ -nostdlib++ -fprebuilt-module-path=lib/libcxx-pcm/lib -Wno-unqualified-std-cast-call -fprebuilt-module-path=$(PCM_DIR)
 #				$(shell find $(PCM_DIR) -type d | sed 's/^/-fprebuilt-module-path=/' | tr '\n' ' ')
 
+# Compilation database output
 CXXDB := 	$(TMP_DIR)/compile_commands.json
 
 # Project modules
-
 MODULES := 	ucbl/cedilla/common.cppm\
-			ucbl/cedilla/scan/scan.cppm\
+			ucbl/cedilla/scan.cppm\
 			ucbl/cedilla/clonable.cppm\
 			ucbl/cedilla/serializable.cppm\
 			ucbl/cedilla/state.cppm\
@@ -31,20 +31,25 @@ MODULES := 	ucbl/cedilla/common.cppm\
 			ucbl/cedilla/state_map/state_map.cppm\
 			ucbl/cedilla/class_registry/class_registry.cppm\
 			ucbl/cedilla/state_registry/state_registry.cppm\
-			ucbl/cedilla/linked_list_node/linked_list_node.cppm\
-			ucbl/cedilla/linked_list/linked_list.cppm\
+			ucbl/cedilla/linked_list_node.cppm\
+			ucbl/cedilla/linked_list.cppm\
 			ucbl/cedilla/tree_node.cppm\
 			ucbl/cedilla/ast_node/ast_node.cppm\
 			ucbl/cedilla/ast_node_registry/ast_node_registry.cppm\
 			\
 			ucbl/cedilla.cppm
 
-
 MODULES := 	$(MODULES:%=$(MOD_DIR)/%)
 
-IMPLS :=	$(shell find src/module -type f -name "*.cpp")\
+#IMPLS :=	$(shell find src/module -type f -name "*.cpp")
+IMPLS :=	ucbl/cedilla/class_registry/class_registry.cpp\
+			ucbl/cedilla/state_array/state_array.cpp\
+			ucbl/cedilla/state_map/state_map.cpp\
+			ucbl/cedilla/state_registry/state_registry.cpp\
+			ucbl/cedilla/ast_node_registry/ast_node_registry.cpp\
+			ucbl/cedilla/ast_node/ast_node.cpp
 
-#IMPLS := 	$(IMPLS:%=$(MOD_DIR)/%)
+IMPLS := 	$(IMPLS:%=$(MOD_DIR)/%)
 
 OBJS := 	$(MODULES:$(SRC_DIR)/%.cppm=$(OBJ_DIR)/%.cppm.o)\
 			$(IMPLS:$(SRC_DIR)/%.cpp=$(OBJ_DIR)/%.cpp.o)

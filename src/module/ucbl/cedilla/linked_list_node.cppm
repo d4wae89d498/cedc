@@ -2,8 +2,7 @@ export module ucbl.cedilla:linked_list_node;
 
 import :common;
 
-export
-namespace cedilla
+export namespace cedilla
 {
 	template <typename T>
 	struct LinkedListNode
