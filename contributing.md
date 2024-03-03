@@ -17,15 +17,13 @@ Braces :
 Always use ANSI C++ style.
 
 Modules :
-Dont use private fragments. use a separate impl file for easier build system that uses timestamp. Implementation module name shall ends with `.impl`. Implementations should export import their interfaces, implementations shall not export anything else.
+Dont use private fragments. use a separate impl file for easier build system that uses timestamp. Implementation module ext shall be a  `.cpp`.  `.cppm` for interfaces.
 One class per module (or one function and its primitives is acceptable). Group impl and intrfaces within a dir named according class name but in snake case. If interface only, file goes at root of project without a directory.
 
 classes :
 constructor shall be explicit
 
 ```C++
-module;
-
 export module vendor_name.module_name:partition_name;
 
 #define SOME_MACRO_CONST 21
