@@ -27,12 +27,12 @@
 #define s8 	char
 
 
-static_assert(sizeof(u64) == sizeof(unsigned long), "u64 size check failed");
-static_assert(sizeof(u32) == sizeof(unsigned), "u32 size check failed");
-static_assert(sizeof(u16) == sizeof(unsigned short), "u16 size check failed");
-static_assert(sizeof(u8) == sizeof(unsigned char), "u8 size check failed");
+static_assert(sizeof(u64) == 8, "u64 size check failed"); // 8 bytes = 64 bits
+static_assert(sizeof(u32) == 4, "u32 size check failed"); // 4 bytes = 32 bits
+static_assert(sizeof(u16) == 2, "u16 size check failed"); // 2 bytes = 16 bits
+static_assert(sizeof(u8) == 1, "u8 size check failed");  // 1 byte = 8 bits
 
-static_assert(sizeof(s64) == sizeof(long), "s64 size check failed");
-static_assert(sizeof(s32) == sizeof(int), "s32 size check failed");
-static_assert(sizeof(s16) == sizeof(short), "s16 size check failed");
-static_assert(sizeof(s8) == sizeof(char), "s8 size check failed");
+static_assert(sizeof(s64) == 8, "s64 size check failed"); // 8 bytes = 64 bits
+static_assert(sizeof(s32) == 4, "s32 size check failed"); // 4 bytes = 32 bits
+static_assert(sizeof(s16) == 2, "s16 size check failed"); // 2 bytes = 16 bits
+static_assert(sizeof(s8) == 1, "s8 size check failed");  // 1 byte = 8 bits
