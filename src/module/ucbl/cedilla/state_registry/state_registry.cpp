@@ -1,9 +1,6 @@
-export module ucbl.cedilla:state_registry.impl;
-export import :state_registry;
+module ucbl.cedilla;
 
 import :common;
-import :class_registry.impl;
-import :state;
 
 namespace cedilla
 {
@@ -11,5 +8,5 @@ namespace cedilla
 	{
 		static StateRegistry s_instance;
 		return s_instance;
-    };
+	};
 }

@@ -1,8 +1,6 @@
-export module ucbl.cedilla:ast_node_registry.impl;
-export import :ast_node_registry;
+module ucbl.cedilla;
 
 import :common;
-import :class_registry.impl;
 
 namespace cedilla
 {
@@ -10,5 +8,5 @@ namespace cedilla
 	{
 		static AstNodeRegistry s_instance;
 		return s_instance;
-    };
+	};
 }

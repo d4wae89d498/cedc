@@ -1,12 +1,11 @@
 export module ucbl.cedilla:ast_node;
 
 import :common;
-import :class_registry;
 import :tree_node;
 
-export namespace cedilla
-{
-    struct AstNode : public TreeNode<AstNode>
+export
+namespace cedilla {
+ 	struct AstNode : public TreeNode<AstNode>
     {
         const string name;
         // StateArray			data;
@@ -18,3 +17,4 @@ export namespace cedilla
         static fn unserialize(string str) -> unique_ptr<AstNode>;
 	};
 }
+

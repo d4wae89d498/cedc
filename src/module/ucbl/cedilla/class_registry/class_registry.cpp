@@ -1,7 +1,8 @@
-export module ucbl.cedilla:class_registry.impl;
-export import :class_registry;
+module ucbl.cedilla;
 
 import :common;
+import :ast_node;
+import :state;
 
 namespace cedilla
 {
@@ -24,5 +25,7 @@ namespace cedilla
 	ClassRegistry<T>::ClassRegistry()
 	{
 	}
-};
 
+	template class ClassRegistry<AstNode>;
+	template class ClassRegistry<State>;
+}

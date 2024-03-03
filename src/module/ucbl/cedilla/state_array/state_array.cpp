@@ -1,7 +1,5 @@
-export module ucbl.cedilla:state_array.impl;
-export import :state_array;
+module ucbl.cedilla;
 
-import :state;
 import :common;
 
 namespace cedilla
@@ -30,5 +28,4 @@ namespace cedilla
 		out += "]";
 		return out;
 	}
-
 }

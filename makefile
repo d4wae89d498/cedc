@@ -37,19 +37,18 @@ MODULES := 	ucbl/cedilla/common.cppm\
 			ucbl/cedilla/ast_node/ast_node.cppm\
 			ucbl/cedilla/ast_node_registry/ast_node_registry.cppm\
 			\
-			ucbl/cedilla/class_registry/class_registry.impl.cppm\
-			ucbl/cedilla/state_array/state_array.impl.cppm\
-			ucbl/cedilla/state_map/state_map.impl.cppm\
-			ucbl/cedilla/state_registry/state_registry.impl.cppm\
-			ucbl/cedilla/linked_list_node/linked_list_node.impl.cppm\
-			ucbl/cedilla/linked_list/linked_list.impl.cppm\
-			ucbl/cedilla/ast_node/ast_node.impl.cppm\
-			ucbl/cedilla/ast_node_registry/ast_node_registry.impl.cppm\
 			ucbl/cedilla.cppm
+
 
 MODULES := 	$(MODULES:%=$(MOD_DIR)/%)
 
-OBJS := 	$(MODULES:$(SRC_DIR)/%.cppm=$(OBJ_DIR)/%.cppm.o)
+IMPLS :=	$(shell find src/module -type f -name "*.cpp")\
+
+#IMPLS := 	$(IMPLS:%=$(MOD_DIR)/%)
+
+OBJS := 	$(MODULES:$(SRC_DIR)/%.cppm=$(OBJ_DIR)/%.cppm.o)\
+			$(IMPLS:$(SRC_DIR)/%.cpp=$(OBJ_DIR)/%.cpp.o)
+
 PCMS := 	$(MODULES:$(SRC_DIR)/%.cppm=$(PCM_DIR)/%.pcm)
 
 # Project library
@@ -100,7 +99,7 @@ $(PCH_DIR)/%.pch: $(SRC_DIR)/%.hpp makefile
 $(PCM_DIR)/%.pcm: $(SRC_DIR)/%.cppm $(PCHS)
 	@mkdir -p $(@D)
 	@mkdir -p $(shell dirname $(patsubst $(PCM_DIR)/%.pcm,$(DEP_DIR)/%.cppm.d,$(@)))
-	$(CXX) -x c++-module $(CXXFLAGS) -MMD -MF $(patsubst $(PCM_DIR)/%.pcm,$(DEP_DIR)/%.cppm.d,$(@)) --precompile $< -o $@ $(INCPCHS)
+	$(CXX) $(CXXFLAGS) -MMD -MF $(patsubst $(PCM_DIR)/%.pcm,$(DEP_DIR)/%.cppm.d,$(@)) --precompile $< -o $@ $(INCPCHS)
 	@if [[ "$<" == $(MOD_DIR)/* ]]; then \
 		path="$<"; \
 		prefix="$(MOD_DIR)/"; \
@@ -116,6 +115,10 @@ $(PCM_DIR)/%.pcm: $(SRC_DIR)/%.cppm $(PCHS)
 	fi
 
 $(OBJ_DIR)/%.cppm.o: $(PCM_DIR)/%.pcm
+	@mkdir -p $(@D)
+	$(CXX) $(CXXFLAGS)  -c $< -o $@
+
+$(OBJ_DIR)/%.cpp.o: $(SRC_DIR)/%.cpp
 	@mkdir -p $(@D)
 	$(CXX) $(CXXFLAGS)  -c $< -o $@
 

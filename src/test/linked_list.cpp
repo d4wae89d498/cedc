@@ -47,7 +47,7 @@ struct SInt : public State
 		return make_unique<SInt>(19);
 	}
 };
-REGISTER_CLASS(State, SInt);
+//REGISTER_CLASS(State, SInt);
 
 fn main() -> int
 {
