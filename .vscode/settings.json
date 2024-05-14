@@ -1,6 +1,7 @@
 {
 	"files.associations": {
-		"*.cppm": "cpp"
+		"*.cppm": "cpp",
+		"*.d": "makefile"
 	},
 	"search.exclude": {
         "**/.git": true,

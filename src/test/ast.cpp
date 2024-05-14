@@ -1,11 +1,12 @@
+#include "assert.h"
+
 import ucbl.cedilla;
-//import ucbl.cedilla.impl;
 
 using namespace cedilla;
 
 struct Identifier : public AstNode
 {
-	string value;
+	//string value;
 
 	Identifier() : AstNode(__func__)
 	{
@@ -13,13 +14,34 @@ struct Identifier : public AstNode
 
 	fn	compile() const -> string
 	{
-		return value;
+		return format("{}", "");
+	}
+
+	fn clone() const -> unique_ptr<AstNode>
+	{
+		return 0;
 	}
 
 	static fn unserialize(const string& str) -> unique_ptr<AstNode>
 	{
+		print("unserializing...\n");
 		//scan("{}", value);
-		return nullptr;//make_unique<Int>();
+
+		auto pp = Identifier::unserialize("const string &str");
+
+  auto gg2 = std::make_unique<int>(42);  // Create a unique_ptr<int>
+
+
+
+
+		auto gg = make_unique<int>(42);
+
+		auto out = make_unique<Identifier>();
+		out->data["test"] = make_unique<State>("test");
+		out->data["test2"] = make_unique<State>(&out);
+
+	//	out->value = str;
+		return out;
 	}
 };
 REGISTER_CLASS(AstNode, Identifier);
@@ -38,11 +60,17 @@ struct Int : public AstNode
 		return format("{}", value);
 	}
 
+	fn clone() const -> unique_ptr<AstNode>
+	{
+		return 0;
+	}
+
 	static fn unserialize(const string& str) -> unique_ptr<AstNode>
 	{
-		int value;
-		//scan("{}", value);
-		return nullptr;//make_unique<Int>();
+		print("unserializing...");
+		auto out = make_unique<Int>();
+		scan(str, "{}", out->value);
+		return out;
 	}
 };
 REGISTER_CLASS(AstNode, Int);
@@ -52,9 +80,19 @@ fn main() -> int
 
 	auto myast = AstNodeRegistry::get().create_instance("Identifier", "salut");
 
+	print("myast: {}\n", (void*)myast.get());
+
 	myast->next =  AstNodeRegistry::get().create_instance("Int", "4");
 
-	Identifier	id;
-	//assert()
+	print("ptr is : {}", (void*)myast->next.get());
 
+	Identifier	id;
+
+	Int* tmp = (Int*)myast->next.get();
+
+	assert(tmp->value == 4);
+
+	StateMap test;
+
+	print("tests succeed\n");
 }

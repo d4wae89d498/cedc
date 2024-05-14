@@ -14,7 +14,17 @@ export namespace cedilla
 		{
 		}
 
-		virtual ~State() = default;
+		fn serialize() const -> string
+		{
+			return "";
+		}
+
+		fn clone() const -> unique_ptr<State>
+		{
+			return 0;
+		}
+
+	//	virtual ~State() = default;
 	};
 };
 

@@ -84,15 +84,15 @@ export namespace cedilla
 	/*
 	* Scan with reccursive templates args
 	*/
-	template<typename T, typename ... Args>
-	fn scan(const string& str, const string& format, T& value, Args&... args) -> bool
+	template<typename T, typename ... ARGS>
+	fn scan(const string& str, const string& format, T& value, ARGS&... args) -> bool
 	{
 		const char *s = str.c_str();
 		const char *f = format.c_str();
 
-		if (count_substring_occurrences(format, "{}") > sizeof...(Args) + 1)
+		if (count_substring_occurrences(format, "{}") > sizeof...(ARGS) + 1)
 			throw runtime_error("More {} placeholders than arguments in scan function");
-		if (count_substring_occurrences(format, "{}") < sizeof...(Args) + 1)
+		if (count_substring_occurrences(format, "{}") < sizeof...(ARGS) + 1)
 			throw runtime_error("More arguments tahn placeholders {} in scan function");
 
 		while (1)

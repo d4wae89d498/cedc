@@ -1,0 +1,14 @@
+- [x] Faire hériter la classe Ast et Arbre
+
+- [x] Enlever pointeurs inutiles dans State / State map (analyser si cest nescessaire, peut etre que oui a cause des AstNode abstract)
+---> pas possible car classe abstraite
+
+- [ ] AstNode : uniquement utiliser StateMap data, revoir les fonctions eg clone etc. avec des fonctions generiques.
+
+
+- [ ] Implementer Parser
+- [x] Revoir arbo fichiers ?
+- [ ] Generer cedilla.cppm
+- [ ] utiliser cedpm
+- [ ] interet du cpp ?
+- [ ] garder historique lros des match patterns (pour par ex jolie message d'erreur)

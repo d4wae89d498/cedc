@@ -4,7 +4,7 @@ import ucbl.cedilla;
 
 using namespace cedilla;
 
-class IntTreeNode : public TreeNode<IntTreeNode>
+class IntTreeNode : public TreeNode<Tree<IntTreeNode>, IntTreeNode>
 {
 	public:
 

@@ -15,5 +15,6 @@ export namespace cedilla
 	{
 		fn clone() const -> unique_ptr<StateArray>;
 		fn serialize() const -> string;
+		virtual ~StateArray() = default;
 	};
 }

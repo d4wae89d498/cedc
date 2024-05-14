@@ -14,3 +14,8 @@ export import :ast_node_registry;
 export import :state_registry;
 export import :state_array;
 export import :state_map;
+
+export import :tree;
+export import :ast;
+
+export import :context;
