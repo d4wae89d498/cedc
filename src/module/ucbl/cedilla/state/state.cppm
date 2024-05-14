@@ -14,6 +14,7 @@ export namespace cedilla
 		{
 		}
 
+		// todo : remove that from state, shall be in child impls
 		fn serialize() const -> string
 		{
 			return "";
@@ -23,8 +24,6 @@ export namespace cedilla
 		{
 			return 0;
 		}
-
-	//	virtual ~State() = default;
 	};
 };
 

@@ -4,12 +4,13 @@ import ucbl.cedilla;
 
 using namespace cedilla;
 
-struct Identifier : public AstNode
+struct Identifier final : public AstNode
 {
-	//string value;
+	string value;
 
-	Identifier() : AstNode(__func__)
+	Identifier(string b = "") : AstNode(__func__)
 	{
+		this->value = b;
 	}
 
 	fn	compile() const -> string
@@ -44,15 +45,16 @@ struct Identifier : public AstNode
 		return out;
 	}
 };
-REGISTER_CLASS(AstNode, Identifier);
+REGISTER_CLASS(AstNode, Identifier, string);
 
 
-struct Int : public AstNode
+struct Int final : public AstNode
 {
 	int value;
 
-	Int() : AstNode(__func__)
+	Int(int b = 42) : AstNode(__func__)
 	{
+		this->value = b;
 	}
 
 	fn	compile() const -> string
@@ -73,16 +75,16 @@ struct Int : public AstNode
 		return out;
 	}
 };
-REGISTER_CLASS(AstNode, Int);
+REGISTER_CLASS(AstNode, Int, int);
 
 fn main() -> int
 {
 
-	auto myast = AstNodeRegistry::get().create_instance("Identifier", "salut");
+	auto myast = AstNodeRegistry::get().make("Identifier", "salut");
 
 	print("myast: {}\n", (void*)myast.get());
 
-	myast->next =  AstNodeRegistry::get().create_instance("Int", "4");
+	myast->next =  AstNodeRegistry::get().make("Int", "4");
 
 	print("ptr is : {}", (void*)myast->next.get());
 

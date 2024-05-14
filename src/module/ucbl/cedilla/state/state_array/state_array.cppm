@@ -7,7 +7,7 @@ import :clonable;
 
 export namespace cedilla
 {
-	struct StateArray
+	struct StateArray final
 		:
 		vector<unique_ptr<State>>,
 		public Serializable,

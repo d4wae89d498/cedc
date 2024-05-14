@@ -9,7 +9,30 @@ namespace cedilla
 	{
 	}
 
-	fn AstNode::serialize() -> string
+	fn AstNode::clone() const -> unique_ptr<AstNode>
+	{
+		auto out = AstNodeRegistry::get().make(this->type);
+		out->childs = move(*this->childs.clone().release());
+		out->data = move(*this->data.clone().release());
+		return out;
+	}
+
+	// serialize compile redondant ?? enreigstrer lexer callbacks ici direct ?
+	// interet serialize / unserialize ? -> cachings ? debugging ?
+	fn AstNode::unserialize(string str) -> unique_ptr<AstNode>
+	{
+		// call create instance from type
+		// (NodeType) { .type = "test", .data = {...}, .childs = { ... } }
+		return 0;
+	}
+
+
+	fn AstNode::compile() const -> string
+	{
+		return ""; /// this shall be virtual, no default values possible
+	}
+
+	fn AstNode::serialize() const -> string
 	{
 		return "{"
 				"name: \""

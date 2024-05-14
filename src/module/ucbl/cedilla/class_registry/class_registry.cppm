@@ -4,14 +4,24 @@ import :common;
 
 export namespace cedilla
 {
-	template <typename T>
+
+	template<typename T>
 	struct ClassRegistry
 	{
-		using FactoryFunction = function<unique_ptr<T>(const string&)>;
-		unordered_map<string, FactoryFunction> registry;
+		unordered_map<string, void*> registry;
 
-		fn register_class(const string& key, FactoryFunction func) -> void;
-		fn create_instance(const string& key, const string& serialized_str) const -> unique_ptr<T>;
-		ClassRegistry();
+		void register_class(const string& key, void* func) {
+			registry[key] = func;
+		}
+
+		template<typename... Args>
+		unique_ptr<T> make(const string& key, Args&&... args) {
+			auto it = registry.find(key);
+			if (it != registry.end()) {
+				return ((unique_ptr<T>(*)(Args...)) it->second)  (std::forward<Args>(args)...);
+			} else {
+				throw runtime_error("Class not registered: " + key);
+			}
+		}
 	};
 };

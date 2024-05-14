@@ -7,7 +7,7 @@ import :ast_node;
 export namespace cedilla
 {
 
-	struct AstNodeRegistry : public ClassRegistry<AstNode>
+	struct AstNodeRegistry final : public ClassRegistry<AstNode>
     {
         static fn get() -> AstNodeRegistry &;
     };

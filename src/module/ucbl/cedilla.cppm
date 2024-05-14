@@ -1,6 +1,7 @@
 export module ucbl.cedilla;
 
 export import :common;
+export import :constructor;
 export import :scan;
 export import :serializable;
 export import :clonable;
@@ -14,8 +15,6 @@ export import :ast_node_registry;
 export import :state_registry;
 export import :state_array;
 export import :state_map;
-
 export import :tree;
 export import :ast;
-
 export import :context;

@@ -4,7 +4,7 @@ import ucbl.cedilla;
 
 using namespace cedilla;
 
-class IntNode : public LinkedListNode<IntNode>
+class IntNode final : public LinkedListNode<IntNode>
 {
 	public:
 
@@ -26,7 +26,7 @@ class IntNode : public LinkedListNode<IntNode>
 };
 
 
-struct SInt : public State
+struct SInt final : public State
 {
 	SInt(int value) : State(value)
 	{
@@ -47,7 +47,7 @@ struct SInt : public State
 		return make_unique<SInt>(19);
 	}
 };
-REGISTER_CLASS(State, SInt);
+REGISTER_CLASS(State, SInt, int);
 
 fn main() -> int
 {

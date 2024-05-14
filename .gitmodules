@@ -1,3 +1,6 @@
 [submodule "lib/libcxx-pcm"]
 	path = lib/libcxx-pcm
 	url = https://github.com/d4wae89d498/libcxx-pcm.git
+[submodule "bin/build-tools/cppmodsort"]
+	path = bin/build-tools/cppmodsort
+	url = git@github.com:d4wae89d498/cppmodsort.git

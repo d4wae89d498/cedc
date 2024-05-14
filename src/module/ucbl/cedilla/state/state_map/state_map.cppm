@@ -7,7 +7,7 @@ import :clonable;
 
 export namespace cedilla
 {
-	struct StateMap
+	struct StateMap final
 		:
 		unordered_map<string, unique_ptr<State>>,
 		public Serializable,
@@ -15,6 +15,5 @@ export namespace cedilla
 	{
 		fn clone() const -> unique_ptr<StateMap>;
 		fn serialize() const -> string;
-		virtual ~StateMap() = default;
 	};
 }

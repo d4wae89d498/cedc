@@ -22,7 +22,8 @@ CXXFLAGS =	-g -fsanitize=address -nostdinc++ -nostdlib++ -fprebuilt-module-path=
 CXXDB := 	$(TMP_DIR)/compile_commands.json
 
 # Project sources
-MODULES :=	$(shell /Users/mfaussur/Desktop/cppmodsort/cppmodsort $(shell find src/module -type f -name "*.cppm"))
+VOID := 	$(shell cd ./bin/build-tools/cppmodsort/ && make)
+MODULES :=	$(shell ./bin/build-tools/cppmodsort/cppmodsort $(shell find src/module -type f -name "*.cppm"))
 IMPLS :=	$(shell find src/module -type f -name "*.cpp")
 
 # Project objects

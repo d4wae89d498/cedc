@@ -14,10 +14,11 @@ export namespace cedilla
         const string		type;
         StateMap			data;
 
+		fn clone() const -> unique_ptr<AstNode>;
         virtual ~AstNode() = default;
         virtual fn compile() const -> string = 0;
-        explicit AstNode(const string &type);
-        fn serialize() -> string;
+        AstNode(const string &type);
+        fn serialize() const -> string;
         static fn unserialize(string str) -> unique_ptr<AstNode>;
 	};
 }

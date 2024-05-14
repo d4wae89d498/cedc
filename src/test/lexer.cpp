@@ -2,11 +2,11 @@ import ucbl.cedilla;
 
 using namespace cedilla;
 
-struct Word : public AstNode
+struct Word final : public AstNode
 {
 	string value;
 
-	Word() : AstNode(__func__)
+	Word(string pp = "") : AstNode(__func__)
 	{
 	}
 
@@ -37,14 +37,14 @@ struct Word : public AstNode
 		return out;
 	}
 };
-REGISTER_CLASS(AstNode, Word);
+REGISTER_CLASS(AstNode, Word, string);
 
 
-struct Raw : public AstNode
+struct Raw final : public AstNode
 {
 	string value;
 
-	Raw() : AstNode(__func__)
+	Raw(string pp = "") : AstNode(__func__)
 	{
 	}
 
@@ -69,7 +69,7 @@ struct Raw : public AstNode
 		return out;
 	}
 };
-REGISTER_CLASS(AstNode, Raw);
+REGISTER_CLASS(AstNode, Raw, string);
 
 fn main() -> int
 {

@@ -3,7 +3,8 @@
 
 # Project binaries
 tmp/*
-bin/*
+bin/cli/*
+bin/test/*
 *.a
 
 # Text editors
