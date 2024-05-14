@@ -63,7 +63,7 @@ namespace cedilla
 			if (result > 0)
 			{
 				// iter until lastt
-
+				// TODO: finish me
 				goto redo;
 			}
 			else if (result < 0)

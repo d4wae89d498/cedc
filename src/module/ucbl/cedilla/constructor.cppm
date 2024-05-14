@@ -4,9 +4,9 @@ import :common;
 
 export namespace cedilla
 {
-	template <typename Type, typename... Args>
-	unique_ptr<Type> constructor(Args... args)
+	template <typename TYPE, typename... ARGS>
+	unique_ptr<TYPE> constructor(ARGS... args)
 	{
-		return make_unique<Type>(std::forward<Args>(args)...);
+		return make_unique<TYPE>(std::forward<ARGS>(args)...);
 	}
 }

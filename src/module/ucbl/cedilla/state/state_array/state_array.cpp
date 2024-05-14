@@ -6,6 +6,7 @@ namespace cedilla
 {
 	fn StateArray::clone() const -> unique_ptr<StateArray>
 	{
+		throw runtime_error("not implemented");
 		auto out = make_unique<StateArray>();
 		for (auto& item : *this)
 			out->push_back(item->clone());
@@ -14,6 +15,7 @@ namespace cedilla
 
 	fn StateArray::serialize() const -> string
 	{
+		throw runtime_error("not implemented");
 		auto out = string("[");
 		auto it = this->begin();
 		const auto end = this->end();

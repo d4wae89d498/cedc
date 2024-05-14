@@ -17,11 +17,13 @@ export namespace cedilla
 		// todo : remove that from state, shall be in child impls
 		fn serialize() const -> string
 		{
+			throw runtime_error("not implemented");
 			return "";
 		}
 
 		fn clone() const -> unique_ptr<State>
 		{
+			throw runtime_error("not implemented");
 			return 0;
 		}
 	};

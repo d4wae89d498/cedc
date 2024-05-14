@@ -21,6 +21,7 @@ namespace cedilla
 	// interet serialize / unserialize ? -> cachings ? debugging ?
 	fn AstNode::unserialize(string str) -> unique_ptr<AstNode>
 	{
+		throw runtime_error("not implemented");
 		// call create instance from type
 		// (NodeType) { .type = "test", .data = {...}, .childs = { ... } }
 		return 0;
@@ -29,11 +30,13 @@ namespace cedilla
 
 	fn AstNode::compile() const -> string
 	{
+		throw runtime_error("not implemented");
 		return ""; /// this shall be virtual, no default values possible
 	}
 
 	fn AstNode::serialize() const -> string
 	{
+		throw runtime_error("not implemented");
 		return "{"
 				"name: \""
 				+ this->type

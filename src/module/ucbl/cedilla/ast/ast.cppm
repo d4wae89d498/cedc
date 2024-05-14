@@ -14,11 +14,13 @@ export namespace cedilla
     {
 		fn	serialize() const -> string
 		{
+			throw runtime_error("not implemented");
 			return "[]";
 		}
 
 		fn	clone() const -> unique_ptr<Ast>
 		{
+			throw runtime_error("not implemented");
 			return 0;
 		}
     };
