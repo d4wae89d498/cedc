@@ -2,10 +2,10 @@ export module ucbl.cedilla:state_registry;
 
 import :common;
 import :class_registry;
-import :state;
 
 export namespace cedilla
 {
+	struct State;
 
 	struct StateRegistry : public ClassRegistry<State>
     {

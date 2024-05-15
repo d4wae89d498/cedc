@@ -4,7 +4,7 @@ import :common;
 
 namespace cedilla
 {
-	fn StateMap::clone() const -> unique_ptr<StateMap>
+	fn StateMap::clone() -> unique_ptr<StateMap>
 	{
 		throw runtime_error("not implemented");
 		auto out = make_unique<StateMap>();
@@ -13,7 +13,7 @@ namespace cedilla
 		return out;
 	}
 
-	fn StateMap::serialize() const -> string
+	fn StateMap::serialize() -> string
 	{
 		throw runtime_error("not implemented");
 		auto out = string("{");

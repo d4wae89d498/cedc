@@ -3,29 +3,25 @@ export module ucbl.cedilla:state;
 import :common;
 import :serializable;
 import :clonable;
+import :state_registry;
 
 export namespace cedilla
 {
 	struct State : public Serializable, public Clonable<State>
 	{
+		string 	type;
 		any		value;
 
-		State(any value) : value(value)
+		State(string type, any value) : type(type), value(value)
 		{
 		}
 
-		// todo : remove that from state, shall be in child impls
-		fn serialize() const -> string
+		fn clone() -> unique_ptr<State> override
 		{
-			throw runtime_error("not implemented");
-			return "";
+			return StateRegistry::get().deserialize(this->type, this->serialize());
 		}
 
-		fn clone() const -> unique_ptr<State>
-		{
-			throw runtime_error("not implemented");
-			return 0;
-		}
+		virtual ~State() = default;
 	};
 };
 

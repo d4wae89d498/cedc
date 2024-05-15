@@ -30,7 +30,7 @@ export namespace cedilla
 		fn del_one(T* node) -> void;
 		fn del_all(function<bool(const T&)> predicate) -> void;
 		fn replace_one(T* old_node, unique_ptr<T> new_node) -> void;
-		fn serialize() -> string;
+		fn size() -> u64;
 	};
 
 	template<typename T>
@@ -193,8 +193,15 @@ export namespace cedilla
 	}
 
 	template <typename T>
-	fn LinkedList<T>::serialize() -> string
+	fn LinkedList<T>::size() -> u64
 	{
-		return "[]";
+		u64	size = 0;
+		T* current = first.get();
+		while (current)
+		{
+			size += 1;
+			current = current->next.get();
+		}
+		return size;
 	}
 }

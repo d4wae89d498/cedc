@@ -13,7 +13,7 @@ export namespace cedilla
 		public Serializable,
 		public Clonable<StateMap>
 	{
-		fn clone() const -> unique_ptr<StateMap>;
-		fn serialize() const -> string;
+		fn clone() -> unique_ptr<StateMap> override;
+		fn serialize() -> string override;
 	};
 }

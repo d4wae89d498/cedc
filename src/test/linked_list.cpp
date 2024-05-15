@@ -28,26 +28,26 @@ class IntNode final : public LinkedListNode<IntNode>
 
 struct SInt final : public State
 {
-	SInt(int value) : State(value)
+	SInt(int value) : State(__func__, value)
 	{
 	}
 
-	fn clone() const -> unique_ptr<State>
+	fn clone() -> unique_ptr<State>
 	{
 		return make_unique<SInt>(any_cast<int>(this->value));
 	}
 
-	fn serialize() const -> string
+	fn serialize() -> string
 	{
-		return format("CSInt({})", any_cast<int>(this->value));
+		throw runtime_error("no implemented");
 	}
 
-	static fn unserialize(const string& str) -> unique_ptr<State>
+	static fn deserialize(const string &) -> unique_ptr<State>
 	{
-		return make_unique<SInt>(19);
+		return 0;
 	}
 };
-REGISTER_CLASS(State, SInt, int);
+REGISTER_DESERIALIZABLE(State, SInt);
 
 fn main() -> int
 {
@@ -61,7 +61,7 @@ fn main() -> int
 	lst.link_back(make_unique<IntNode>(22));
 	lst.link_back(make_unique<IntNode>(-888));
 
-	print("Serialized: {}\n", lst.serialize());
+	//print("Serialized: {}\n", lst.serialize());
 
 	auto pomme = SInt(4);
 

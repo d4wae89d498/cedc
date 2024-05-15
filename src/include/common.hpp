@@ -1,12 +1,14 @@
-#define REGISTER_CLASS(TYPE, CLASS, ...) \
+#define REGISTER_DESERIALIZABLE_WITH_FUNC(TYPE, CLASS, F) \
     namespace { \
         struct Registrator_##CLASS { \
             Registrator_##CLASS() { \
-                TYPE ## Registry::get().register_class(#CLASS,  (void*)constructor<CLASS, __VA_ARGS__>); \
+                TYPE ## Registry::get().register_class(#CLASS, F); \
             } \
         }; \
         static Registrator_##CLASS reg_##CLASS; \
     }
+
+#define REGISTER_DESERIALIZABLE(TYPE, CLASS) REGISTER_DESERIALIZABLE_WITH_FUNC(TYPE, CLASS, CLASS::deserialize)
 
 #define fn auto
 

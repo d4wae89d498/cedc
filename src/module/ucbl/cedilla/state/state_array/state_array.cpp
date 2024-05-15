@@ -4,7 +4,7 @@ import :common;
 
 namespace cedilla
 {
-	fn StateArray::clone() const -> unique_ptr<StateArray>
+	fn StateArray::clone() -> unique_ptr<StateArray>
 	{
 		throw runtime_error("not implemented");
 		auto out = make_unique<StateArray>();
@@ -13,7 +13,7 @@ namespace cedilla
 		return out;
 	}
 
-	fn StateArray::serialize() const -> string
+	fn StateArray::serialize() -> string
 	{
 		throw runtime_error("not implemented");
 		auto out = string("[");

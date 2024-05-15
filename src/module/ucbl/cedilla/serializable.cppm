@@ -6,6 +6,6 @@ export namespace cedilla
 {
 	struct Serializable
 	{
-		virtual fn	serialize() const -> string = 0;
+		virtual fn serialize() -> string = 0;
 	};
 }

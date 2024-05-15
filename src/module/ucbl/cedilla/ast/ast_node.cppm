@@ -6,20 +6,21 @@ import :state_map;
 import :clonable;
 import :tree;
 import :ast;
+import :serializable;
 
 export namespace cedilla
 {
- 	struct AstNode : public TreeNode<Ast, AstNode>, Clonable<AstNode>
+ 	struct AstNode : public TreeNode<Ast, AstNode>, public Clonable<AstNode>, public Serializable
     {
         const string		type;
         StateMap			data;
 
-		fn clone() const -> unique_ptr<AstNode>;
-        virtual ~AstNode() = default;
-        virtual fn compile() const -> string = 0;
         AstNode(const string &type);
-        fn serialize() const -> string;
-        static fn unserialize(string str) -> unique_ptr<AstNode>;
+		fn clone() -> unique_ptr<AstNode> override;
+        fn serialize() -> string override;
+        virtual ~AstNode() = default;
+        virtual fn compile() -> string = 0;
+        static fn deserialize(string str) -> unique_ptr<AstNode>;
 	};
 }
 

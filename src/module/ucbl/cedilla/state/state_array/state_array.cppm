@@ -13,8 +13,8 @@ export namespace cedilla
 		public Serializable,
 		public Clonable<StateArray>
 	{
-		fn clone() const -> unique_ptr<StateArray>;
-		fn serialize() const -> string;
+		fn clone() -> unique_ptr<StateArray> override;
+		fn serialize() -> string override;
 		virtual ~StateArray() = default;
 	};
 }

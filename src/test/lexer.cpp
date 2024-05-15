@@ -2,42 +2,59 @@ import ucbl.cedilla;
 
 using namespace cedilla;
 
-struct Word final : public AstNode
+struct StringState final : public State
 {
-	string value;
-
-	Word(string pp = "") : AstNode(__func__)
+	StringState(string value) : State(__func__, value)
 	{
 	}
 
-	fn	clone() const -> unique_ptr<AstNode>
+	fn clone() -> unique_ptr<State> override
 	{
-		auto out  = Word::unserialize(value);
-		if (this->next)
-			out->next = this->next->clone();
+		return make_unique<StringState>(any_cast<string>(this->value));
+	}
+
+	fn serialize() -> string override
+	{
+		return any_cast<string>(this->value);
+	}
+
+	static fn deserialize(const string &str) -> unique_ptr<State>
+	{
+		return make_unique<StringState>(str);
+	}
+};
+REGISTER_DESERIALIZABLE(State, StringState);
+
+struct Word final : public AstNode
+{
+	Word() : AstNode(__func__)
+	{
+	}
+
+	fn	compile() -> string override
+	{
+		auto &mystate = this->data["value"];
+		return format("{}", any_cast<string>(mystate->value));
+	}
+
+	fn clone() -> unique_ptr<AstNode> override
+	{
+		throw runtime_error("not implemented");
+		auto out = make_unique<Word>();
+		out->data["value"] = make_unique<StringState>(any_cast<string>(this->data["value"]->value));
 		return out;
 	}
 
-
-	fn	compile() const -> string
+	static fn deserialize(const string& str) -> unique_ptr<AstNode>
 	{
-		return format("{}", value);
-	}
-
-	static fn unserialize(const string& str) -> unique_ptr<AstNode>
-	{
-
 		auto out = make_unique<Word>();
 		string my;
 		scan(str, "{}", my);
-
-		auto myany = make_unique<State>(my);
-
-		out->data["value"] = move(myany);
+		out->data["value"] = make_unique<StringState>(my);
 		return out;
 	}
 };
-REGISTER_CLASS(AstNode, Word, string);
+REGISTER_DESERIALIZABLE(AstNode, Word);
 
 
 struct Raw final : public AstNode
@@ -48,28 +65,28 @@ struct Raw final : public AstNode
 	{
 	}
 
-	fn	compile() const -> string
+	fn	compile() -> string
 	{
 		return format("{}", value);
 	}
 
-	fn	clone() const -> unique_ptr<AstNode>
+	fn	clone() -> unique_ptr<AstNode>
 	{
-		auto out  = Raw::unserialize(value);
+		auto out  = Raw::deserialize(value);
 		if (this->next)
 			out->next = this->next->clone();
 		return out;
 	}
 
 
-	static fn unserialize(const string& str) -> unique_ptr<AstNode>
+	static fn deserialize(const string& str) -> unique_ptr<AstNode>
 	{
 		auto out = make_unique<Raw>();
 		scan(str, "{}", out->value);
 		return out;
 	}
 };
-REGISTER_CLASS(AstNode, Raw, string);
+REGISTER_DESERIALIZABLE(AstNode, Raw)
 
 fn main() -> int
 {
@@ -89,7 +106,7 @@ fn main() -> int
 		{
 			i += 1;
 		}
-		return (LexerOutput){i, Word::unserialize(src.substr(0, i))};
+		return (LexerOutput){i, Word::deserialize(src.substr(0, i))};
 	});
 
 	// match a word
@@ -103,7 +120,7 @@ fn main() -> int
 			int i = 1;
 			while (csrc[i] == '_' || isalnum(csrc[i]))
 				i += 1;
-			return (LexerOutput){i, Word::unserialize(src.substr(0, i))};
+			return (LexerOutput){i, Word::deserialize(src.substr(0, i))};
 		}
 		return (LexerOutput) {0, nullptr};
 	});
@@ -125,7 +142,7 @@ fn main() -> int
 				}
 				i += 1;
 			}
-			return (LexerOutput) {i, Word::unserialize(src.substr(0, i))};
+			return (LexerOutput) {i, Word::deserialize(src.substr(0, i))};
 		}
 		return (LexerOutput) {0, nullptr};
 	});
@@ -159,7 +176,7 @@ fn main() -> int
 			}
 			println("ok {}", i);
 
-			return (LexerOutput) {i, Word::unserialize(src.substr(0, i))};
+			return (LexerOutput) {i, Word::deserialize(src.substr(0, i))};
 		}
 		return (LexerOutput) {0, nullptr};
 	});
@@ -180,7 +197,7 @@ fn main() -> int
 				}
 				i += 1;
 			}
-			return (LexerOutput) {i, Word::unserialize(src.substr(0, i))};
+			return (LexerOutput) {i, Word::deserialize(src.substr(0, i))};
 		}
 		return (LexerOutput) {0, nullptr};
 	});
@@ -201,7 +218,7 @@ fn main() -> int
 				}
 				i += 1;
 			}
-			return (LexerOutput) {i, Word::unserialize(src.substr(0, i))};
+			return (LexerOutput) {i, Word::deserialize(src.substr(0, i))};
 		}
 		return (LexerOutput) {0, nullptr};
 	});
@@ -230,7 +247,7 @@ fn main() -> int
 			}
 			if (!has_digit)
 				return (LexerOutput) {0, nullptr};
-			return (LexerOutput) {i, Word::unserialize(src.substr(0, i))};
+			return (LexerOutput) {i, Word::deserialize(src.substr(0, i))};
 		}
 		return (LexerOutput) {0, nullptr};
 	});
@@ -242,7 +259,7 @@ fn main() -> int
 		auto csrc = src.c_str();
 		if ((csrc[0] == '(' || csrc[0] == '[' || csrc[0] == '{') || (csrc[0] == ')' || csrc[0] == ']' || csrc[0] == '}'))
 		{
-			return (LexerOutput) {1, Word::unserialize(src.substr(0, 1))};
+			return (LexerOutput) {1, Word::deserialize(src.substr(0, 1))};
 		}
 		return (LexerOutput) {0, nullptr};
 	});
@@ -255,7 +272,7 @@ fn main() -> int
 
 		if (s_depth)
 		{
-			return (LexerOutput) {0, Raw::unserialize(src.substr(0, 0))};
+			return (LexerOutput) {0, Raw::deserialize(src.substr(0, 0))};
 
 		}
 		s_depth += 1;
@@ -271,9 +288,9 @@ fn main() -> int
 				{
 					s_depth -= 1;
 					if (i)
-						return (LexerOutput) {i, Raw::unserialize(src.substr(0, i))};
+						return (LexerOutput) {i, Raw::deserialize(src.substr(0, i))};
 					else
-						return (LexerOutput) {0, Raw::unserialize(src.substr(0, 0))};
+						return (LexerOutput) {0, Raw::deserialize(src.substr(0, 0))};
 				}
 				else if (lexer(csrc + i).matched_src_prefix_length < 0)
 				{
@@ -283,7 +300,7 @@ fn main() -> int
 			i += 1;
 		}
 		s_depth -= 1;
-		return (LexerOutput) {i, Raw::unserialize(src.substr(0, i))};
+		return (LexerOutput) {i, Raw::deserialize(src.substr(0, i))};
 	});
 
 
@@ -291,6 +308,7 @@ fn main() -> int
 
 		if (ast.last->compile() == string(")"))
 		{
+			print("--------\n");
 			auto it = ast.last->prev;
 			while (it)
 			{
@@ -300,7 +318,10 @@ fn main() -> int
 
 					auto prev = it->prev;
 
-					ast.last = (prev->next = Word::unserialize("PARENS")).get();
+					ast.last = (prev->next = Word::deserialize("PARENS")).get();
+
+					auto new_childs = it->clone();
+				//	ast.last->childs.link_front(move(new_childs));
 
 					prev->next->prev = prev;
 
@@ -337,6 +358,7 @@ fn main() -> int
 	{
 		println("item->type: [{}]", item.type);
 		println("item->value: [{}]", item.compile());
+		println("item->childs: [{}]", item.childs.size());
 		println("");
 
 	}

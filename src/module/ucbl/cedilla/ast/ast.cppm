@@ -12,16 +12,7 @@ export namespace cedilla
 
     struct Ast final : public Tree<AstNode>, public Serializable, public Clonable<Ast>
     {
-		fn	serialize() const -> string
-		{
-			throw runtime_error("not implemented");
-			return "[]";
-		}
-
-		fn	clone() const -> unique_ptr<Ast>
-		{
-			throw runtime_error("not implemented");
-			return 0;
-		}
+		fn	clone() -> unique_ptr<Ast> override;
+		fn	serialize() -> string override;
     };
 }
