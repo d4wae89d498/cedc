@@ -39,15 +39,16 @@ namespace cedilla
 	{
 		string out = "Ast(";
 		auto it = this->begin();
-		while (true)
-		{
-			out += it->serialize();
-			++it;
-			if (it != this->end())
-				out += ",";
-			else
-				break ;
-		}
+		if (it != this->end())
+			while (true)
+			{
+				out += it->serialize();
+				++it;
+				if (it != this->end())
+					out += ",";
+				else
+					break ;
+			}
 		out += ")";
 		return out;
 	}

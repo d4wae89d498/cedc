@@ -16,10 +16,11 @@ namespace cedilla
 
 	fn StateMap::clone() -> unique_ptr<StateMap>
 	{
-		//throw runtime_error("StateMap::clone() not implemented");
 		auto out = make_unique<StateMap>();
 		for (auto& item : *this)
-			(*out)[item.first] = item.second->clone();
+		{
+			out->emplace(item.first, item.second->clone());
+		}
 		return out;
 	}
 

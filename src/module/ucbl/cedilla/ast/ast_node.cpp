@@ -17,7 +17,7 @@ namespace cedilla
 
 	fn AstNode::serialize() -> string
 	{
-		throw runtime_error("err23");
+		//throw runtime_error("err23");
 		return this->type + "(" + this->states.serialize() + ", " + this->childs.serialize() + ")";
 	}
 
