@@ -59,13 +59,13 @@ struct Identifier final : public AstNode
 
 	fn	compile() -> string override
 	{
-		throw runtime_error("not implemented");
+		throw runtime_error("Identifier::compile() not implemented");
 		return format("{}", "");
 	}
 
 	fn clone() -> unique_ptr<AstNode> override
 	{
-		throw runtime_error("not implemented");
+		throw runtime_error("Identifier::clone() not implemented");
 		return 0;
 	}
 
@@ -84,8 +84,8 @@ struct Identifier final : public AstNode
 		auto gg = make_unique<int>(42);
 
 		auto out = make_unique<Identifier>();
-		out->data["test"] = make_unique<StringState>(StringState("test"));
-		out->data["test2"] = make_unique<AstNodeState>(AstNodeState(move(out)));
+		out->states["test"] = make_unique<StringState>(StringState("test"));
+		out->states["test2"] = make_unique<AstNodeState>(AstNodeState(move(out)));
 
 	//	out->value = str;
 		return out;
@@ -105,13 +105,13 @@ struct Int final : public AstNode
 
 	fn	compile() -> string override
 	{
-		throw runtime_error("not implemented");
+		throw runtime_error("Int::compile() not implemented");
 		return format("{}", value);
 	}
 
 	fn clone() -> unique_ptr<AstNode> override
 	{
-		throw runtime_error("not implemented");
+		throw runtime_error("Int::clone() not implemented");
 		return 0;
 	}
 

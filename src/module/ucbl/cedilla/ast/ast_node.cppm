@@ -13,9 +13,9 @@ export namespace cedilla
  	struct AstNode : public TreeNode<Ast, AstNode>, public Clonable<AstNode>, public Serializable
     {
         const string		type;
-        StateMap			data;
+        StateMap			states;
 
-        AstNode(const string &type);
+        AstNode(const string type, StateMap states = StateMap(), Ast childs = Ast());
 		fn clone() -> unique_ptr<AstNode> override;
         fn serialize() -> string override;
         virtual ~AstNode() = default;

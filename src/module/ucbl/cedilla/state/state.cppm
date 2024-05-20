@@ -9,10 +9,10 @@ export namespace cedilla
 {
 	struct State : public Serializable, public Clonable<State>
 	{
-		string 	type;
-		any		value;
+		const string 	type;
+		any				value;
 
-		State(string type, any value) : type(type), value(value)
+		State(const string type, any value) : type(type), value(value)
 		{
 		}
 

@@ -1,7 +1,9 @@
 export module ucbl.cedilla;
 
 export import :common;
+export import :string;
 export import :constructor;
+export import :rref_capture;
 export import :scan;
 export import :serializable;
 export import :clonable;

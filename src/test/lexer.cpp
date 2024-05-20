@@ -15,7 +15,9 @@ struct StringState final : public State
 
 	fn serialize() -> string override
 	{
-		return any_cast<string>(this->value);
+		return this->type + "(\"" + String(any_cast<string>(this->value))
+			.replace_substring_occurrences("\"", "\\\"")
+			+ "\")";
 	}
 
 	static fn deserialize(const string &str) -> unique_ptr<State>
@@ -27,21 +29,44 @@ REGISTER_DESERIALIZABLE(State, StringState);
 
 struct Word final : public AstNode
 {
-	Word() : AstNode(__func__)
+	Word(StateMap states = StateMap(), Ast childs = Ast()) : AstNode(__func__)
 	{
+		//auto gg = move(childs);
 	}
+    Word(Word&& other) noexcept : AstNode(__func__) {
+        // Move constructor implementation
+        // Transfer ownership of resources from 'other' to 'this'
+    }
+
+    Word& operator=(Word&& other) noexcept {
+        if (this != &other) {
+            // Move assignment implementation
+            // Transfer ownership of resources from 'other' to 'this'
+        }
+        return *this;
+    }
+
 
 	fn	compile() -> string override
 	{
-		auto &mystate = this->data["value"];
+		auto &mystate = this->states["value"];
 		return format("{}", any_cast<string>(mystate->value));
 	}
 
 	fn clone() -> unique_ptr<AstNode> override
 	{
-		throw runtime_error("not implemented");
-		auto out = make_unique<Word>();
-		out->data["value"] = make_unique<StringState>(any_cast<string>(this->data["value"]->value));
+		print("Clonning Word...\n");
+
+		auto myptr = this->states.clone();
+
+		auto out = make_unique<Word>(move(*(this->states.clone().release())));//, move(*(this->childs.clone().release())));
+		if (this->childs.first)
+			out->childs.first = move(this->childs.first->clone());
+		if (this->next)
+			out->next = this->next->clone();
+	//	out->states = move(* (this->states.clone().release()));
+	//	out->states["value"] = make_unique<StringState>(any_cast<string>(this->states["value"]->value));
+		print("clonned\n");
 		return out;
 	}
 
@@ -50,7 +75,7 @@ struct Word final : public AstNode
 		auto out = make_unique<Word>();
 		string my;
 		scan(str, "{}", my);
-		out->data["value"] = make_unique<StringState>(my);
+		out->states["value"] = make_unique<StringState>(my);
 		return out;
 	}
 };
@@ -88,11 +113,64 @@ struct Raw final : public AstNode
 };
 REGISTER_DESERIALIZABLE(AstNode, Raw)
 
+/*
+fn ftest(initializer_list<pair<const string, unique_ptr<State>>> init)
+{
+	auto test21 = StateMap();
+	for (auto &&itm : init)
+	{
+	//	test21.emplace(itm.first, move(itm.second));
+		 test21.emplace(std::piecewise_construct,
+                       std::forward_as_tuple(itm.first),
+                       std::forward_as_tuple(std::move(itm.second)));
+	}
+}
+*/
 fn main() -> int
 {
 	print("begin...\n");
 
+	auto test = String("yoo pomme yoo");
+	int i;
+	auto my = test.cast<int>(i);
+
+	println("my: {}", test.replace_substring_occurrences("yoo", "hello").c_str());
+
 	Context ctx;
+
+	auto ii = make_unique<int>(42);
+
+
+	auto p = StringState::deserialize("yoo");
+
+
+	/*ftest({
+		{string("test"), StringState::deserialize("yoo")}
+	});
+*/
+	auto gg = StateMap({{"test", StringState::deserialize("yoo")}});
+
+	auto test33 = Ast({
+		{Word(
+		StateMap({{"test", StringState::deserialize("yoo")}}),
+		Ast({
+				{Word(
+				StateMap(),
+				Ast()
+				)},
+			})
+		)},
+	});
+
+	if (test33.first)
+		print("type is ... {}\n", test33.first->type);
+
+
+
+
+	//println("{}", gg["test"]->serialize());
+	//println("{}",test33.first->type);
+
 
 	// match a space
 	ctx.lexers.push_back([](const string src) -> LexerOutput {
@@ -317,11 +395,12 @@ fn main() -> int
 					println("FOUND!");
 
 					auto prev = it->prev;
+					auto new_childs = it->clone();
+
 
 					ast.last = (prev->next = Word::deserialize("PARENS")).get();
 
-					auto new_childs = it->clone();
-				//	ast.last->childs.link_front(move(new_childs));
+					ast.last->childs.link_front(move(new_childs));
 
 					prev->next->prev = prev;
 
@@ -346,9 +425,9 @@ fn main() -> int
 			 "/*pomme*/"
 			 "test"
 			 "'test'"
-			 "\"test\""
+			 "\"tes\\\"t\""
 			 "(5.98) "
-			 "§fesfesfe$éééé"
+			 "§fesfesfe$éééé \""
 
 		);
 
@@ -356,11 +435,7 @@ fn main() -> int
 
 	for (auto &item : ctx.ast)
 	{
-		println("item->type: [{}]", item.type);
-		println("item->value: [{}]", item.compile());
-		println("item->childs: [{}]", item.childs.size());
-		println("");
-
+	//	println("{}", item.serialize());
 	}
 
 	// test \
