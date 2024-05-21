@@ -16,7 +16,7 @@ namespace cedilla
 		return original;
 	}
 
-	fn String::count_substring_occurrences(const string& needle) -> u64
+	fn String::count_substring_occurrences(const string& needle) const -> u64
 	{
 		size_t count = 0;
 		size_t pos = 0;

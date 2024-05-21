@@ -3,10 +3,8 @@ export module ucbl.cedilla:ast_node;
 import :common;
 import :tree_node;
 import :state_map;
-import :clonable;
 import :tree;
 import :ast;
-import :serializable;
 
 export namespace cedilla
 {

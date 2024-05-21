@@ -8,15 +8,15 @@ export namespace cedilla
 	{
 		fn replace_substring_occurrences(const string& from, const string& to) -> String;
 
-		fn count_substring_occurrences(const string& needle) -> u64;
+		fn count_substring_occurrences(const string& needle) const -> u64;
 
 		template<typename T>
-		fn cast(T& value) -> bool
+		fn assign_to(T& value) -> bool
 		{
 			auto str = this;
 			if constexpr (is_same_v<T, string>)
 			{
-				value = str;
+				value = *str;
 				return true;
 			}
 			else if constexpr (is_same_v<T, float> || is_same_v<T, double>)
@@ -36,5 +36,80 @@ export namespace cedilla
 			}
 			// todo handle operator >> for generic class but  LIBCXX PCM modules currently crash with it
 		}
+
+		template<typename T>
+		fn scan(const string& format, T& value)
+		{
+			return scan(this->c_str(), format, &value);
+		}
 	};
+
+	/*
+	* Scan with 1 arg
+	*/
+	template<typename T>
+	fn scan(const string& str, const string& format, T& value) -> bool
+	{
+		const char *s = str.c_str();
+		const char *f = format.c_str();
+
+		if (String(format).count_substring_occurrences("{}") > 1)
+			throw runtime_error("More {} placeholders than arguments in scan function");
+
+		while (*s)
+			if (!strncmp(f, "{}", 2))
+			{
+				string match = "";
+				f += 2;
+				while (*s && *s != *f)
+					match += *s++;
+				if (!String(match).assign_to(value))
+					return false;
+			}
+			else if (*s == *f && *s)
+			{
+				s += 1;
+				f += 1;
+			}
+			else
+				return false;
+		return true;
+	}
+
+	/*
+	* Scan with reccursive templates args
+	* (basic impl of https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2019/p1729r0.html)
+	*/
+	template<typename T, typename ... ARGS>
+	fn scan(const string& str, const string& format, T& value, ARGS&... args) -> bool
+	{
+		const char *s = str.c_str();
+		const char *f = format.c_str();
+
+		auto format_string = String(format);
+
+		if (format_string.count_substring_occurrences("{}") > sizeof...(ARGS) + 1)
+			throw runtime_error("More {} placeholders than arguments in scan function");
+		if (format_string.count_substring_occurrences("{}") < sizeof...(ARGS) + 1)
+			throw runtime_error("More arguments tahn placeholders {} in scan function");
+
+		while (1)
+			if (!strncmp(f, "{}", 2))
+			{
+				string match = "";
+				f += 2;
+				while (*s && *s != *f)
+					match += *s++;
+				if (!String(match).assign_to(value))
+					return false;
+				return scan(s, f, args...);
+			}
+			else if (*s == *f && *s)
+			{
+				s += 1;
+				f += 1;
+			}
+			else
+				return false;
+	}
 }

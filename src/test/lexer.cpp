@@ -34,12 +34,14 @@ struct Word final : public AstNode
 	{
 	}
 
-    Word(Word&& other) noexcept : AstNode(__func__) {
+    Word(Word&& other) noexcept : AstNode(__func__)
+	{
         // Move constructor implementation
         // Transfer ownership of resources from 'other' to 'this'
     }
 
-    Word& operator=(Word&& other) noexcept {
+   	fn operator=(Word&& other) noexcept ->  Word&
+	{
         if (this != &other) {
             // Move assignment implementation
             // Transfer ownership of resources from 'other' to 'this'
@@ -136,7 +138,7 @@ fn main() -> int
 
 	auto test = String("yoo pomme yoo");
 	int i;
-	auto my = test.cast<int>(i);
+	auto my = test.assign_to<int>(i);
 
 	println("my: {}", test.replace_substring_occurrences("yoo", "hello").c_str());
 
@@ -366,7 +368,7 @@ fn main() -> int
 		{
 			for (auto &lexer : ctx.lexers)
 			{
-				if (lexer(csrc + i).matched_src_prefix_length > 0)
+				if (lexer(csrc + i).first > 0)
 				{
 					s_depth -= 1;
 					if (i)
@@ -374,7 +376,7 @@ fn main() -> int
 					else
 						return (LexerOutput) {0, Raw::deserialize(src.substr(0, 0))};
 				}
-				else if (lexer(csrc + i).matched_src_prefix_length < 0)
+				else if (lexer(csrc + i).first  < 0)
 				{
 					throw new runtime_error("Lexer error at : " + string(csrc + i));
 				}
@@ -387,6 +389,7 @@ fn main() -> int
 
 
 	ctx.parsers.push_back([](Ast& ast) -> ParserOutput {
+
 
 		if (ast.last->compile() == string(")"))
 		{

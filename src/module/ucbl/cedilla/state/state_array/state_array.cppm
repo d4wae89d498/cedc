@@ -2,9 +2,6 @@ export module ucbl.cedilla:state_array;
 
 import :state;
 import :common;
-import :serializable;
-import :clonable;
-import :rref_capture;
 
 export namespace cedilla
 {

@@ -1,10 +1,7 @@
 export module ucbl.cedilla:state_map;
 
-import :state;
 import :common;
-import :serializable;
-import :clonable;
-import :rref_capture;
+import :state;
 
 export namespace cedilla
 {

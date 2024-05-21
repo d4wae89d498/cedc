@@ -7,18 +7,15 @@ import :ast;
 
 export namespace cedilla
 {
+	/*
+		Lexer return codes:
+			Negative = Error
+			Zero = Not a match
+			Postivie = Length of matched prefix size
+	*/
+	using LexerOutput = pair<int, unique_ptr<AstNode>>;
 
-	struct LexerOutput
-	{
-		/*
-			Lexer return codes:
-				Negative = Error
-				Zero = Not a match
-				Postivie = Length of matched prefix size
-		*/
-		int 					matched_src_prefix_length;
-		unique_ptr<AstNode>		nodes;
-	};
+
 
 	using ParserOutput = enum {
 		ERROR = -1,

@@ -3,9 +3,6 @@ export module ucbl.cedilla:ast;
 import :common;
 import :tree;
 import :linked_list;
-import :serializable;
-import :clonable;
-import :rref_capture;
 
 export namespace cedilla
 {
