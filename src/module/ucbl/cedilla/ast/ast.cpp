@@ -52,6 +52,49 @@ namespace cedilla
 		out += ")";
 		return out;
 	}
+
+	/*
+
+		?	may be empty
+		*	until
+		capture Type [
+			"prop" is "str",
+			"prop" is lower,
+			"prop" is containing("needle"),
+
+			 or prop { assume ast and match and }] {childs}
+		skip Type
+
+
+		capture Type
+		capture Identifier
+		capture Parenthesis
+		capture Braces
+		-> Func
+
+		capture Raw[value=async]	# Use [] for data match
+		capture Func["Braces"={		# Use {} for child match
+			skip Braces				# First braces are function arguments
+			{
+				capture Expr {
+					capture Raw[value=await]
+					capture Call
+				}
+			}
+		}]
+
+		matches["Call"]["type"]
+
+
+
+
+
+
+	*/
+	fn match(const string fmt)
+	{
+
+	}
 }
 
 /*
