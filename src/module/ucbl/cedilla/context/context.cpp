@@ -19,26 +19,26 @@ namespace cedilla
 			for (auto& lexer : this->lexers)
 			{
 				auto result = lexer(csrc + i);
-				if (result.matched_src_prefix_length > longest_match.matched_src_prefix_length)
+				if (result.first > longest_match.first)
 				{
-					longest_match.matched_src_prefix_length = result.matched_src_prefix_length;
-					if (result.nodes)
-						longest_match.nodes = move(result.nodes);
+					longest_match.first = result.first;
+					if (result.second)
+						longest_match.second = move(result.second);
 					else
-						longest_match.nodes = 0;
+						longest_match.second = 0;
 				}
-				else if (result.matched_src_prefix_length < 0)
+				else if (result.first < 0)
 				{
 					throw runtime_error("Lexer runtime error at : " + string(csrc + i));
 				}
 			}
 
-			if (longest_match.matched_src_prefix_length)
+			if (longest_match.first)
 			{
-				i += longest_match.matched_src_prefix_length;
-				if (longest_match.nodes)
+				i += longest_match.first;
+				if (longest_match.second)
 				{
-					this->ast.link_back(move(longest_match.nodes));
+					this->ast.link_back(move(longest_match.second));
 					// todo: apply parser rules
 
 					this->parse(this->ast);

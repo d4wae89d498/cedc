@@ -3,7 +3,6 @@ module ucbl.cedilla;
 import :common;
 import :ast;
 import :ast_node;
-import :rref_capture;
 
 namespace cedilla
 {
@@ -54,20 +53,28 @@ namespace cedilla
 	}
 
 	/*
+		# AST NODE MATCHER DSL
 
-		?	may be empty
-		*	until
+		#we can capture? capture* and skip? skip* also
+		#? means optional *means repeat until
+
+		# a node contains properties and childs. A property may be a string or an ast node.
+		# Childs are ast.
+
 		capture Type [
-			"prop" is "str",
-			"prop" is lower,
-			"prop" is containing("needle"),
 
-			 or prop { assume ast and match and }] {childs}
+			"prop1" = "str"					// prop cant be matched or skipped, but can be compared like this
+			"prop2" islower($)
+			"prop3" contains($, "needle"),	// prop will be passed a second argument to containing
+
+			 "prop4" {
+				#assume ast here. we can use capture and amtch here.
+			}] {childs}
 		skip Type
 
 
-		capture Type
-		capture Identifier
+		capture Type				# By default match Type name as matched key
+		capture Identifier	as id1	# we may specify a new name
 		capture Parenthesis
 		capture Braces
 		-> Func

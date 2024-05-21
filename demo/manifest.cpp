@@ -6,9 +6,15 @@ using namespace cedilla;
 
 extern "C"
 {
+
 	fn on_attach(cedilla::Context &ctx)
 	{
 		ctx.parsers.push_back([](Ast &tree) -> ParserOutput {
+
+			// match function return values ?
+			AstNode *ptr;
+
+			// todo: use libastmatch instead
 			if (tree.match("skip:O_PAR capture:* skip:C_PAR"))
 			{
 
