@@ -4,3 +4,6 @@
 [submodule "bin/build-tools/cppmodsort"]
 	path = bin/build-tools/cppmodsort
 	url = git@github.com:d4wae89d498/cppmodsort.git
+[submodule "bin/build-tools/antlr4"]
+	path = bin/build-tools/antlr4
+	url = https://github.com/antlr/antlr4.git
