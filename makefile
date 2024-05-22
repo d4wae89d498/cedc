@@ -15,7 +15,23 @@ DEP_DIR := $(TMP_DIR)/dep
 
 # Compilation flags
 CXX :=		clang++ -std=c++26
-CXXFLAGS =	-g -O0 -fsanitize=address -nostdinc++ -nostdlib++ -fprebuilt-module-path=lib/libcxx-pcm/lib -Wno-unqualified-std-cast-call -fprebuilt-module-path=$(PCM_DIR)
+CXXFLAGS =	-g\
+			-O0\
+			-fsanitize=address\
+			-nostdinc++\
+			-nostdlib++\
+			-fprebuilt-module-path=lib/libcxx-pcm/lib\
+			-Wno-unqualified-std-cast-call\
+			-fprebuilt-module-path=$(PCM_DIR)\
+			-Ilib/libantlr4/runtime/src\
+			-Ilib/libastmatcher\
+			-Wno-unused-command-line-argument
+
+# External libraries
+LIBS :=		lib/libcxx.a\
+			lib/libantlr4-runtime.a\
+			lib/libastmatcher-parser.a
+
 #				$(shell find $(PCM_DIR) -type d | sed 's/^/-fprebuilt-module-path=/' | tr '\n' ' ')
 
 # Compilation database output
@@ -57,7 +73,13 @@ INCPCHS :=	$(PCHS:%=-include-pch %)
 DEPS 	:= 	$(MODULES:$(SRC_DIR)/%=$(DEP_DIR)/%.d) $(IMPLS:$(SRC_DIR)/%=$(DEP_DIR)/%.d)
 
 # Submodules libraries marker
-LIBCXX_MADE_MARKER=$(TMP_DIR)/.libcxx_made
+LIBS_MADE_MARKER=$(TMP_DIR)/.libs_made
+
+# Extract the path of the current Makefile
+CURRENT_MAKEFILE := $(lastword $(MAKEFILE_LIST))
+
+# Extract the directory of the current Makefile
+MAKEFILE_DIR := $(realpath $(dir $(CURRENT_MAKEFILE)))
 
 #-------------------------------------------------#
 
@@ -65,14 +87,18 @@ LIBCXX_MADE_MARKER=$(TMP_DIR)/.libcxx_made
 .PRECIOUS: 	$(PCHS) $(PCMS)
 .PHONY: 	all clean fclean re
 
-all: $(LIBCXX_MADE_MARKER) $(NAME) $(EXECS)
-debug:
-	echo "$(MODULES)"
-$(LIBCXX_MADE_MARKER):
+all: $(LIBS_MADE_MARKER) $(NAME) $(EXECS)
+
+$(LIBS_MADE_MARKER):
 	make -C lib/libcxx-pcm
 	@mkdir -p $(@D)
-	@ln -sf $(shell pwd)/lib/libcxx-pcm/lib/libcxx.a lib/libcxx.a
-	@touch $(LIBCXX_MADE_MARKER)
+	@cd $(MAKEFILE_DIR)/lib && ln -sf libcxx-pcm/lib/libcxx.a libcxx.a
+	@cd $(MAKEFILE_DIR)/lib && rm libantlr4-runtime && ln -s  ../bin/build-tools/antlr4/runtime/Cpp libantlr4-runtime
+	@cd $(MAKEFILE_DIR)/lib/libantlr4-runtime && mkdir -p build && cd build && cmake .. && make
+	@cd $(MAKEFILE_DIR)/lib && ln -sf libantlr4-runtime/dist/libantlr4-runtime.a libantlr4-runtime.a
+	@make -C $(MAKEFILE_DIR)/lib/libastmatcher-parser
+	@cd $(MAKEFILE_DIR)/lib && ln -sf libastmatcher-parser/libastmatcher-parser.a libastmatcher-parser.a
+	@touch $(LIBS_MADE_MARKER)
 
 $(PCH_DIR)/%.pch: $(SRC_DIR)/%.hpp makefile
 	@mkdir -p $(@D)
@@ -113,7 +139,7 @@ $(NAME): $(OBJS)
 
 $(BIN_DIR)/%.out: $(SRC_DIR)/%.cpp $(OBJS)
 	@mkdir -p $(@D)
-	$(CXX) $(CXXFLAGS) $< -o $@ $(INCPCHS) $(NAME) lib/libcxx.a -w
+	$(CXX) $(CXXFLAGS) $< -o $@ $(INCPCHS) $(NAME) $(LIBS) -w
 	@make $(CXXDB)
 
 $(CXXDB): $(EXECS)
@@ -130,7 +156,10 @@ fclean: clean
 	rm -f $(EXECS)
 	rm -f $(PCMS)
 	rm -f $(PCHS)
-	rm -f $(LIBCXX_MADE_MARKER)
+	rm -f $(LIBS_MADE_MARKER)
+	rm -rf $(LIBS)
 	make fclean -C lib/libcxx-pcm
+	make clean -C lib/libastmatcher-parser
+	rm -rf lib/antlr4-runtime/build
 
 re: fclean all
