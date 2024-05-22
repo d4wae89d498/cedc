@@ -14,6 +14,9 @@
 class  AstMatcherListener : public antlr4::tree::ParseTreeListener {
 public:
 
+  virtual void enterPattern(AstMatcherParser::PatternContext *ctx) = 0;
+  virtual void exitPattern(AstMatcherParser::PatternContext *ctx) = 0;
+
   virtual void enterAstDescription(AstMatcherParser::AstDescriptionContext *ctx) = 0;
   virtual void exitAstDescription(AstMatcherParser::AstDescriptionContext *ctx) = 0;
 

@@ -3,7 +3,7 @@ grammar AstMatcher;
 // Lexer rules
 DOLLAR: '$';
 CAPTURE: 'capture';
-SKIP: 'skip';
+SKIP_NODE: 'skip';
 AS: 'as';
 ARROW: '->';
 LPAREN: '(';
@@ -17,8 +17,12 @@ COMMA: ',';
 IDENTIFIER: [a-zA-Z_][a-zA-Z_0-9]*;
 STRING: '"' (~["\\] | '\\' .)* '"';
 WHITESPACE: [ \t\r\n] -> skip;
+COMMENT: '#' ~[\r\n]* -> skip;
 
 // Parser rules
+
+pattern:
+    astDescription* EOF; // The program can contain multiple astDescription statements
 
 astDescription:
     (captureStmt | skipStmt)
@@ -29,7 +33,7 @@ captureStmt:
     CAPTURE IDENTIFIER (AS IDENTIFIER)? (ARROW IDENTIFIER)?;
 
 skipStmt:
-    SKIP IDENTIFIER;
+    SKIP_NODE IDENTIFIER;
 
 astPropertyDescription:
     STRING EQUAL STRING

@@ -15,6 +15,10 @@
 class  AstMatcherBaseVisitor : public AstMatcherVisitor {
 public:
 
+  virtual std::any visitPattern(AstMatcherParser::PatternContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual std::any visitAstDescription(AstMatcherParser::AstDescriptionContext *ctx) override {
     return visitChildren(ctx);
   }

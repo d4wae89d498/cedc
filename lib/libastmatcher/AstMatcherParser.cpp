@@ -53,7 +53,7 @@ void astmatcherParserInitialize() {
 #endif
   auto staticData = std::make_unique<AstMatcherParserStaticData>(
     std::vector<std::string>{
-      "astDescription", "captureStmt", "skipStmt", "astPropertyDescription", 
+      "pattern", "astDescription", "captureStmt", "skipStmt", "astPropertyDescription", 
       "funcCall", "matchList", "matchStmt", "nestedCapture"
     },
     std::vector<std::string>{
@@ -61,38 +61,41 @@ void astmatcherParserInitialize() {
       "']'", "'{'", "'}'", "'='", "','"
     },
     std::vector<std::string>{
-      "", "DOLLAR", "CAPTURE", "SKIP", "AS", "ARROW", "LPAREN", "RPAREN", 
+      "", "DOLLAR", "CAPTURE", "SKIP_NODE", "AS", "ARROW", "LPAREN", "RPAREN", 
       "LBRACKET", "RBRACKET", "LBRACE", "RBRACE", "EQUAL", "COMMA", "IDENTIFIER", 
-      "STRING", "WHITESPACE"
+      "STRING", "WHITESPACE", "COMMENT"
     }
   );
   static const int32_t serializedATNSegment[] = {
-  	4,1,16,88,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,6,2,7,
-  	7,7,1,0,1,0,3,0,19,8,0,1,0,1,0,5,0,23,8,0,10,0,12,0,26,9,0,1,0,3,0,29,
-  	8,0,1,0,1,0,1,0,1,0,3,0,35,8,0,1,1,1,1,1,1,1,1,3,1,41,8,1,1,1,1,1,3,1,
-  	45,8,1,1,2,1,2,1,2,1,3,1,3,1,3,1,3,1,3,3,3,55,8,3,1,4,1,4,1,4,1,4,1,4,
-  	3,4,62,8,4,3,4,64,8,4,1,4,1,4,1,5,1,5,1,5,5,5,71,8,5,10,5,12,5,74,9,5,
-  	3,5,76,8,5,1,6,1,6,1,6,3,6,81,8,6,1,7,1,7,1,7,1,7,1,7,1,7,0,0,8,0,2,4,
-  	6,8,10,12,14,0,0,92,0,18,1,0,0,0,2,36,1,0,0,0,4,46,1,0,0,0,6,54,1,0,0,
-  	0,8,56,1,0,0,0,10,75,1,0,0,0,12,80,1,0,0,0,14,82,1,0,0,0,16,19,3,2,1,
-  	0,17,19,3,4,2,0,18,16,1,0,0,0,18,17,1,0,0,0,19,28,1,0,0,0,20,24,5,8,0,
-  	0,21,23,3,6,3,0,22,21,1,0,0,0,23,26,1,0,0,0,24,22,1,0,0,0,24,25,1,0,0,
-  	0,25,27,1,0,0,0,26,24,1,0,0,0,27,29,5,9,0,0,28,20,1,0,0,0,28,29,1,0,0,
-  	0,29,34,1,0,0,0,30,31,5,10,0,0,31,32,3,10,5,0,32,33,5,11,0,0,33,35,1,
-  	0,0,0,34,30,1,0,0,0,34,35,1,0,0,0,35,1,1,0,0,0,36,37,5,2,0,0,37,40,5,
-  	14,0,0,38,39,5,4,0,0,39,41,5,14,0,0,40,38,1,0,0,0,40,41,1,0,0,0,41,44,
-  	1,0,0,0,42,43,5,5,0,0,43,45,5,14,0,0,44,42,1,0,0,0,44,45,1,0,0,0,45,3,
-  	1,0,0,0,46,47,5,3,0,0,47,48,5,14,0,0,48,5,1,0,0,0,49,50,5,15,0,0,50,51,
-  	5,12,0,0,51,55,5,15,0,0,52,53,5,15,0,0,53,55,3,8,4,0,54,49,1,0,0,0,54,
-  	52,1,0,0,0,55,7,1,0,0,0,56,57,5,14,0,0,57,63,5,6,0,0,58,61,5,1,0,0,59,
-  	60,5,13,0,0,60,62,5,15,0,0,61,59,1,0,0,0,61,62,1,0,0,0,62,64,1,0,0,0,
-  	63,58,1,0,0,0,63,64,1,0,0,0,64,65,1,0,0,0,65,66,5,7,0,0,66,9,1,0,0,0,
-  	67,72,3,12,6,0,68,69,5,13,0,0,69,71,3,12,6,0,70,68,1,0,0,0,71,74,1,0,
-  	0,0,72,70,1,0,0,0,72,73,1,0,0,0,73,76,1,0,0,0,74,72,1,0,0,0,75,67,1,0,
-  	0,0,75,76,1,0,0,0,76,11,1,0,0,0,77,81,3,2,1,0,78,81,3,4,2,0,79,81,3,14,
-  	7,0,80,77,1,0,0,0,80,78,1,0,0,0,80,79,1,0,0,0,81,13,1,0,0,0,82,83,5,14,
-  	0,0,83,84,5,10,0,0,84,85,3,10,5,0,85,86,5,11,0,0,86,15,1,0,0,0,12,18,
-  	24,28,34,40,44,54,61,63,72,75,80
+  	4,1,17,98,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,6,2,7,
+  	7,7,2,8,7,8,1,0,5,0,20,8,0,10,0,12,0,23,9,0,1,0,1,0,1,1,1,1,3,1,29,8,
+  	1,1,1,1,1,5,1,33,8,1,10,1,12,1,36,9,1,1,1,3,1,39,8,1,1,1,1,1,1,1,1,1,
+  	3,1,45,8,1,1,2,1,2,1,2,1,2,3,2,51,8,2,1,2,1,2,3,2,55,8,2,1,3,1,3,1,3,
+  	1,4,1,4,1,4,1,4,1,4,3,4,65,8,4,1,5,1,5,1,5,1,5,1,5,3,5,72,8,5,3,5,74,
+  	8,5,1,5,1,5,1,6,1,6,1,6,5,6,81,8,6,10,6,12,6,84,9,6,3,6,86,8,6,1,7,1,
+  	7,1,7,3,7,91,8,7,1,8,1,8,1,8,1,8,1,8,1,8,0,0,9,0,2,4,6,8,10,12,14,16,
+  	0,0,102,0,21,1,0,0,0,2,28,1,0,0,0,4,46,1,0,0,0,6,56,1,0,0,0,8,64,1,0,
+  	0,0,10,66,1,0,0,0,12,85,1,0,0,0,14,90,1,0,0,0,16,92,1,0,0,0,18,20,3,2,
+  	1,0,19,18,1,0,0,0,20,23,1,0,0,0,21,19,1,0,0,0,21,22,1,0,0,0,22,24,1,0,
+  	0,0,23,21,1,0,0,0,24,25,5,0,0,1,25,1,1,0,0,0,26,29,3,4,2,0,27,29,3,6,
+  	3,0,28,26,1,0,0,0,28,27,1,0,0,0,29,38,1,0,0,0,30,34,5,8,0,0,31,33,3,8,
+  	4,0,32,31,1,0,0,0,33,36,1,0,0,0,34,32,1,0,0,0,34,35,1,0,0,0,35,37,1,0,
+  	0,0,36,34,1,0,0,0,37,39,5,9,0,0,38,30,1,0,0,0,38,39,1,0,0,0,39,44,1,0,
+  	0,0,40,41,5,10,0,0,41,42,3,12,6,0,42,43,5,11,0,0,43,45,1,0,0,0,44,40,
+  	1,0,0,0,44,45,1,0,0,0,45,3,1,0,0,0,46,47,5,2,0,0,47,50,5,14,0,0,48,49,
+  	5,4,0,0,49,51,5,14,0,0,50,48,1,0,0,0,50,51,1,0,0,0,51,54,1,0,0,0,52,53,
+  	5,5,0,0,53,55,5,14,0,0,54,52,1,0,0,0,54,55,1,0,0,0,55,5,1,0,0,0,56,57,
+  	5,3,0,0,57,58,5,14,0,0,58,7,1,0,0,0,59,60,5,15,0,0,60,61,5,12,0,0,61,
+  	65,5,15,0,0,62,63,5,15,0,0,63,65,3,10,5,0,64,59,1,0,0,0,64,62,1,0,0,0,
+  	65,9,1,0,0,0,66,67,5,14,0,0,67,73,5,6,0,0,68,71,5,1,0,0,69,70,5,13,0,
+  	0,70,72,5,15,0,0,71,69,1,0,0,0,71,72,1,0,0,0,72,74,1,0,0,0,73,68,1,0,
+  	0,0,73,74,1,0,0,0,74,75,1,0,0,0,75,76,5,7,0,0,76,11,1,0,0,0,77,82,3,14,
+  	7,0,78,79,5,13,0,0,79,81,3,14,7,0,80,78,1,0,0,0,81,84,1,0,0,0,82,80,1,
+  	0,0,0,82,83,1,0,0,0,83,86,1,0,0,0,84,82,1,0,0,0,85,77,1,0,0,0,85,86,1,
+  	0,0,0,86,13,1,0,0,0,87,91,3,4,2,0,88,91,3,6,3,0,89,91,3,16,8,0,90,87,
+  	1,0,0,0,90,88,1,0,0,0,90,89,1,0,0,0,91,15,1,0,0,0,92,93,5,14,0,0,93,94,
+  	5,10,0,0,94,95,3,12,6,0,95,96,5,11,0,0,96,17,1,0,0,0,13,21,28,34,38,44,
+  	50,54,64,71,73,82,85,90
   };
   staticData->serializedATN = antlr4::atn::SerializedATNView(serializedATNSegment, sizeof(serializedATNSegment) / sizeof(serializedATNSegment[0]));
 
@@ -140,6 +143,88 @@ antlr4::atn::SerializedATNView AstMatcherParser::getSerializedATN() const {
   return astmatcherParserStaticData->serializedATN;
 }
 
+
+//----------------- PatternContext ------------------------------------------------------------------
+
+AstMatcherParser::PatternContext::PatternContext(ParserRuleContext *parent, size_t invokingState)
+  : ParserRuleContext(parent, invokingState) {
+}
+
+tree::TerminalNode* AstMatcherParser::PatternContext::EOF() {
+  return getToken(AstMatcherParser::EOF, 0);
+}
+
+std::vector<AstMatcherParser::AstDescriptionContext *> AstMatcherParser::PatternContext::astDescription() {
+  return getRuleContexts<AstMatcherParser::AstDescriptionContext>();
+}
+
+AstMatcherParser::AstDescriptionContext* AstMatcherParser::PatternContext::astDescription(size_t i) {
+  return getRuleContext<AstMatcherParser::AstDescriptionContext>(i);
+}
+
+
+size_t AstMatcherParser::PatternContext::getRuleIndex() const {
+  return AstMatcherParser::RulePattern;
+}
+
+void AstMatcherParser::PatternContext::enterRule(tree::ParseTreeListener *listener) {
+  auto parserListener = dynamic_cast<AstMatcherListener *>(listener);
+  if (parserListener != nullptr)
+    parserListener->enterPattern(this);
+}
+
+void AstMatcherParser::PatternContext::exitRule(tree::ParseTreeListener *listener) {
+  auto parserListener = dynamic_cast<AstMatcherListener *>(listener);
+  if (parserListener != nullptr)
+    parserListener->exitPattern(this);
+}
+
+
+std::any AstMatcherParser::PatternContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<AstMatcherVisitor*>(visitor))
+    return parserVisitor->visitPattern(this);
+  else
+    return visitor->visitChildren(this);
+}
+
+AstMatcherParser::PatternContext* AstMatcherParser::pattern() {
+  PatternContext *_localctx = _tracker.createInstance<PatternContext>(_ctx, getState());
+  enterRule(_localctx, 0, AstMatcherParser::RulePattern);
+  size_t _la = 0;
+
+#if __cplusplus > 201703L
+  auto onExit = finally([=, this] {
+#else
+  auto onExit = finally([=] {
+#endif
+    exitRule();
+  });
+  try {
+    enterOuterAlt(_localctx, 1);
+    setState(21);
+    _errHandler->sync(this);
+    _la = _input->LA(1);
+    while (_la == AstMatcherParser::CAPTURE
+
+    || _la == AstMatcherParser::SKIP_NODE) {
+      setState(18);
+      astDescription();
+      setState(23);
+      _errHandler->sync(this);
+      _la = _input->LA(1);
+    }
+    setState(24);
+    match(AstMatcherParser::EOF);
+   
+  }
+  catch (RecognitionException &e) {
+    _errHandler->reportError(this, e);
+    _localctx->exception = std::current_exception();
+    _errHandler->recover(this, _localctx->exception);
+  }
+
+  return _localctx;
+}
 
 //----------------- AstDescriptionContext ------------------------------------------------------------------
 
@@ -210,7 +295,7 @@ std::any AstMatcherParser::AstDescriptionContext::accept(tree::ParseTreeVisitor 
 
 AstMatcherParser::AstDescriptionContext* AstMatcherParser::astDescription() {
   AstDescriptionContext *_localctx = _tracker.createInstance<AstDescriptionContext>(_ctx, getState());
-  enterRule(_localctx, 0, AstMatcherParser::RuleAstDescription);
+  enterRule(_localctx, 2, AstMatcherParser::RuleAstDescription);
   size_t _la = 0;
 
 #if __cplusplus > 201703L
@@ -222,17 +307,17 @@ AstMatcherParser::AstDescriptionContext* AstMatcherParser::astDescription() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(18);
+    setState(28);
     _errHandler->sync(this);
     switch (_input->LA(1)) {
       case AstMatcherParser::CAPTURE: {
-        setState(16);
+        setState(26);
         captureStmt();
         break;
       }
 
-      case AstMatcherParser::SKIP: {
-        setState(17);
+      case AstMatcherParser::SKIP_NODE: {
+        setState(27);
         skipStmt();
         break;
       }
@@ -240,36 +325,36 @@ AstMatcherParser::AstDescriptionContext* AstMatcherParser::astDescription() {
     default:
       throw NoViableAltException(this);
     }
-    setState(28);
+    setState(38);
     _errHandler->sync(this);
 
     _la = _input->LA(1);
     if (_la == AstMatcherParser::LBRACKET) {
-      setState(20);
+      setState(30);
       match(AstMatcherParser::LBRACKET);
-      setState(24);
+      setState(34);
       _errHandler->sync(this);
       _la = _input->LA(1);
       while (_la == AstMatcherParser::STRING) {
-        setState(21);
+        setState(31);
         astPropertyDescription();
-        setState(26);
+        setState(36);
         _errHandler->sync(this);
         _la = _input->LA(1);
       }
-      setState(27);
+      setState(37);
       match(AstMatcherParser::RBRACKET);
     }
-    setState(34);
+    setState(44);
     _errHandler->sync(this);
 
     _la = _input->LA(1);
     if (_la == AstMatcherParser::LBRACE) {
-      setState(30);
+      setState(40);
       match(AstMatcherParser::LBRACE);
-      setState(31);
+      setState(41);
       matchList();
-      setState(32);
+      setState(42);
       match(AstMatcherParser::RBRACE);
     }
    
@@ -336,7 +421,7 @@ std::any AstMatcherParser::CaptureStmtContext::accept(tree::ParseTreeVisitor *vi
 
 AstMatcherParser::CaptureStmtContext* AstMatcherParser::captureStmt() {
   CaptureStmtContext *_localctx = _tracker.createInstance<CaptureStmtContext>(_ctx, getState());
-  enterRule(_localctx, 2, AstMatcherParser::RuleCaptureStmt);
+  enterRule(_localctx, 4, AstMatcherParser::RuleCaptureStmt);
   size_t _la = 0;
 
 #if __cplusplus > 201703L
@@ -348,28 +433,28 @@ AstMatcherParser::CaptureStmtContext* AstMatcherParser::captureStmt() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(36);
+    setState(46);
     match(AstMatcherParser::CAPTURE);
-    setState(37);
+    setState(47);
     match(AstMatcherParser::IDENTIFIER);
-    setState(40);
+    setState(50);
     _errHandler->sync(this);
 
     _la = _input->LA(1);
     if (_la == AstMatcherParser::AS) {
-      setState(38);
+      setState(48);
       match(AstMatcherParser::AS);
-      setState(39);
+      setState(49);
       match(AstMatcherParser::IDENTIFIER);
     }
-    setState(44);
+    setState(54);
     _errHandler->sync(this);
 
     _la = _input->LA(1);
     if (_la == AstMatcherParser::ARROW) {
-      setState(42);
+      setState(52);
       match(AstMatcherParser::ARROW);
-      setState(43);
+      setState(53);
       match(AstMatcherParser::IDENTIFIER);
     }
    
@@ -389,8 +474,8 @@ AstMatcherParser::SkipStmtContext::SkipStmtContext(ParserRuleContext *parent, si
   : ParserRuleContext(parent, invokingState) {
 }
 
-tree::TerminalNode* AstMatcherParser::SkipStmtContext::SKIP() {
-  return getToken(AstMatcherParser::SKIP, 0);
+tree::TerminalNode* AstMatcherParser::SkipStmtContext::SKIP_NODE() {
+  return getToken(AstMatcherParser::SKIP_NODE, 0);
 }
 
 tree::TerminalNode* AstMatcherParser::SkipStmtContext::IDENTIFIER() {
@@ -424,7 +509,7 @@ std::any AstMatcherParser::SkipStmtContext::accept(tree::ParseTreeVisitor *visit
 
 AstMatcherParser::SkipStmtContext* AstMatcherParser::skipStmt() {
   SkipStmtContext *_localctx = _tracker.createInstance<SkipStmtContext>(_ctx, getState());
-  enterRule(_localctx, 4, AstMatcherParser::RuleSkipStmt);
+  enterRule(_localctx, 6, AstMatcherParser::RuleSkipStmt);
 
 #if __cplusplus > 201703L
   auto onExit = finally([=, this] {
@@ -435,9 +520,9 @@ AstMatcherParser::SkipStmtContext* AstMatcherParser::skipStmt() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(46);
-    match(AstMatcherParser::SKIP);
-    setState(47);
+    setState(56);
+    match(AstMatcherParser::SKIP_NODE);
+    setState(57);
     match(AstMatcherParser::IDENTIFIER);
    
   }
@@ -499,7 +584,7 @@ std::any AstMatcherParser::AstPropertyDescriptionContext::accept(tree::ParseTree
 
 AstMatcherParser::AstPropertyDescriptionContext* AstMatcherParser::astPropertyDescription() {
   AstPropertyDescriptionContext *_localctx = _tracker.createInstance<AstPropertyDescriptionContext>(_ctx, getState());
-  enterRule(_localctx, 6, AstMatcherParser::RuleAstPropertyDescription);
+  enterRule(_localctx, 8, AstMatcherParser::RuleAstPropertyDescription);
 
 #if __cplusplus > 201703L
   auto onExit = finally([=, this] {
@@ -509,25 +594,25 @@ AstMatcherParser::AstPropertyDescriptionContext* AstMatcherParser::astPropertyDe
     exitRule();
   });
   try {
-    setState(54);
+    setState(64);
     _errHandler->sync(this);
-    switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 6, _ctx)) {
+    switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 7, _ctx)) {
     case 1: {
       enterOuterAlt(_localctx, 1);
-      setState(49);
+      setState(59);
       match(AstMatcherParser::STRING);
-      setState(50);
+      setState(60);
       match(AstMatcherParser::EQUAL);
-      setState(51);
+      setState(61);
       match(AstMatcherParser::STRING);
       break;
     }
 
     case 2: {
       enterOuterAlt(_localctx, 2);
-      setState(52);
+      setState(62);
       match(AstMatcherParser::STRING);
-      setState(53);
+      setState(63);
       funcCall();
       break;
     }
@@ -603,7 +688,7 @@ std::any AstMatcherParser::FuncCallContext::accept(tree::ParseTreeVisitor *visit
 
 AstMatcherParser::FuncCallContext* AstMatcherParser::funcCall() {
   FuncCallContext *_localctx = _tracker.createInstance<FuncCallContext>(_ctx, getState());
-  enterRule(_localctx, 8, AstMatcherParser::RuleFuncCall);
+  enterRule(_localctx, 10, AstMatcherParser::RuleFuncCall);
   size_t _la = 0;
 
 #if __cplusplus > 201703L
@@ -615,29 +700,29 @@ AstMatcherParser::FuncCallContext* AstMatcherParser::funcCall() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(56);
+    setState(66);
     match(AstMatcherParser::IDENTIFIER);
-    setState(57);
+    setState(67);
     match(AstMatcherParser::LPAREN);
-    setState(63);
+    setState(73);
     _errHandler->sync(this);
 
     _la = _input->LA(1);
     if (_la == AstMatcherParser::DOLLAR) {
-      setState(58);
+      setState(68);
       match(AstMatcherParser::DOLLAR);
-      setState(61);
+      setState(71);
       _errHandler->sync(this);
 
       _la = _input->LA(1);
       if (_la == AstMatcherParser::COMMA) {
-        setState(59);
+        setState(69);
         match(AstMatcherParser::COMMA);
-        setState(60);
+        setState(70);
         match(AstMatcherParser::STRING);
       }
     }
-    setState(65);
+    setState(75);
     match(AstMatcherParser::RPAREN);
    
   }
@@ -699,7 +784,7 @@ std::any AstMatcherParser::MatchListContext::accept(tree::ParseTreeVisitor *visi
 
 AstMatcherParser::MatchListContext* AstMatcherParser::matchList() {
   MatchListContext *_localctx = _tracker.createInstance<MatchListContext>(_ctx, getState());
-  enterRule(_localctx, 10, AstMatcherParser::RuleMatchList);
+  enterRule(_localctx, 12, AstMatcherParser::RuleMatchList);
   size_t _la = 0;
 
 #if __cplusplus > 201703L
@@ -711,23 +796,23 @@ AstMatcherParser::MatchListContext* AstMatcherParser::matchList() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(75);
+    setState(85);
     _errHandler->sync(this);
 
     _la = _input->LA(1);
     if ((((_la & ~ 0x3fULL) == 0) &&
       ((1ULL << _la) & 16396) != 0)) {
-      setState(67);
+      setState(77);
       matchStmt();
-      setState(72);
+      setState(82);
       _errHandler->sync(this);
       _la = _input->LA(1);
       while (_la == AstMatcherParser::COMMA) {
-        setState(68);
+        setState(78);
         match(AstMatcherParser::COMMA);
-        setState(69);
+        setState(79);
         matchStmt();
-        setState(74);
+        setState(84);
         _errHandler->sync(this);
         _la = _input->LA(1);
       }
@@ -788,7 +873,7 @@ std::any AstMatcherParser::MatchStmtContext::accept(tree::ParseTreeVisitor *visi
 
 AstMatcherParser::MatchStmtContext* AstMatcherParser::matchStmt() {
   MatchStmtContext *_localctx = _tracker.createInstance<MatchStmtContext>(_ctx, getState());
-  enterRule(_localctx, 12, AstMatcherParser::RuleMatchStmt);
+  enterRule(_localctx, 14, AstMatcherParser::RuleMatchStmt);
 
 #if __cplusplus > 201703L
   auto onExit = finally([=, this] {
@@ -798,26 +883,26 @@ AstMatcherParser::MatchStmtContext* AstMatcherParser::matchStmt() {
     exitRule();
   });
   try {
-    setState(80);
+    setState(90);
     _errHandler->sync(this);
     switch (_input->LA(1)) {
       case AstMatcherParser::CAPTURE: {
         enterOuterAlt(_localctx, 1);
-        setState(77);
+        setState(87);
         captureStmt();
         break;
       }
 
-      case AstMatcherParser::SKIP: {
+      case AstMatcherParser::SKIP_NODE: {
         enterOuterAlt(_localctx, 2);
-        setState(78);
+        setState(88);
         skipStmt();
         break;
       }
 
       case AstMatcherParser::IDENTIFIER: {
         enterOuterAlt(_localctx, 3);
-        setState(79);
+        setState(89);
         nestedCapture();
         break;
       }
@@ -885,7 +970,7 @@ std::any AstMatcherParser::NestedCaptureContext::accept(tree::ParseTreeVisitor *
 
 AstMatcherParser::NestedCaptureContext* AstMatcherParser::nestedCapture() {
   NestedCaptureContext *_localctx = _tracker.createInstance<NestedCaptureContext>(_ctx, getState());
-  enterRule(_localctx, 14, AstMatcherParser::RuleNestedCapture);
+  enterRule(_localctx, 16, AstMatcherParser::RuleNestedCapture);
 
 #if __cplusplus > 201703L
   auto onExit = finally([=, this] {
@@ -896,13 +981,13 @@ AstMatcherParser::NestedCaptureContext* AstMatcherParser::nestedCapture() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(82);
+    setState(92);
     match(AstMatcherParser::IDENTIFIER);
-    setState(83);
+    setState(93);
     match(AstMatcherParser::LBRACE);
-    setState(84);
+    setState(94);
     matchList();
-    setState(85);
+    setState(95);
     match(AstMatcherParser::RBRACE);
    
   }

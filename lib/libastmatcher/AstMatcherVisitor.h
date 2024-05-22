@@ -19,6 +19,8 @@ public:
   /**
    * Visit parse trees produced by AstMatcherParser.
    */
+    virtual std::any visitPattern(AstMatcherParser::PatternContext *context) = 0;
+
     virtual std::any visitAstDescription(AstMatcherParser::AstDescriptionContext *context) = 0;
 
     virtual std::any visitCaptureStmt(AstMatcherParser::CaptureStmtContext *context) = 0;

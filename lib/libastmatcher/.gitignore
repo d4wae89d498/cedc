@@ -1,0 +1,17 @@
+# Ignore ANTLR generated files
+AstMatcher.tokens
+AstMatcher.interp
+AstMatcherLexer.tokens
+AstMatcherLexer.interp
+AstMatcherLexer.cpp
+AstMatcherLexer.h
+AstMatcherParser.cpp
+AstMatcherParser.h
+AstMatcherListener.cpp
+AstMatcherListener.h
+AstMatcherBaseListener.cpp
+AstMatcherBaseListener.h
+AstMatcherVisitor.cpp
+AstMatcherVisitor.h
+AstMatcherBaseVisitor.cpp
+AstMatcherBaseVisitor.h

@@ -16,6 +16,9 @@
 class  AstMatcherBaseListener : public AstMatcherListener {
 public:
 
+  virtual void enterPattern(AstMatcherParser::PatternContext * /*ctx*/) override { }
+  virtual void exitPattern(AstMatcherParser::PatternContext * /*ctx*/) override { }
+
   virtual void enterAstDescription(AstMatcherParser::AstDescriptionContext * /*ctx*/) override { }
   virtual void exitAstDescription(AstMatcherParser::AstDescriptionContext * /*ctx*/) override { }
 

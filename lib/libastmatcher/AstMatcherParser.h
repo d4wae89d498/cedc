@@ -12,14 +12,15 @@
 class  AstMatcherParser : public antlr4::Parser {
 public:
   enum {
-    DOLLAR = 1, CAPTURE = 2, SKIP = 3, AS = 4, ARROW = 5, LPAREN = 6, RPAREN = 7, 
-    LBRACKET = 8, RBRACKET = 9, LBRACE = 10, RBRACE = 11, EQUAL = 12, COMMA = 13, 
-    IDENTIFIER = 14, STRING = 15, WHITESPACE = 16
+    DOLLAR = 1, CAPTURE = 2, SKIP_NODE = 3, AS = 4, ARROW = 5, LPAREN = 6, 
+    RPAREN = 7, LBRACKET = 8, RBRACKET = 9, LBRACE = 10, RBRACE = 11, EQUAL = 12, 
+    COMMA = 13, IDENTIFIER = 14, STRING = 15, WHITESPACE = 16, COMMENT = 17
   };
 
   enum {
-    RuleAstDescription = 0, RuleCaptureStmt = 1, RuleSkipStmt = 2, RuleAstPropertyDescription = 3, 
-    RuleFuncCall = 4, RuleMatchList = 5, RuleMatchStmt = 6, RuleNestedCapture = 7
+    RulePattern = 0, RuleAstDescription = 1, RuleCaptureStmt = 2, RuleSkipStmt = 3, 
+    RuleAstPropertyDescription = 4, RuleFuncCall = 5, RuleMatchList = 6, 
+    RuleMatchStmt = 7, RuleNestedCapture = 8
   };
 
   explicit AstMatcherParser(antlr4::TokenStream *input);
@@ -39,6 +40,7 @@ public:
   antlr4::atn::SerializedATNView getSerializedATN() const override;
 
 
+  class PatternContext;
   class AstDescriptionContext;
   class CaptureStmtContext;
   class SkipStmtContext;
@@ -47,6 +49,23 @@ public:
   class MatchListContext;
   class MatchStmtContext;
   class NestedCaptureContext; 
+
+  class  PatternContext : public antlr4::ParserRuleContext {
+  public:
+    PatternContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    antlr4::tree::TerminalNode *EOF();
+    std::vector<AstDescriptionContext *> astDescription();
+    AstDescriptionContext* astDescription(size_t i);
+
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+   
+  };
+
+  PatternContext* pattern();
 
   class  AstDescriptionContext : public antlr4::ParserRuleContext {
   public:
@@ -94,7 +113,7 @@ public:
   public:
     SkipStmtContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
-    antlr4::tree::TerminalNode *SKIP();
+    antlr4::tree::TerminalNode *SKIP_NODE();
     antlr4::tree::TerminalNode *IDENTIFIER();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;

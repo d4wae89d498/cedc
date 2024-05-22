@@ -1,7 +1,3 @@
-Sure, here is a professional specification for the ANTLR grammar to match the given DSL:
-
----
-
 # AST Node Matcher DSL Specification
 
 ## Overview
@@ -121,7 +117,9 @@ capture Type [
     "prop4" {
         capture SubType
     }
-] {childs}
+] {
+	# Childs ...
+}
 
 skip Type
 
