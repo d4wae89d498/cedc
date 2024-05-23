@@ -10,17 +10,11 @@ ANTLR_OUT_SOURCES=AstMatcherLexer.cpp\
 	AstMatcherVisitor.cpp\
 	AstMatcherBaseVisitor.cpp\
 
-ANTLR_OUT_HEADERS=AstMatcherLexer.cpp\
-	AstMatcherLexer.h\
-	AstMatcherParser.cpp\
+ANTLR_OUT_HEADERS=	AstMatcherLexer.h\
 	AstMatcherParser.h\
-	AstMatcherListener.cpp\
 	AstMatcherListener.h\
-	AstMatcherBaseListener.cpp\
 	AstMatcherBaseListener.h\
-	AstMatcherVisitor.cpp\
 	AstMatcherVisitor.h\
-	AstMatcherBaseVisitor.cpp\
 	AstMatcherBaseVisitor.h
 
 ANTLR_OBJS=$(ANTLR_OUT_SOURCES:.cpp=.o)
@@ -39,7 +33,7 @@ $(ANTLR_OUT_SOURCES): AstMatcher.g4
 	clang++ -c $< -o $@ -I../libantlr4-runtime/runtime/src
 
 clean:
-	rm -f a.out $(ANTLR_OUT_OTHERS) $(ANTLR_OUT_SOURCES) $(ANTLR_OUT_HEADERS)
+	rm -f a.out $(ANTLR_OUT_OTHERS) $(ANTLR_OUT_SOURCES) $(ANTLR_OUT_HEADERS) $(ANTLR_OBJS)
 
 fclean: clean
 	rm -rf $(NAME)

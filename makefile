@@ -21,10 +21,12 @@ CXXFLAGS =	-g\
 			-nostdinc++\
 			-nostdlib++\
 			-fprebuilt-module-path=lib/libcxx-pcm/lib\
+			-Ilib/libcxx-pcm/src\
+			-Ilib/libcxx-pcm/src/include\
 			-Wno-unqualified-std-cast-call\
 			-fprebuilt-module-path=$(PCM_DIR)\
-			-Ilib/libantlr4/runtime/src\
-			-Ilib/libastmatcher\
+			-Ilib/libantlr4-runtime/runtime/src\
+			-Ilib/libastmatcher-parser\
 			-Wno-unused-command-line-argument
 
 # External libraries

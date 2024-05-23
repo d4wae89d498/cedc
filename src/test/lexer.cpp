@@ -1,4 +1,5 @@
 import ucbl.cedilla;
+import ucbl.astmatcher;
 
 using namespace cedilla;
 
@@ -171,8 +172,17 @@ fn main() -> int
 	if (test33.first)
 		print("type is ... {}\n", test33.first->type);
 
+	astmatcher::interpret("		\
+									\
+			skip Identifier 		\n\
+			skip Identifier 		\n\
+			capture PARENS 			\n\
+									\
+		", test33);
 
+	println("end..");
 
+	return 0;
 
 	//println("{}", gg["test"]->serialize());
 	//println("{}",test33.first->type);
@@ -439,6 +449,15 @@ fn main() -> int
 	{
 		println("{}", item.serialize());
 	}
+
+/*
+	astmatcher::interpret("		\
+								\
+		skip Identifier 		\n\
+		skip Identifier 		\n\
+		capture PARENS 			\n\
+								\
+	", ctx.ast);*/
 
 	// test \
 	dwdw\
