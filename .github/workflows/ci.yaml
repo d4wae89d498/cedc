@@ -43,7 +43,7 @@ jobs:
           rm -rf /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
-        - name: Build another Docker image from debian-llvm
+      - name: Build another Docker image from debian-llvm
         run: |
           docker buildx build --file ./docker/debian-cedilla/Dockerfile --cache-from=type=local,src=/tmp/.buildx-cache --cache-to=type=local,dest=/tmp/.buildx-cache-new --output=type=docker -t debian-cedilla:latest ./docker/debian-cedilla
 
