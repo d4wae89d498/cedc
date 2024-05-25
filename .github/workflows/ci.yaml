@@ -32,10 +32,10 @@ jobs:
       - name: Build Docker image
         run: |
           docker buildx create --use
-          docker buildx build --file llvm.dockerfile --cache-from=type=local,src=/tmp/.buildx-cache --cache-to=type=local,dest=/tmp/.buildx-cache-new --output=type=docker -t llvm:latest .
+          docker buildx build --file llvm.dockerfile --cache-from=type=local,src=/tmp/.buildx-cache --cache-to=type=local,dest=/tmp/.buildx-cache-new --output=type=docker -t debian-llvm:latest ./docker/debian-llvm
 
       - name: Test Docker image
-        run: docker run --rm llvm:latest /bin/bash -c "echo 'Docker image built and tested successfully.'"
+        run: docker run --rm debian-llvm:latest /bin/bash -c "echo 'Docker image built and tested successfully.'"
 
       - name: Save new Docker cache
         if: always()
