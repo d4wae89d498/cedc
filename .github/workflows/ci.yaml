@@ -29,9 +29,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildx-
 
+      - name: Create Buildx builder
+        run: docker buildx create --use --name mybuilder
+
       - name: Build and export debian-llvm Docker image
         run: |
-          docker buildx build --file ./docker/debian-llvm/Dockerfile --cache-from=type=local,src=/tmp/.buildx-cache --cache-to=type=local,dest=/tmp/.buildx-cache-new --output=type=docker --load -t debian-llvm:latest ./docker/debian-llvm
+          docker buildx build --builder mybuilder --file ./docker/debian-llvm/Dockerfile --cache-from=type=local,src=/tmp/.buildx-cache --cache-to=type=local,dest=/tmp/.buildx-cache-new --output=type=docker --load -t debian-llvm:latest ./docker/debian-llvm
           docker save debian-llvm:latest -o debian-llvm.tar
 
       - name: Test debian-llvm Docker image
@@ -43,8 +46,20 @@ jobs:
           rm -rf /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
+      - name: Upload debian-llvm.tar to be used in subsequent steps
+        uses: actions/upload-artifact@v2
+        with:
+          name: debian-llvm-tar
+          path: debian-llvm.tar
+
+      - name: Download debian-llvm.tar for next build
+        uses: actions/download-artifact@v2
+        with:
+          name: debian-llvm-tar
+          path: .
+
       - name: Build the debian-cedilla image using debian-llvm
-        run: docker build --file ./docker/debian-cedilla/Dockerfile --build-arg BASE_IMAGE=debian-llvm:latest --build-context debian-llvm.tar=. -t debian-cedilla:latest ./docker/debian-cedilla
+        run: docker build --build-context myimage=./debian-llvm.tar --file ./docker/debian-cedilla/Dockerfile -t debian-cedilla:latest ./docker/debian-cedilla
 
       - name: Test debian-cedilla Docker image
         run: docker run --rm debian-cedilla:latest /bin/bash -c "echo 'Another Docker image built and tested successfully.'"
