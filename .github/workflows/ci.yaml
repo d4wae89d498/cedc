@@ -43,9 +43,9 @@ jobs:
           rm -rf /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
-      - name: Build the debian-cedilla image using debian-llvm
+      - name: Build and load debian-cedilla Docker image
         run: |
-          docker buildx build --file ./docker/debian-cedilla/Dockerfile --cache-from=type=local,src=/tmp/.buildx-cache --cache-to=type=local,dest=/tmp/.buildx-cache-new --output=type=docker --load --build-arg BASE_IMAGE=debian-llvm:latest -t debian-cedilla:latest ./docker/debian-cedilla
+          docker build --file ./docker/debian-cedilla/Dockerfile --build-arg BASE_IMAGE=debian-llvm:latest --tag debian-cedilla:latest ./docker/debian-cedilla
 
       - name: Test debian-cedilla Docker image
         run: docker run --rm debian-cedilla:latest /bin/bash -c "echo 'Another Docker image built and tested successfully.'"

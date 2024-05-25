@@ -1,10 +1,4 @@
 ARG BASE_IMAGE
-FROM ${BASE_IMAGE} AS base
-
-FROM base
-
-CMD ["/bin/bash"]
-
-RUN echo ok
+FROM ${BASE_IMAGE}
 
 CMD ["/bin/bash"]
