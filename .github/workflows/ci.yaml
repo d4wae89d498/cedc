@@ -29,13 +29,18 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildx-
 
+      - name: Create Buildx builder
+        run: docker buildx create --name mybuilder --use
+
       - name: Build and load debian-llvm Docker image
         run: |
-          docker buildx create --use
-          docker buildx build --file ./docker/debian-llvm/Dockerfile --cache-from=type=local,src=/tmp/.buildx-cache --cache-to=type=local,dest=/tmp/.buildx-cache-new --output=type=docker --load -t debian-llvm:latest ./docker/debian-llvm
+          docker buildx build --builder mybuilder --file ./docker/debian-llvm/Dockerfile --cache-from=type=local,src=/tmp/.buildx-cache --cache-to=type=local,dest=/tmp/.buildx-cache-new --output=type=docker --load -t debian-llvm:latest ./docker/debian-llvm
 
       - name: Test debian-llvm Docker image
         run: docker run --rm debian-llvm:latest /bin/bash -c "echo 'Docker image built and tested successfully.'"
+
+      - name: Tag debian-llvm Docker image locally
+        run: docker tag debian-llvm:latest myrepo/debian-llvm:latest
 
       - name: Save new Docker cache
         if: always()
@@ -43,12 +48,9 @@ jobs:
           rm -rf /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
-      - name: Tag debian-llvm Docker image locally
-        run: docker tag debian-llvm:latest local/debian-llvm:latest
-
       - name: Build the debian-cedilla image using debian-llvm
         run: |
-          docker build --file ./docker/debian-cedilla/Dockerfile --build-arg BASE_IMAGE=local/debian-llvm:latest -t debian-cedilla:latest ./docker/debian-cedilla
+          docker build --file ./docker/debian-cedilla/Dockerfile --build-arg BASE_IMAGE=myrepo/debian-llvm:latest -t debian-cedilla:latest ./docker/debian-cedilla
 
       - name: Test debian-cedilla Docker image
         run: docker run --rm debian-cedilla:latest /bin/bash -c "echo 'Another Docker image built and tested successfully.'"
