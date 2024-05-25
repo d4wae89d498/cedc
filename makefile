@@ -94,6 +94,9 @@ all: $(LIBS_MADE_MARKER) $(NAME) $(EXECS)
 $(LIBS_MADE_MARKER):
 	make -C lib/libcxx-pcm
 	@mkdir -p $(@D)
+	@cd $(MAKEFILE_DIR)/lib && rm libcxx && ln -s  ../bin/build-tools/llvm-project/libcxx libcxx
+	@cd $(MAKEFILE_DIR)/lib && rm libcxxabi && ln -s  ../bin/build-tools/llvm-project/libcxxabi libcxxabi
+	@cd $(MAKEFILE_DIR)/lib && rm libunwind && ln -s  ../bin/build-tools/llvm-project/libunwind libunwind
 	@cd $(MAKEFILE_DIR)/lib && ln -sf libcxx-pcm/lib/libcxx.a libcxx.a
 	@cd $(MAKEFILE_DIR)/lib && rm libantlr4-runtime && ln -s  ../bin/build-tools/antlr4/runtime/Cpp libantlr4-runtime
 	@cd $(MAKEFILE_DIR)/lib/libantlr4-runtime && mkdir -p build && cd build && cmake .. && make
