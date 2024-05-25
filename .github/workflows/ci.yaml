@@ -13,9 +13,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-#
-#
-#
       - name: Checkout repository
         uses: actions/checkout@v3
 
@@ -32,16 +29,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildx-
 
-#
-# Build system image
-#
-
-      - name: Build system image debian-llvm
+      - name: Build debian-llvm Docker image
         run: |
-          docker buildx create --use
-          docker buildx build --file ./docker/debian-llvm/Dockerfile --cache-from=type=local,src=/tmp/.buildx-cache --cache-to=type=local,dest=/tmp/.buildx-cache-new --output=type=docker -t debian-llvm:latest ./docker/debian-llvm
+          docker buildx create --use --name mybuilder
+          docker buildx build --builder mybuilder --file ./docker/debian-llvm/Dockerfile --cache-from=type=local,src=/tmp/.buildx-cache --cache-to=type=local,dest=/tmp/.buildx-cache-new --output=type=docker --load -t debian-llvm:latest ./docker/debian-llvm
 
-      - name: Test Docker image
+      - name: Test debian-llvm Docker image
         run: docker run --rm debian-llvm:latest /bin/bash -c "echo 'Docker image built and tested successfully.'"
 
       - name: Save new Docker cache
@@ -51,20 +44,16 @@ jobs:
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
       - name: Tag debian-llvm Docker image locally
-        run: docker tag debian-llvm:latest debian-llvm:latest
-#
-# Build project image
-#
+        run: docker tag debian-llvm:latest local/debian-llvm:latest
+
       - name: Build the debian-cedilla image using debian-llvm
-        run: |
-          docker buildx build --file ./docker/debian-cedilla/Dockerfile --cache-from=type=local,src=/tmp/.buildx-cache --cache-to=type=local,dest=/tmp/.buildx-cache-new --output=type=docker -t debian-cedilla:latest --pull=false  --build-arg BASE_IMAGE=debian-llvm:latest ./docker/debian-cedilla
+        run: docker build --file ./docker/debian-cedilla/Dockerfile --build-arg BASE_IMAGE=local/debian-llvm:latest -t debian-cedilla:latest ./docker/debian-cedilla
 
-      - name: Test Docker image
-        run: docker run --rm debian-cedilla:latest /bin/bash -c "echo 'debian-cedilla built and tested successfully.'"
+      - name: Test debian-cedilla Docker image
+        run: docker run --rm debian-cedilla:latest /bin/bash -c "echo 'Another Docker image built and tested successfully.'"
 
-      - name: Save new Docker cache
+      - name: Save new Docker cache again
         if: always()
         run: |
           rm -rf /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
-
