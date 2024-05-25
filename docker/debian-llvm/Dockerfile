@@ -38,7 +38,7 @@ ENV CC=/usr/bin/clang
 ENV CXX=/usr/bin/clang++
 
 COPY test.sh .
-copy test.cpp .
+COPY test.cpp .
 
 RUN chmod +x test.sh && ./test.sh
 
