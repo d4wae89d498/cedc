@@ -29,10 +29,13 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildx-
 
+      - name: Create and bootstrap local builder
+        run: |
+          docker buildx create --use --name localbuilder --driver docker-container --bootstrap
+
       - name: Build debian-llvm Docker image
         run: |
-          docker buildx create --use
-          docker buildx build --file ./docker/debian-llvm/Dockerfile --cache-from=type=local,src=/tmp/.buildx-cache --cache-to=type=local,dest=/tmp/.buildx-cache-new --output=type=docker -t debian-llvm:latest ./docker/debian-llvm
+          docker buildx build --builder localbuilder --file ./docker/debian-llvm/Dockerfile --cache-from=type=local,src=/tmp/.buildx-cache --cache-to=type=local,dest=/tmp/.buildx-cache-new --output=type=docker -t debian-llvm:latest ./docker/debian-llvm
 
       - name: Test debian-llvm Docker image
         run: docker run --rm debian-llvm:latest /bin/bash -c "echo 'debian-llvm Docker image built and tested successfully.'"
@@ -43,10 +46,7 @@ jobs:
           rm -rf /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
-      - name: Set up Docker Buildx for local daemon
-        run: docker buildx create --use --name localbuilder --driver docker-container --bootstrap
-
-      - name: Use local image for another Docker build
+      - name: Build another Docker image from debian-llvm
         run: |
           docker buildx build --builder localbuilder --file ./docker/debian-cedilla/Dockerfile --cache-from=type=local,src=/tmp/.buildx-cache --cache-to=type=local,dest=/tmp/.buildx-cache-new --output=type=docker -t debian-cedilla:latest ./docker/debian-cedilla
 
