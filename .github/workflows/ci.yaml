@@ -45,7 +45,7 @@ jobs:
 
       - name: Build another Docker image from debian-llvm
         run: |
-          docker buildx build --file ./docker/debian-cedilla/Dockerfile --cache-from=type=local,src=/tmp/.buildx-cache --cache-to=type=local,dest=/tmp/.buildx-cache-new --output=type=docker --load -t debian-cedilla:latest ./docker/debian-cedilla
+          docker build --file ./docker/debian-cedilla/Dockerfile --tag debian-cedilla:latest ./docker/debian-cedilla
 
       - name: Test another Docker image
         run: docker run --rm debian-cedilla:latest /bin/bash -c "echo 'Another Docker image built and tested successfully.'"
