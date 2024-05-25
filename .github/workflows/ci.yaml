@@ -43,12 +43,12 @@ jobs:
           rm -rf /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
-      - name: Tag debian-llvm Docker image locally
-        run: docker tag debian-llvm:latest debian-llvm:latest
+      - name: Set up Docker Buildx for local daemon
+        run: docker buildx create --use --name localbuilder --driver docker-container --bootstrap
 
-      - name: Build another Docker image from debian-llvm
+      - name: Use local image for another Docker build
         run: |
-          docker buildx build --file ./docker/debian-cedilla/Dockerfile --cache-from=type=local,src=/tmp/.buildx-cache --cache-to=type=local,dest=/tmp/.buildx-cache-new --output=type=docker -t debian-cedilla:latest ./docker/debian-cedilla
+          docker buildx build --builder localbuilder --file ./docker/debian-cedilla/Dockerfile --cache-from=type=local,src=/tmp/.buildx-cache --cache-to=type=local,dest=/tmp/.buildx-cache-new --output=type=docker -t debian-cedilla:latest ./docker/debian-cedilla
 
       - name: Test another Docker image
         run: docker run --rm debian-cedilla:latest /bin/bash -c "echo 'Another Docker image built and tested successfully.'"
