@@ -1,3 +1,3 @@
-FROM debian-llvm:latest
+FROM local/debian-llvm:latest
 
 CMD ["/bin/bash"]
