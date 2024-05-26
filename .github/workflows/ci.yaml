@@ -43,7 +43,7 @@ jobs:
       - name: Create Docker builder instance
         run: docker buildx create --use
 
-      - name: Build system image debian-llvm
+      - name: Build and push base image debian-llvm
         run: |
           docker buildx build --file ./docker/debian-llvm/Dockerfile \
             --cache-from=type=local,src=/tmp/.buildx-cache \
@@ -53,23 +53,17 @@ jobs:
             --tag debian-llvm:latest \
             ./docker/debian-llvm
 
-      - name: Test system Docker image
-        run: docker run --rm debian-llvm:latest /bin/bash -c "echo 'System Docker image built and tested successfully.'"
+      - name: Test base Docker image
+        run: docker run --rm debian-llvm:latest /bin/bash -c "echo 'Base Docker image built and tested successfully.'"
 
-      - name: Save new Docker cache
-        if: always()
-        run: |
-          rm -rf /tmp/.buildx-cache
-          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
-
-      - name: Build project image debian-cedilla
+      - name: Build and push project image debian-cedilla using base image
         run: |
           docker buildx build --file ./docker/debian-cedilla/Dockerfile \
             --cache-from=type=local,src=/tmp/.buildx-cache \
             --cache-to=type=local,dest=/tmp/.buildx-cache-new,mode=max \
             --output=type=docker \
             --tag ${{ secrets.DOCKER_USERNAME }}/debian-cedilla:latest \
-            --build-arg BASE_IMAGE=debian-llvm:latest \
+            --build-arg BASE_IMAGE=${{ secrets.DOCKER_USERNAME }}/debian-llvm:latest \
             ./docker/debian-cedilla
 
       - name: Test project Docker image
