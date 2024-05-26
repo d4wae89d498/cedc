@@ -22,6 +22,7 @@ jobs:
           install: true
 
       - name: Cache Docker layers
+        id: cache-docker-layers
         uses: actions/cache@v3
         with:
           path: /tmp/.buildx-cache
@@ -56,6 +57,14 @@ jobs:
       - name: Test base Docker image
         run: docker run --rm debian-llvm:latest /bin/bash -c "echo 'Base Docker image built and tested successfully.'"
 
+      - name: Save new Docker cache
+        if: always()
+        run: |
+          if [ -d /tmp/.buildx-cache-new ]; then
+            rm -rf /tmp/.buildx-cache
+            mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+          fi
+
       - name: Build and push project image debian-cedilla using base image
         run: |
           docker buildx build --file ./docker/debian-cedilla/Dockerfile \
@@ -72,8 +81,10 @@ jobs:
       - name: Save final Docker cache
         if: always()
         run: |
-          rm -rf /tmp/.buildx-cache
-          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+          if [ -d /tmp/.buildx-cache-new ]; then
+            rm -rf /tmp/.buildx-cache
+            mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+          fi
 
       - name: Push Docker images to Docker Hub
         if: github.ref == 'refs/heads/main'
