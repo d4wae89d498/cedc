@@ -26,14 +26,18 @@ We'd love your help to make this project even better! If you're interested in co
 ## Compilation instructions
 
 ### MacOS
-`brew install antlr4`
-`git submodule update --init`
-`make`
+```bash
+brew install antlr4
+git submodule update --init
+make
+```
 
 ### Debian
-`apt-get install antlr4`
-`git submodule update --init`
-`make`
+```bash
+apt-get install antlr4
+git submodule update --init
+make
+```
 
 ## License
 
