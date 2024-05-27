@@ -7,7 +7,7 @@
 
 ## 🚀 Overview
 
-Welcome to the Extensible Syntax Framework! 🎉
+Welcome to an Extensible Syntax framework! 🎉
 
 Imagine a world where you can bend the syntax of C/C++ to your will—no limits, just pure creative freedom. That's what we're building here. This framework is designed to be an AST (Abstract Syntax Tree) preprocessor for C/C++ that empowers developers to create and use powerful syntax extensions.
 
