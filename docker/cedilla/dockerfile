@@ -1,3 +1,3 @@
 # syntax = edrevo/dockerfile-plus
 
-INCLUDE+ ../debian-llvm/dockerfile
+INCLUDE+ docker/debian-llvm/dockerfile
