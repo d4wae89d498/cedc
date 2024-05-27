@@ -17,7 +17,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Set up Docker Buildx
-        uses: setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v2
         with:
           install: true
 
@@ -32,7 +32,7 @@ jobs:
       - name: Build Docker image
         run: |
           docker buildx create --use
-          docker buildx build --file dockerfile --cache-from=type=local,src=/tmp/.buildx-cache --cache-to=type=local,dest=/tmp/.buildx-cache-new --output=type=docker -t cedilla:latest .
+          docker buildx build --file ./dockerfile --cache-from=type=local,src=/tmp/.buildx-cache --cache-to=type=local,dest=/tmp/.buildx-cache-new --output=type=docker -t cedilla:latest .
 
       - name: Test Docker image
         run: docker run --rm cedilla:latest /bin/bash -c "echo 'Docker image built and tested successfully.'"
