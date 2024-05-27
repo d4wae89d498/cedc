@@ -28,9 +28,15 @@ CXXFLAGS =	-g\
 			-Wno-unused-command-line-argument\
 			-Wreserved-module-identifier
 
+ifeq ($(shell uname -s), Darwin)
+    CXXFLAGS += -target x86_64-apple-macos10.9
+endif
+
 # External libraries
-LIBS :=		$(shell ls lib/*.a)
-#lib/libcxx.a\
+LIBS :=		lib/libc++.a\
+			lib/libc++experimental.a\
+			lib/libc++abi.a\
+			lib/libunwind.a\
 			lib/libantlr4-runtime.a\
 			lib/libastmatcher-parser.a
 

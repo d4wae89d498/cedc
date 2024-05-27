@@ -22,8 +22,8 @@ export namespace astmatcher
 	//	cedilla::cout << "Input: " << pattern << cedilla::endl;
 
 		antlr4::ANTLRInputStream input(pattern.c_str());
-/*
-		TODO:: fix these lines
+
+	//	TODO:: fix these lines
 
 		AstMatcherLexer lexer(&input);
 
@@ -39,7 +39,7 @@ export namespace astmatcher
 		InterpretReverseVisitor visitor;
 		visitor.visit(tree);
 
-		*/
+
 
 		return unordered_map<string, unique_ptr<AstNode>>{};
 	}
