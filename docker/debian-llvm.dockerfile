@@ -37,8 +37,8 @@ RUN llvm_version=$(ls /usr/bin | grep clang++ | tr -d 'clang++-') \
 ENV CC=/usr/bin/clang
 ENV CXX=/usr/bin/clang++
 
-COPY test/test.sh .
-COPY test/test.cpp .
+COPY test/llvm/test.sh .
+COPY test/llvm/test.cpp .
 
 RUN chmod +x test.sh && ./test.sh
 

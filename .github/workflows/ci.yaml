@@ -32,7 +32,7 @@ jobs:
       - name: Build 'debian-llvm' Docker image
         run: |
           docker buildx create --use
-          docker buildx build --file ./docker/debian-llvm/dockerfile --cache-from=type=local,src=/tmp/.buildx-cache --cache-to=type=local,dest=/tmp/.buildx-cache-new --output=type=docker -t debian-llvm:latest .
+          docker buildx build --file ./docker/debian-llvm.dockerfile --cache-from=type=local,src=/tmp/.buildx-cache --cache-to=type=local,dest=/tmp/.buildx-cache-new --output=type=docker -t debian-llvm:latest .
 
       - name: Test 'debian-llvm' Docker image
         run: docker run --rm debian-llvm:latest /bin/bash -c "echo 'Docker image built and tested successfully.'"
@@ -46,7 +46,7 @@ jobs:
       - name: Build 'cedilla' Docker image
         run: |
           docker buildx create --use
-          docker buildx build --file ./docker/cedilla/dockerfile --cache-from=type=local,src=/tmp/.buildx-cache --cache-to=type=local,dest=/tmp/.buildx-cache-new --output=type=docker -t cedilla:latest .
+          docker buildx build --file ./docker/cedilla.dockerfile --cache-from=type=local,src=/tmp/.buildx-cache --cache-to=type=local,dest=/tmp/.buildx-cache-new --output=type=docker -t cedilla:latest .
 
       - name: Test 'cedilla' Docker image
         run: docker run --rm cedilla:latest /bin/bash -c "echo 'Docker image built and tested successfully.'"
