@@ -22,7 +22,6 @@ jobs:
           install: true
 
       - name: Cache Docker layers
-        id: cache-docker-layers
         uses: actions/cache@v3
         with:
           path: /tmp/.buildx-cache
@@ -30,64 +29,30 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildx-
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
-        with:
-          platforms: all
-
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
-      - name: Create Docker builder instance
-        run: docker buildx create --use
-
-      - name: Build and push base image debian-llvm
+      - name: Build 'debian-llvm' Docker image
         run: |
-          docker buildx build --file ./docker/debian-llvm/Dockerfile \
-            --cache-from=type=local,src=/tmp/.buildx-cache \
-            --cache-to=type=local,dest=/tmp/.buildx-cache-new,mode=max \
-            --output=type=docker \
-            --tag ${{ secrets.DOCKER_USERNAME }}/debian-llvm:latest \
-            --tag debian-llvm:latest \
-            ./docker/debian-llvm
+          docker buildx create --use
+          docker buildx build --file ./docker/debian-llvm/Dockerfile --cache-from=type=local,src=/tmp/.buildx-cache --cache-to=type=local,dest=/tmp/.buildx-cache-new --output=type=docker -t debian-llvm:latest ./docker/debian-llvm
 
-      - name: Test base Docker image
-        run: docker run --rm debian-llvm:latest /bin/bash -c "echo 'Base Docker image built and tested successfully.'"
+      - name: Test 'debian-llvm' Docker image
+        run: docker run --rm debian-llvm:latest /bin/bash -c "echo 'Docker image built and tested successfully.'"
 
       - name: Save new Docker cache
         if: always()
         run: |
-          if [ -d /tmp/.buildx-cache-new ]; then
-            rm -rf /tmp/.buildx-cache
-            mv /tmp/.buildx-cache-new /tmp/.buildx-cache
-          fi
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
-      - name: Build and push project image debian-cedilla using base image
+      - name: Build 'cedilla' Docker image
         run: |
-          docker buildx build --file ./docker/debian-cedilla/Dockerfile \
-            --cache-from=type=local,src=/tmp/.buildx-cache \
-            --cache-to=type=local,dest=/tmp/.buildx-cache-new,mode=max \
-            --output=type=docker \
-            --tag ${{ secrets.DOCKER_USERNAME }}/debian-cedilla:latest \
-            --build-arg BASE_IMAGE=${{ secrets.DOCKER_USERNAME }}/debian-llvm:latest \
-            ./docker/debian-cedilla
+          docker buildx create --use
+          docker buildx build --file ./docker/cedilla/Dockerfile --cache-from=type=local,src=/tmp/.buildx-cache --cache-to=type=local,dest=/tmp/.buildx-cache-new --output=type=docker -t cedilla:latest ./docker/cedilla
 
-      - name: Test project Docker image
-        run: docker run --rm debian-cedilla:latest /bin/bash -c "echo 'Project Docker image built and tested successfully.'"
+      - name: Test 'cedilla' Docker image
+        run: docker run --rm cedilla:latest /bin/bash -c "echo 'Docker image built and tested successfully.'"
 
-      - name: Save final Docker cache
+      - name: Save new Docker cache
         if: always()
         run: |
-          if [ -d /tmp/.buildx-cache-new ]; then
-            rm -rf /tmp/.buildx-cache
-            mv /tmp/.buildx-cache-new /tmp/.buildx-cache
-          fi
-
-      - name: Push Docker images to Docker Hub
-        if: github.ref == 'refs/heads/main'
-        run: |
-          docker push ${{ secrets.DOCKER_USERNAME }}/debian-llvm:latest
-          docker push ${{ secrets.DOCKER_USERNAME }}/debian-cedilla:latest
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
