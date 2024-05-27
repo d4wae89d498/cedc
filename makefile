@@ -20,17 +20,17 @@ CXXFLAGS =	-g\
 			-fsanitize=address\
 			-nostdinc++\
 			-nostdlib++\
-			-fprebuilt-module-path=lib/libcxx-pcm/lib\
-			-Ilib/libcxx-pcm/src\
-			-Ilib/libcxx-pcm/src/include\
+			-Ibin/build-tools/llvm-project/build/include/c++/v1\
 			-Wno-unqualified-std-cast-call\
 			-fprebuilt-module-path=$(PCM_DIR)\
 			-Ilib/libantlr4-runtime/runtime/src\
 			-Ilib/libastmatcher-parser\
-			-Wno-unused-command-line-argument
+			-Wno-unused-command-line-argument\
+			-Wreserved-module-identifier
 
 # External libraries
-LIBS :=		lib/libcxx.a\
+LIBS :=		$(shell ls lib/*.a)
+#lib/libcxx.a\
 			lib/libantlr4-runtime.a\
 			lib/libastmatcher-parser.a
 
@@ -92,12 +92,22 @@ MAKEFILE_DIR := $(realpath $(dir $(CURRENT_MAKEFILE)))
 all: $(LIBS_MADE_MARKER) $(NAME) $(EXECS)
 
 $(LIBS_MADE_MARKER):
-	make -C lib/libcxx-pcm
 	@mkdir -p $(@D)
-	@cd $(MAKEFILE_DIR)/lib && rm libcxx && ln -s  ../bin/build-tools/llvm-project/libcxx libcxx
-	@cd $(MAKEFILE_DIR)/lib && rm libcxxabi && ln -s  ../bin/build-tools/llvm-project/libcxxabi libcxxabi
-	@cd $(MAKEFILE_DIR)/lib && rm libunwind && ln -s  ../bin/build-tools/llvm-project/libunwind libunwind
-	@cd $(MAKEFILE_DIR)/lib && ln -sf libcxx-pcm/lib/libcxx.a libcxx.a
+	@mkdir -p tmp/pcm
+	@cd bin/build-tools/llvm-project \
+		&& mkdir -p build \
+		&& cmake -G Ninja -S runtimes -B build \
+			-DLLVM_ENABLE_RUNTIMES="libcxx;libcxxabi;libunwind" \
+			-DCMAKE_C_COMPILER=$(shell which clang) \
+			-DCMAKE_CXX_COMPILER=$(shell which clang++) \
+		&& ninja -C build
+	@cd $(MAKEFILE_DIR)/lib && ln -sf ../bin/build-tools/llvm-project/build/lib/libc++.a libc++.a
+	@cd $(MAKEFILE_DIR)/lib && ln -sf ../bin/build-tools/llvm-project/build/lib/libc++experimental.a libc++experimental.a
+	@cd $(MAKEFILE_DIR)/lib && ln -sf ../bin/build-tools/llvm-project/build/lib/libc++abi.a libc++abi.a
+	@cd $(MAKEFILE_DIR)/lib && ln -sf ../bin/build-tools/llvm-project/build/lib/libunwind.a libunwind.a
+
+	$(CXX) $(CXXFLAGS) --precompile bin/build-tools/llvm-project/build/modules/c++/v1/std.cppm -o tmp/pcm/std.pcm
+	$(CXX) $(CXXFLAGS) --precompile bin/build-tools/llvm-project/build/modules/c++/v1/std.compat.cppm -o tmp/pcm/std.compat.pcm
 	@cd $(MAKEFILE_DIR)/lib && rm libantlr4-runtime && ln -s  ../bin/build-tools/antlr4/runtime/Cpp libantlr4-runtime
 	@cd $(MAKEFILE_DIR)/lib/libantlr4-runtime && mkdir -p build && cd build && cmake .. && make
 	@cd $(MAKEFILE_DIR)/lib && ln -sf libantlr4-runtime/dist/libantlr4-runtime.a libantlr4-runtime.a

@@ -19,7 +19,7 @@ export namespace astmatcher
 	fn interpret(const string pattern, Ast &Ast) -> unordered_map<string, unique_ptr<AstNode>>
 	{
 		println("Input: {}", pattern);
-		//cedilla::cout << "Input: " << pattern << cedilla::endl;
+	//	cedilla::cout << "Input: " << pattern << cedilla::endl;
 
 		antlr4::ANTLRInputStream input(pattern.c_str());
 /*

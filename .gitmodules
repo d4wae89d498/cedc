@@ -7,3 +7,6 @@
 [submodule "bin/build-tools/antlr4"]
 	path = bin/build-tools/antlr4
 	url = https://github.com/antlr/antlr4.git
+[submodule "bin/build-tools/llvm-project"]
+	path = bin/build-tools/llvm-project
+	url = https://github.com/llvm/llvm-project.git
