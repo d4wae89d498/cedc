@@ -20,7 +20,7 @@ CXXFLAGS =	-g\
 			-fsanitize=address\
 			-nostdinc++\
 			-nostdlib++\
-			-Ibin/build-tools/llvm-project/build/include/c++/v1\
+			-Itools/llvm-project/build/include/c++/v1\
 			-Wno-unqualified-std-cast-call\
 			-fprebuilt-module-path=$(PCM_DIR)\
 			-Ilib/libantlr4-runtime/runtime/src\
@@ -33,12 +33,12 @@ ifeq ($(shell uname -s), Darwin)
 endif
 
 # External libraries
-LIBS :=		lib/libc++.a\
-			lib/libc++experimental.a\
-			lib/libc++abi.a\
-			lib/libunwind.a\
-			lib/libantlr4-runtime.a\
-			lib/libastmatcher-parser.a
+LIBS :=		tools/llvm/build/lib/libc++.a\
+			tools/llvm/build/lib/libc++experimental.a\
+			tools/llvm/build/lib/libc++abi.a\
+			tools/llvm/build/lib/libunwind.a\
+			tools/antlr4/runtime/Cpp/dist/libantlr4-runtime.a\
+			tools/libastmatcher-parser/libastmatcher-parser.a
 
 #				$(shell find $(PCM_DIR) -type d | sed 's/^/-fprebuilt-module-path=/' | tr '\n' ' ')
 
@@ -46,8 +46,8 @@ LIBS :=		lib/libc++.a\
 CXXDB := 	$(TMP_DIR)/compile_commands.json
 
 # Project sources
-VOID := 	$(shell cd ./bin/build-tools/cppmodsort/ && make)
-MODULES :=	$(shell ./bin/build-tools/cppmodsort/cppmodsort $(shell find src/module -type f -name "*.cppm"))
+VOID := 	$(shell cd ./tools/cppmodsort/ && make)
+MODULES :=	$(shell ./tools/cppmodsort/cppmodsort $(shell find src/module -type f -name "*.cppm"))
 IMPLS :=	$(shell find src/module -type f -name "*.cpp")
 
 # Project objects
@@ -100,25 +100,23 @@ all: $(LIBS_MADE_MARKER) $(NAME) $(EXECS)
 $(LIBS_MADE_MARKER):
 	@mkdir -p $(@D)
 	@mkdir -p tmp/pcm
-	@cd bin/build-tools/llvm-project \
+	@cd tools/llvm-project \
+		&& rm -rf build \
 		&& mkdir -p build \
 		&& cmake -G Ninja -S runtimes -B build \
 			-DLLVM_ENABLE_RUNTIMES="libcxx;libcxxabi;libunwind" \
 			-DCMAKE_C_COMPILER=$(shell which clang) \
 			-DCMAKE_CXX_COMPILER=$(shell which clang++) \
 		&& ninja -C build
-	@cd $(MAKEFILE_DIR)/lib && ln -sf ../bin/build-tools/llvm-project/build/lib/libc++.a libc++.a
-	@cd $(MAKEFILE_DIR)/lib && ln -sf ../bin/build-tools/llvm-project/build/lib/libc++experimental.a libc++experimental.a
-	@cd $(MAKEFILE_DIR)/lib && ln -sf ../bin/build-tools/llvm-project/build/lib/libc++abi.a libc++abi.a
-	@cd $(MAKEFILE_DIR)/lib && ln -sf ../bin/build-tools/llvm-project/build/lib/libunwind.a libunwind.a
-
-	$(CXX) $(CXXFLAGS) --precompile bin/build-tools/llvm-project/build/modules/c++/v1/std.cppm -o tmp/pcm/std.pcm
-	$(CXX) $(CXXFLAGS) --precompile bin/build-tools/llvm-project/build/modules/c++/v1/std.compat.cppm -o tmp/pcm/std.compat.pcm
-	@cd $(MAKEFILE_DIR)/lib && rm libantlr4-runtime && ln -s  ../bin/build-tools/antlr4/runtime/Cpp libantlr4-runtime
-	@cd $(MAKEFILE_DIR)/lib/libantlr4-runtime && mkdir -p build && cd build && cmake .. && make
-	@cd $(MAKEFILE_DIR)/lib && ln -sf libantlr4-runtime/dist/libantlr4-runtime.a libantlr4-runtime.a
-	@make -C $(MAKEFILE_DIR)/lib/libastmatcher-parser
-	@cd $(MAKEFILE_DIR)/lib && ln -sf libastmatcher-parser/libastmatcher-parser.a libastmatcher-parser.a
+	$(CXX) $(CXXFLAGS) --precompile tools/llvm-project/build/modules/c++/v1/std.cppm -o tmp/pcm/std.pcm
+	$(CXX) $(CXXFLAGS) --precompile tools/llvm-project/build/modules/c++/v1/std.compat.cppm -o tmp/pcm/std.compat.pcm
+	@cd tools/antlr4/runtime/Cpp \
+		&& rm -rf build \
+		&& mkdir -p build \
+		&& cd build \
+		&& cmake .. \
+		&& make
+	@make -C tools/libastmatcher-parser
 	@touch $(LIBS_MADE_MARKER)
 
 $(PCH_DIR)/%.pch: $(SRC_DIR)/%.hpp makefile

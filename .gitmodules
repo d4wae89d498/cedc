@@ -1,12 +1,9 @@
-[submodule "lib/libcxx-pcm"]
-	path = lib/libcxx-pcm
-	url = https://github.com/d4wae89d498/libcxx-pcm.git
-[submodule "bin/build-tools/cppmodsort"]
-	path = bin/build-tools/cppmodsort
+[submodule "tools/cppmodsort"]
+	path = tools/cppmodsort
 	url = git@github.com:d4wae89d498/cppmodsort.git
-[submodule "bin/build-tools/antlr4"]
-	path = bin/build-tools/antlr4
+[submodule "tools/antlr4"]
+	path = tools/antlr4
 	url = https://github.com/antlr/antlr4.git
-[submodule "bin/build-tools/llvm-project"]
-	path = bin/build-tools/llvm-project
+[submodule "tools/llvm-project"]
+	path = tools/llvm-project
 	url = https://github.com/llvm/llvm-project.git

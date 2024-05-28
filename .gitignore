@@ -1,7 +1,7 @@
 # Tools
 tools/antlr4
 tools/cppmodsort
-tools/libastmatcher-parser
+tools/llvm-project
 
 # Project markers
 .libcxx_made
