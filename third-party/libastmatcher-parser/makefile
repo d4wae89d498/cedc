@@ -30,7 +30,7 @@ $(ANTLR_OUT_SOURCES): AstMatcher.g4
 	antlr -Dlanguage=Cpp -visitor AstMatcher.g4
 
 %.o: %.cpp
-	clang++ -c $< -o $@ -I../libantlr4-runtime/runtime/src
+	clang++ -c $< -o $@ -I../antlr4/runtime/Cpp/runtime/src
 
 clean:
 	rm -f a.out $(ANTLR_OUT_OTHERS) $(ANTLR_OUT_SOURCES) $(ANTLR_OUT_HEADERS) $(ANTLR_OBJS)

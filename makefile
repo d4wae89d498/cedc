@@ -40,8 +40,6 @@ LIBS :=		third-party/llvm-project/build/lib/libc++.a\
 			third-party/antlr4/runtime/Cpp/dist/libantlr4-runtime.a\
 			third-party/libastmatcher-parser/libastmatcher-parser.a
 
-#				$(shell find $(PCM_DIR) -type d | sed 's/^/-fprebuilt-module-path=/' | tr '\n' ' ')
-
 # Compilation database output
 CXXDB := 	$(TMP_DIR)/compile_commands.json
 
@@ -177,8 +175,7 @@ fclean: clean
 	rm -f $(PCHS)
 	rm -f $(LIBS_MADE_MARKER)
 	rm -rf $(LIBS)
-	make fclean -C lib/libcxx-pcm
-	make clean -C lib/libastmatcher-parser
-	rm -rf lib/antlr4-runtime/build
+	make clean -C third-party/libastmatcher-parser
+	rm -rf third-party/runtime/Cpp/build
 
-re: fclean all
+re: clean all

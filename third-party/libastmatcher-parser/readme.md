@@ -9,8 +9,6 @@ This document specifies the ANTLR grammar for the AST Node Matcher DSL. This DSL
 The lexer rules define the tokens used in the DSL:
 
 - **DOLLAR**: Represents the `$` character.
-- **CAPTURE**: The keyword `capture`.
-- **SKIP**: The keyword `skip`.
 - **AS**: The keyword `as`.
 - **LPARENTHESE**: Represents the `(` character.
 - **RPARENTHESE**: Represents the `)` character.
@@ -30,31 +28,22 @@ The grammar rules define the structure and hierarchy of the DSL.
 
 ### Root Rule: `astDescription`
 
-The `astDescription` rule is the entry point for parsing the DSL. It describes the capture and skip statements, along with optional property descriptions and match lists.
+The `astDescription` rule is the entry point for parsing the DSL. It describes the node type statements, along with optional property descriptions and match lists.
 
 ```antlr
 astDescription:
-    (captureStmt | skipStmt)
+    nodeTypeStmt
     (LBRACKET astPropertyDescription* RBRACKET)?
     (LBRACE matchList RBRACE)?;
 ```
 
-### Capture Statement: `captureStmt`
+### Node Type Statement: `nodeTypeStmt`
 
-The `captureStmt` rule defines a `capture` statement, which may optionally specify an alias using the `as` keyword.
-
-```antlr
-captureStmt:
-    CAPTURE IDENTIFIER (AS IDENTIFIER)?;
-```
-
-### Skip Statement: `skipStmt`
-
-The `skipStmt` rule defines a `skip` statement.
+The `nodeTypeStmt` rule defines a node type statement, which may optionally specify an alias using the `as` keyword.
 
 ```antlr
-skipStmt:
-    SKIP IDENTIFIER;
+nodeTypeStmt:
+    IDENTIFIER (AS IDENTIFIER)?;
 ```
 
 ### Property Description: `astPropertyDescription`
@@ -87,21 +76,20 @@ matchList:
 
 ### Match Statement: `matchStmt`
 
-The `matchStmt` rule can be a capture statement, skip statement, or nested capture.
+The `matchStmt` rule can be a node type statement or nested node type.
 
 ```antlr
 matchStmt:
-    captureStmt
-    | skipStmt
-    | nestedCapture;
+    nodeTypeStmt
+    | nestedNodeType;
 ```
 
-### Nested Capture: `nestedCapture`
+### Nested Node Type: `nestedNodeType`
 
-The `nestedCapture` rule allows for nested captures within braces, containing a match list.
+The `nestedNodeType` rule allows for nested node types within braces, containing a match list.
 
 ```antlr
-nestedCapture:
+nestedNodeType:
     IDENTIFIER LBRACE matchList RBRACE;
 ```
 
@@ -110,37 +98,13 @@ nestedCapture:
 The following is an example of the DSL and how it conforms to the specified grammar:
 
 ```dsl
-capture Type [
-    "prop1" = "str"
-    "prop2" islower($)
-    "prop3" contains($, "needle"),
-    "prop4" {
-        capture SubType
-    }
-] {
-	# Childs ...
-}
 
-skip Type
+	Expr["type"="int"] as number
+	Symbol["value"="!"]
 
-capture Identifier as id1
-capture Parenthesis
-capture Braces
-capture Raw[value=async]
-capture Func[
-	"body"= {
-		skip Braces {
-			capture Expr {
-				capture Raw[value=await]
-				capture Call
-			}
-		}
-	}
-]
 ```
 
 In this example:
-- The `capture` and `skip` statements define patterns for matching AST nodes.
-- Property descriptions include string assignments and function calls.
-- Nested captures are defined within braces, allowing for recursive pattern matching.
-
+- Capture the `Expr` node if it has a property `"type"="int"`, and name it as `number`.
+- Capture the `Symbol` node if it has a property `"value"="!"`, indicating the factorial operator.
+- The structure showcases how to define node types with properties and nested node types, supporting recursive pattern matching in the AST.
