@@ -20,11 +20,11 @@ CXXFLAGS =	-g\
 			-fsanitize=address\
 			-nostdinc++\
 			-nostdlib++\
-			-Itools/llvm-project/build/include/c++/v1\
+			-Ithird-party/llvm-project/build/include/c++/v1\
 			-Wno-unqualified-std-cast-call\
 			-fprebuilt-module-path=$(PCM_DIR)\
-			-Ilib/libantlr4-runtime/runtime/src\
-			-Ilib/libastmatcher-parser\
+			-Ithird-party/antlr4/runtime/Cpp/runtime/src\
+			-Ithird-party/libastmatcher-parser\
 			-Wno-unused-command-line-argument\
 			-Wreserved-module-identifier
 
@@ -33,12 +33,12 @@ ifeq ($(shell uname -s), Darwin)
 endif
 
 # External libraries
-LIBS :=		tools/llvm/build/lib/libc++.a\
-			tools/llvm/build/lib/libc++experimental.a\
-			tools/llvm/build/lib/libc++abi.a\
-			tools/llvm/build/lib/libunwind.a\
-			tools/antlr4/runtime/Cpp/dist/libantlr4-runtime.a\
-			tools/libastmatcher-parser/libastmatcher-parser.a
+LIBS :=		third-party/llvm-project/build/lib/libc++.a\
+			third-party/llvm-project/build/lib/libc++experimental.a\
+			third-party/llvm-project/build/lib/libc++abi.a\
+			third-party/llvm-project/build/lib/libunwind.a\
+			third-party/antlr4/runtime/Cpp/dist/libantlr4-runtime.a\
+			third-party/libastmatcher-parser/libastmatcher-parser.a
 
 #				$(shell find $(PCM_DIR) -type d | sed 's/^/-fprebuilt-module-path=/' | tr '\n' ' ')
 
@@ -46,8 +46,8 @@ LIBS :=		tools/llvm/build/lib/libc++.a\
 CXXDB := 	$(TMP_DIR)/compile_commands.json
 
 # Project sources
-VOID := 	$(shell cd ./tools/cppmodsort/ && make)
-MODULES :=	$(shell ./tools/cppmodsort/cppmodsort $(shell find src/module -type f -name "*.cppm"))
+VOID := 	$(shell cd ./third-party/cppmodsort/ && make)
+MODULES :=	$(shell ./third-party/cppmodsort/cppmodsort $(shell find src/module -type f -name "*.cppm"))
 IMPLS :=	$(shell find src/module -type f -name "*.cpp")
 
 # Project objects
@@ -100,7 +100,7 @@ all: $(LIBS_MADE_MARKER) $(NAME) $(EXECS)
 $(LIBS_MADE_MARKER):
 	@mkdir -p $(@D)
 	@mkdir -p tmp/pcm
-	@cd tools/llvm-project \
+	@cd third-party/llvm-project \
 		&& rm -rf build \
 		&& mkdir -p build \
 		&& cmake -G Ninja -S runtimes -B build \
@@ -108,15 +108,15 @@ $(LIBS_MADE_MARKER):
 			-DCMAKE_C_COMPILER=$(shell which clang) \
 			-DCMAKE_CXX_COMPILER=$(shell which clang++) \
 		&& ninja -C build
-	$(CXX) $(CXXFLAGS) --precompile tools/llvm-project/build/modules/c++/v1/std.cppm -o tmp/pcm/std.pcm
-	$(CXX) $(CXXFLAGS) --precompile tools/llvm-project/build/modules/c++/v1/std.compat.cppm -o tmp/pcm/std.compat.pcm
-	@cd tools/antlr4/runtime/Cpp \
+	$(CXX) $(CXXFLAGS) --precompile third-party/llvm-project/build/modules/c++/v1/std.cppm -o tmp/pcm/std.pcm
+	$(CXX) $(CXXFLAGS) --precompile third-party/llvm-project/build/modules/c++/v1/std.compat.cppm -o tmp/pcm/std.compat.pcm
+	@cd third-party/antlr4/runtime/Cpp \
 		&& rm -rf build \
 		&& mkdir -p build \
 		&& cd build \
 		&& cmake .. \
 		&& make
-	@make -C tools/libastmatcher-parser
+	@make -C third-party/libastmatcher-parser
 	@touch $(LIBS_MADE_MARKER)
 
 $(PCH_DIR)/%.pch: $(SRC_DIR)/%.hpp makefile

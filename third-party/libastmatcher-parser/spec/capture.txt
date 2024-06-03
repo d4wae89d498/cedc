@@ -1,0 +1,16 @@
+name:	NodeType
+
+name:	NodeType[
+			prop="value"
+		]
+
+
+RegisterParser(R"
+	NodeType[prop='value']{
+		NodeType ...
+	}
+	NodeType{}
+	NodeType
+", [](){
+
+})
