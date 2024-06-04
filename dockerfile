@@ -10,8 +10,8 @@ RUN LATEST_VERSION=$(curl -s https://api.github.com/repos/antlr/antlr4/releases/
     echo '#! /bin/bash\n'\
 'export CLASSPATH=".:/usr/local/lib/antlr-'$LATEST_VERSION'-complete.jar:$CLASSPATH"\n'\
 'java -jar /usr/local/lib/antlr-'$LATEST_VERSION'-complete.jar "$@"\n'\
-> /usr/local/bin/antlr4 && \
-    chmod +x /usr/local/bin/antlr4
+> /usr/bin/antlr4 && \
+    chmod +x /usr/bin/antlr4
 
 # Verify the installation by printing ANTLR version
 RUN antlr4 -version
