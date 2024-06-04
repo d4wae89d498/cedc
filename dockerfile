@@ -3,15 +3,11 @@ INCLUDE+ debian-llvm.dockerfile
 
 # Install system deps
 RUN apt-get install -y antlr4
-
-RUN antlr4
-
-RUN antlr
+RUN ln -s /usr/bin/antlr $(which antlr4)
 
 # Copy third-party directory first to leverage caching
 COPY third-party /project/third-party
 COPY common.mk /project/common.mk
-
 
 # Set the working directory for the third-party build
 WORKDIR /project/third-party
