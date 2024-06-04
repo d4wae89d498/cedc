@@ -172,12 +172,12 @@ fn main() -> int
 	if (test33.first)
 		print("type is ... {}\n", test33.first->type);
 
-	astmatcher::interpret("		\
-									\
-			skip Identifier 		\n\
-			skip Identifier 		\n\
-			capture PARENS 			\n\
-									\
+	astmatcher::interpret("\
+								\
+			Identifier; 		\n\
+			Identifier; 		\n\
+			PARENS;				\n\
+								\
 		", test33);
 
 	println("end..");

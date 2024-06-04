@@ -37,7 +37,7 @@ LIBS :=		third-party/llvm-project/build/lib/libc++.a\
 			third-party/llvm-project/build/lib/libc++experimental.a\
 			third-party/llvm-project/build/lib/libc++abi.a\
 			third-party/llvm-project/build/lib/libunwind.a\
-			third-party/antlr4/runtime/Cpp/dist/libantlr4-runtime.a\
+			third-party/antlr4/runtime/Cpp/build/runtime/libantlr4-runtime.a\
 			third-party/libastmatcher-parser/libastmatcher-parser.a
 
 # Compilation database output

@@ -35,7 +35,7 @@ export namespace astmatcher
 			println("token: {}", token->toString());
 		}
 		AstMatcherParser parser(&tokens);
-		AstMatcherParser::PatternContext* tree = parser.pattern();
+		AstMatcherParser::AstPatternDescriptionContext* tree = parser.astPatternDescription();
 		InterpretReverseVisitor visitor;
 		visitor.visit(tree);
 

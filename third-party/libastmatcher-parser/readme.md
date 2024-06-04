@@ -106,5 +106,5 @@ The following is an example of the DSL and how it conforms to the specified gram
 
 In this example:
 - Capture the `Expr` node if it has a property `"type"="int"`, and name it as `number`.
-- Capture the `Symbol` node if it has a property `"value"="!"`, indicating the factorial operator.
+- Skip the `Symbol` node if it has a property `"value"="!"`
 - The structure showcases how to define node types with properties and nested node types, supporting recursive pattern matching in the AST.

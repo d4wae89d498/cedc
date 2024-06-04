@@ -1,29 +1,24 @@
 grammar AstMatcher;
 
-astDescription:
-    nodeTypeStmt
-    (LBRACKET astPropertyDescription* RBRACKET)?
-    (LBRACE matchList RBRACE)?;
+astPatternDescription:
+    nodeType*;
 
-nodeTypeStmt:
-    IDENTIFIER (AS IDENTIFIER)?;
+nodeTypeList:
+    (nodeType (SCOL)*);
 
-astPropertyDescription:
+nodeType:
+	(IDENTIFIER (AS IDENTIFIER)?)
+	(LBRACKET nodePropertiesDescription* RBRACKET)?
+	(LBRACE nodeTypeList RBRACE)?;
+
+nodePropertiesDescription:
     STRING EQUAL STRING
-    | STRING funcCall;
+    |
+	STRING funcCall;
 
 funcCall:
     IDENTIFIER LPARENTHESE (DOLLAR (COMMA STRING)?)? RPARENTHESE;
 
-matchList:
-    (matchStmt (COMMA matchStmt)*)?;
-
-matchStmt:
-    nodeTypeStmt
-    | nestedNodeType;
-
-nestedNodeType:
-    IDENTIFIER LBRACE matchList RBRACE;
 
 // Lexer rules
 DOLLAR: '$';
@@ -36,6 +31,7 @@ LBRACE: '{';
 RBRACE: '}';
 EQUAL: '=';
 COMMA: ',';
+SCOL: ';';
 IDENTIFIER: [a-zA-Z_][a-zA-Z_0-9]*;
 STRING: '"' (ESC | ~["\\])* '"';
 fragment ESC: '\\' .;
