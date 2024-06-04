@@ -31,7 +31,7 @@ CXXFLAGS := -g \
             -Wno-unused-command-line-argument \
             -Wreserved-module-identifier
 
-# llvm-libcxx iostream to avoid ABI error on macos (https://github.com/frida/frida-gum/issues/694)
+# Avoid llvm-libcxx iostream ABI error on macos (https://github.com/frida/frida-gum/issues/694)
 ifeq ($(shell uname -s), Darwin)
     CXXFLAGS += -target x86_64-apple-macos10.9
 endif
