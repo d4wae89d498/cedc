@@ -15,7 +15,6 @@ RUN LATEST_VERSION=$(curl -s https://api.github.com/repos/antlr/antlr4/releases/
 
 # Verify the installation by printing ANTLR version
 RUN ln -s /usr/local/bin/antlr4 /usr/bin/antlr4
-RUN antlr4 -version
 RUN ln -s $(which antlr4) /usr/bin/antlr
 
 # Copy third-party directory first to leverage caching
