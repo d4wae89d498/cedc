@@ -1,6 +1,9 @@
 # syntax = edrevo/dockerfile-plus
 INCLUDE+ debian-llvm.dockerfile
 
+# Install system deps
+RUN apt-get install -y antlr4
+
 # Copy third-party directory first to leverage caching
 COPY third-party /project/third-party
 COPY common.mk /project/common.mk
