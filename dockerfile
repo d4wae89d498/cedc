@@ -12,8 +12,7 @@ RUN make
 
 # Copy the main project files
 
-# syntax=docker.io/docker/dockerfile:1.7-labs
-COPY --exclude=third-party . /project/
+COPY . /project/
 
 # Set the working directory for the main project
 WORKDIR /project/
