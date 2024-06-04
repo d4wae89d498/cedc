@@ -72,17 +72,17 @@ $(PCM_DIR)/%.pcm: $(SRC_DIR)/%.cppm $(PCHS)
 	@mkdir -p $(@D)
 	@mkdir -p $(shell dirname $(patsubst $(PCM_DIR)/%.pcm,$(DEP_DIR)/%.cppm.d,$(@)))
 	$(CXX) $(CXXFLAGS) -MMD -MF $(patsubst $(PCM_DIR)/%.pcm,$(DEP_DIR)/%.cppm.d,$(@)) --precompile $< -o $@ $(INCPCHS)
-	@if [[ "$<" == $(MOD_DIR)/* ]]; then \
+	@if test "${$<#$(MOD_DIR)/}" != "$<"; then \
 		path="$<"; \
 		prefix="$(MOD_DIR)/"; \
-		stripped_path=$${path#$${prefix}}; \
-		vendor_name=$$(echo "$$stripped_path" | cut -d'/' -f1); \
-		num_folders=$$(echo "$$stripped_path" | tr -cd '/' | wc -c); \
-		if [[ $$num_folders -eq 1 ]]; then \
+		stripped_path=$(echo "$$path" | sed "s|^$$prefix||"); \
+		vendor_name=$(echo "$$stripped_path" | cut -d'/' -f1); \
+		num_folders=$(echo "$$stripped_path" | awk -F"/" '{print NF-1}'); \
+		if test "$$num_folders" -eq 1; then \
 			cp -f $@ $(PCM_DIR)/$$vendor_name.$(notdir $@); \
 		else \
-			project_name=$$(echo "$$stripped_path" | cut -d'/' -f2); \
-			cp -f $@ $(PCM_DIR)/$$vendor_name.$$project_name-$(notdir $@);  \
+			project_name=$(echo "$$stripped_path" | cut -d'/' -f2); \
+			cp -f $@ $(PCM_DIR)/$$vendor_name.$$project_name-$(notdir $@); \
 		fi; \
 	fi
 
