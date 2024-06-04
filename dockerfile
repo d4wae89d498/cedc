@@ -1,8 +1,20 @@
 # syntax = edrevo/dockerfile-plus
 INCLUDE+ debian-llvm.dockerfile
 
-# Install system deps
-RUN apt-get install -y antlr4
+# Install wget, curl, jq, and other dependencies
+RUN apt-get update && apt-get install -y wget curl jq openjdk-11-jdk
+
+# Fetch the latest ANTLR release tag from GitHub and download the jar file
+RUN LATEST_VERSION=$(curl -s https://api.github.com/repos/antlr/antlr4/releases/latest | jq -r '.tag_name') && \
+    wget http://www.antlr.org/download/antlr-$LATEST_VERSION-complete.jar -O /usr/local/lib/antlr-$LATEST_VERSION-complete.jar && \
+    echo '#! /bin/bash\n'\
+'export CLASSPATH=".:/usr/local/lib/antlr-'$LATEST_VERSION'-complete.jar:$CLASSPATH"\n'\
+'java -jar /usr/local/lib/antlr-'$LATEST_VERSION'-complete.jar "$@"\n'\
+> /usr/local/bin/antlr4 && \
+    chmod +x /usr/local/bin/antlr4
+
+# Verify the installation by printing ANTLR version
+RUN antlr4 -version
 RUN ln -s $(which antlr4) /usr/bin/antlr
 
 # Copy third-party directory first to leverage caching
