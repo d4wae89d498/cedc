@@ -1,36 +1,4 @@
-# Project structure
-BIN_DIR := 	bin
-LIB_DIR := 	lib
-SRC_DIR := 	src
-TMP_DIR := 	tmp
-
-# Src subdirs
-MOD_DIR := $(SRC_DIR)/module
-
-# Tmp subdirs
-OBJ_DIR := $(TMP_DIR)/obj
-PCM_DIR := $(TMP_DIR)/pcm
-PCH_DIR := $(TMP_DIR)/pch
-DEP_DIR := $(TMP_DIR)/dep
-
-# Compilation flags
-CXX :=		clang++ -std=c++26
-CXXFLAGS =	-g\
-			-O0\
-			-fsanitize=address\
-			-nostdinc++\
-			-nostdlib++\
-			-Ithird-party/llvm-project/build/include/c++/v1\
-			-Wno-unqualified-std-cast-call\
-			-fprebuilt-module-path=$(PCM_DIR)\
-			-Ithird-party/antlr4/runtime/Cpp/runtime/src\
-			-Ithird-party/libastmatcher-parser\
-			-Wno-unused-command-line-argument\
-			-Wreserved-module-identifier
-
-ifeq ($(shell uname -s), Darwin)
-    CXXFLAGS += -target x86_64-apple-macos10.9
-endif
+include common.mk
 
 # External libraries
 LIBS :=		third-party/llvm-project/build/lib/libc++.a\
@@ -42,6 +10,7 @@ LIBS :=		third-party/llvm-project/build/lib/libc++.a\
 
 # Compilation database output
 CXXDB := 	$(TMP_DIR)/compile_commands.json
+
 
 # Project sources
 VOID := 	$(shell cd ./third-party/cppmodsort/ && make)
@@ -78,46 +47,22 @@ INCPCHS :=	$(PCHS:%=-include-pch %)
 # Deps
 DEPS 	:= 	$(MODULES:$(SRC_DIR)/%=$(DEP_DIR)/%.d) $(IMPLS:$(SRC_DIR)/%=$(DEP_DIR)/%.d)
 
-# Submodules libraries marker
-LIBS_MADE_MARKER=$(TMP_DIR)/.libs_made
-
 # Extract the path of the current Makefile
 CURRENT_MAKEFILE := $(lastword $(MAKEFILE_LIST))
 
-# Extract the directory of the current Makefile
-MAKEFILE_DIR := $(realpath $(dir $(CURRENT_MAKEFILE)))
+
+
+include third-party/makefile
 
 #-------------------------------------------------#
 
 .SUFFIXES:
 .PRECIOUS: 	$(PCHS) $(PCMS)
-.PHONY: 	all clean fclean re
+.PHONY: 	all test clean fclean re
 
 all: $(LIBS_MADE_MARKER) $(NAME) $(EXECS)
 
-$(LIBS_MADE_MARKER):
-	@mkdir -p $(@D)
-	@mkdir -p tmp/pcm
-	@cd third-party/llvm-project \
-		&& rm -rf build \
-		&& mkdir -p build \
-		&& cmake -G Ninja -S runtimes -B build \
-			-DLLVM_ENABLE_RUNTIMES="libcxx;libcxxabi;libunwind" \
-			-DCMAKE_C_COMPILER=$(shell which clang) \
-			-DCMAKE_CXX_COMPILER=$(shell which clang++) \
-		&& ninja -C build
-	$(CXX) $(CXXFLAGS) --precompile third-party/llvm-project/build/modules/c++/v1/std.cppm -o tmp/pcm/std.pcm
-	$(CXX) $(CXXFLAGS) --precompile third-party/llvm-project/build/modules/c++/v1/std.compat.cppm -o tmp/pcm/std.compat.pcm
-	@cd third-party/antlr4/runtime/Cpp \
-		&& rm -rf build \
-		&& mkdir -p build \
-		&& cd build \
-		&& cmake .. \
-		&& make
-	@make -C third-party/libastmatcher-parser
-	@touch $(LIBS_MADE_MARKER)
-
-$(PCH_DIR)/%.pch: $(SRC_DIR)/%.hpp makefile
+$(PCH_DIR)/%.pch: $(SRC_DIR)/%.hpp makefile common.mk third-party/makefile
 	@mkdir -p $(@D)
 	$(CXX) -x c++-header -DCLANGD $(CXXFLAGS) -o $@ $<
 
@@ -164,6 +109,9 @@ $(CXXDB): $(EXECS)
 	| grep -wE 'clang\+\+' \
 	| jq -nR '[inputs | {directory: env.PWD, command: (. + " -DCLANGD") , file: (match("\\S+\\.(cpp|cppm|hpp)(?=\\s|$$)").string)}]' \
 	> $(CXXDB)
+
+test:
+	./bin/test/lexer.out
 
 clean:
 	rm -f $(DEPS) $(OBJS) $(CXXDB)
