@@ -1,23 +1,22 @@
 # syntax = edrevo/dockerfile-plus
 INCLUDE+ debian-llvm.dockerfile
 
-# Set the working directory for the third-party build
-WORKDIR /third-party
-
 # Copy third-party directory first to leverage caching
-COPY third-party /third-party
+COPY third-party /project/third-party
 
-# Initialize and update git submodules
-RUN git submodule init && git submodule update
+# Set the working directory for the third-party build
+WORKDIR /project/third-party
 
 # Build the third-party dependencies
 RUN make
 
-# Set the working directory for the main project
-WORKDIR /app
-
 # Copy the main project files
-COPY . /app
+
+# syntax=docker.io/docker/dockerfile:1.7-labs
+COPY --exclude=third-party . /project/
+
+# Set the working directory for the main project
+WORKDIR /project/
 
 # Build the main project
 RUN make
