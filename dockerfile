@@ -3,6 +3,8 @@ INCLUDE+ debian-llvm.dockerfile
 
 # Copy third-party directory first to leverage caching
 COPY third-party /project/third-party
+COPY common.mk /project/common.mk
+
 
 # Set the working directory for the third-party build
 WORKDIR /project/third-party

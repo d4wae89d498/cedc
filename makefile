@@ -62,7 +62,7 @@ include third-party/makefile
 
 all: $(LIBS_MADE_MARKER) $(NAME) $(EXECS)
 
-$(PCH_DIR)/%.pch: $(SRC_DIR)/%.hpp makefile common.mk third-party/makefile
+$(PCH_DIR)/%.pch: $(SRC_DIR)/%.hpp makefile third-party/makefile
 	@mkdir -p $(@D)
 	$(CXX) -x c++-header -DCLANGD $(CXXFLAGS) -o $@ $<
 
