@@ -28,6 +28,7 @@ $(LIBS_MADE_MARKER):
 		&& cmake .. \
 		&& make
 	@make -C $(PROJECT_DIR)/third-party/libastmatcher-parser
+	@make -C $(PROJECT_DIR)/third-party/cppmodsort
 	@make $(PROJECT_DIR)/$(PCM_DIR)/std.pcm
 	@make $(PROJECT_DIR)/$(PCM_DIR)/std.compat.pcm
 	@touch $(LIBS_MADE_MARKER)
