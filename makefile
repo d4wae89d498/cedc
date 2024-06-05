@@ -72,19 +72,23 @@ $(PCM_DIR)/%.pcm: $(SRC_DIR)/%.cppm $(PCHS)
 	@mkdir -p $(@D)
 	@mkdir -p $(shell dirname $(patsubst $(PCM_DIR)/%.pcm,$(DEP_DIR)/%.cppm.d,$(@)))
 	$(CXX) $(CXXFLAGS) -MMD -MF $(patsubst $(PCM_DIR)/%.pcm,$(DEP_DIR)/%.cppm.d,$(@)) --precompile $< -o $@ $(INCPCHS)
-	@if test "$<" = $(MOD_DIR)/* ; then \
-		path="$<"; \
-		prefix="$(MOD_DIR)/"; \
-		stripped_path=$${path#$${prefix}}; \
-		vendor_name=$$(echo "$$stripped_path" | cut -d'/' -f1); \
-		num_folders=$$(echo "$$stripped_path" | tr -cd '/' | wc -c); \
-		if test $$num_folders = 1 ; then \
-			cp -f $@ $(PCM_DIR)/$$vendor_name.$(notdir $@); \
-		else \
-			project_name=$$(echo "$$stripped_path" | cut -d'/' -f2); \
-			cp -f $@ $(PCM_DIR)/$$vendor_name.$$project_name-$(notdir $@);  \
-		fi; \
-	fi
+	@case "$<" in \
+		$(MOD_DIR)/*)\
+			path="$<"; \
+			prefix="$(MOD_DIR)/"; \
+			stripped_path=$${path#$${prefix}}; \
+			vendor_name=$$(echo "$$stripped_path" | cut -d'/' -f1); \
+			num_folders=$$(echo "$$stripped_path" | tr -cd '/' | wc -c); \
+			if test $$num_folders = 1 ; then \
+				cp -f $@ $(PCM_DIR)/$$vendor_name.$(notdir $@); \
+			else \
+				project_name=$$(echo "$$stripped_path" | cut -d'/' -f2); \
+				cp -f $@ $(PCM_DIR)/$$vendor_name.$$project_name-$(notdir $@);  \
+			fi; \
+		;;\
+		*)\
+		;;\
+	esac
 
 $(OBJ_DIR)/%.cppm.o: $(PCM_DIR)/%.pcm
 	@mkdir -p $(@D)
