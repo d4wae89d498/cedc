@@ -14,7 +14,7 @@ endif
 LIBS := third-party/libastmatcher-parser/libastmatcher-parser.a\
         third-party/antlr4/runtime/Cpp/build/runtime/libantlr4-runtime.a\
         third-party/llvm-project/build/lib/libunwind.$(LIB_EXT)\
-        third-party/llvm-project/build/lib/libc++experimental.$(LIB_EXT)\
+        third-party/llvm-project/build/lib/libc++experimental.a\
         third-party/llvm-project/build/lib/libc++.$(LIB_EXT)\
         third-party/llvm-project/build/lib/libc++abi.$(LIB_EXT)
 
