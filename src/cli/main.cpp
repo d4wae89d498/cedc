@@ -9,5 +9,5 @@ using namespace cedilla;
 
 fn main() -> int
 {
-    return 0;
+	return 0;
 }
