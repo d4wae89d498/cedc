@@ -9,6 +9,15 @@ LIBS_MADE_MARKER := $(PROJECT_DIR)/$(TMP_DIR)/.libs_made
 .PHONY: all std_pcm
 all: $(LIBS_MADE_MARKER)
 
+update_llvm:
+	VERSION=$$(cd $(PROJECT_DIR)/llvm-project && git tag -l 'llvmorg-$(LLVM_VERSION).[0-9]*.[0-9]*' --sort=-v:refname | head -n 1)
+	git checkout tags/$(VERSION)
+
+update_antlr:
+	VERSION=$$(cd $(PROJECT_DIR)/antlr4 && git tag -l 'llvmorg-$(ANTLR_VERSION).[0-9]*.[0-9]*' --sort=-v:refname | head -n 1)
+	git checkout tags/$(VERSION)
+
+
 # Build all third party libs
 $(LIBS_MADE_MARKER):
 	@mkdir -p $(PROJECT_DIR)/$(TMP_DIR)
