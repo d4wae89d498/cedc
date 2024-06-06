@@ -26,13 +26,18 @@ RUN wget https://apt.llvm.org/llvm.sh && chmod +x llvm.sh && ./llvm.sh 18 all
 RUN rm llvm.sh
 
 # Detect llvm version and create symlinks
-RUN llvm_version=$(ls /usr/bin | grep clang++ | tr -d 'clang++-') \
-	&& ln -s /usr/bin/clang-$llvm_version /usr/bin/clang \
-	&& ln -s /usr/bin/clang++-$llvm_version /usr/bin/clang++ \
-	&& ln -s /usr/bin/llvm-config-$llvm_version /usr/bin/llvm-config \
-	&& rm /usr/bin/cc \
-	&& ln -s /usr/bin/clang-$llvm_version /usr/bin/cc \
-	&& ln -s /usr/bin/clang++-$llvm_version /usr/bin/c++
+RUN export LLVM_VERSION=$(ls /usr/bin | grep clang++ | tr -d 'clang++-'); \
+	export LLVM_ROOT=$(llvm-config-$LLVM_VERSION --prefix); \
+	ln -s /usr/bin/llvm-config-$LLVM_VERSION /usr/bin/llvm-config; \
+    for bin in $LLVM_ROOT/bin/*; do \
+      bin=$(basename $bin); \
+      if test -f /usr/bin/$bin-$LLVM_VERSION ; then \
+        ln -sf /usr/bin/$bin-$LLVM_VERSION /usr/bin/$bin; \
+      fi; \
+    done; \
+	rm /usr/bin/cc; \
+	ln -s /usr/bin/clang-$LLVM_VERSION /usr/bin/cc \
+	ln -s /usr/bin/clang++-$LLVM_VERSION /usr/bin/c++
 
 # Add environment variables directly to Dockerfile
 ENV CC=/usr/bin/clang
