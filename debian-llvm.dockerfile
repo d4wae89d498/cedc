@@ -1,24 +1,17 @@
-FROM debian:12-slim
+FROM debian:12
 
-# Set environment variables
-ENV DEBIAN_FRONTEND=noninteractive
-
-# Install necessary packages
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-    build-essential \
-    curl \
-    git \
-    vim \
-    python3 \
-    python3-pip \
-    wget \
-    zlib1g-dev \
-    libzstd-dev \
-    libcurl4-openssl-dev \
-    libxml2-dev \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+# Install dependencies
+RUN apt-get update && apt-get install -y \
+	wget \
+	gnupg \
+	lsb-release \
+	software-properties-common \
+	cmake \
+	ninja-build \
+	git \
+	vim \
+	&& apt-get clean \
+	&& rm -rf /var/lib/apt/lists/*
 
 # Dynamically add the official LLVM repository based on the Debian codename
 RUN CODENAME=$(lsb_release -cs) \
