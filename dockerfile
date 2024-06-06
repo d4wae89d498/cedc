@@ -2,16 +2,16 @@
 INCLUDE+ debian-llvm.dockerfile
 
 # Install wget, curl, jq, and other dependencies
-RUN apt-get update && apt-get install -y wget curl jq antlr4
+RUN apt-get update && apt-get install -y wget curl jq openjdk-11-jre-headless
 
 # Fetch the latest ANTLR release tag from GitHub and download the jar file
-#RUN LATEST_VERSION=$(curl -s https://api.github.com/repos/antlr/antlr4/releases/latest | jq -r '.tag_name') && \
-#    wget http://www.antlr.org/download/antlr-$LATEST_VERSION-complete.jar -O /usr/local/lib/antlr-$LATEST_VERSION-complete.jar && \
-#    echo '#! /bin/bash\n'\
-#'export CLASSPATH=".:/usr/local/lib/antlr-'$LATEST_VERSION'-complete.jar:$CLASSPATH"\n'\
-#'java -jar /usr/local/lib/antlr-'$LATEST_VERSION'-complete.jar "$@"\n'\
-#> /usr/local/bin/antlr4 && \
-#    chmod +x /usr/local/bin/antlr4
+RUN LATEST_VERSION=$(curl -s https://api.github.com/repos/antlr/antlr4/releases/latest | jq -r '.tag_name') && \
+    wget http://www.antlr.org/download/antlr-$LATEST_VERSION-complete.jar -O /usr/local/lib/antlr-$LATEST_VERSION-complete.jar && \
+    echo '#! /bin/bash\n'\
+'export CLASSPATH=".:/usr/local/lib/antlr-'$LATEST_VERSION'-complete.jar:$CLASSPATH"\n'\
+'java -jar /usr/local/lib/antlr-'$LATEST_VERSION'-complete.jar "$@"\n'\
+> /usr/local/bin/antlr4 && \
+    chmod +x /usr/local/bin/antlr4
 
 # Verify the installation by printing ANTLR version
 RUN ln -s /usr/local/bin/antlr4 /usr/bin/antlr4
