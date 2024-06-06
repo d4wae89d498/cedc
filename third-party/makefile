@@ -26,6 +26,11 @@ $(LIBS_MADE_MARKER):
 		&& mkdir -p build \
 		&& cd build \
 		&& cmake .. \
+			-DCMAKE_CXX_COMPILER=$(shell which clang++) \
+			-DCMAKE_CXX_FLAGS="-stdlib=libc++ -I$(PROJECT_DIR)/third-party/llvm-project/build/include/c++/v1" \
+			-DCMAKE_EXE_LINKER_FLAGS="-L$(PROJECT_DIR)/third-party/llvm-project/build/lib -lc++ -lc++abi -lunwind" \
+			-DCMAKE_SHARED_LINKER_FLAGS="-L$(PROJECT_DIR)/third-party/llvm-project/build/lib -lc++ -lc++abi -lunwind" \
+			-DCMAKE_MODULE_LINKER_FLAGS="-L$(PROJECT_DIR)/third-party/llvm-project/build/lib -lc++ -lc++abi -lunwind" \
 		&& make
 	@make -C $(PROJECT_DIR)/third-party/libastmatcher-parser
 	@make -C $(PROJECT_DIR)/third-party/cppmodsort
