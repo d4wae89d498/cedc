@@ -28,7 +28,6 @@ RUN rm llvm.sh
 # Detect llvm version and create symlinks
 RUN export LLVM_VERSION=$(ls /usr/bin | grep clang++ | tr -d 'clang++-'); \
 	export LLVM_ROOT=$(llvm-config-$LLVM_VERSION --prefix); \
-	ln -s /usr/bin/llvm-config-$LLVM_VERSION /usr/bin/llvm-config; \
     for bin in $LLVM_ROOT/bin/*; do \
       bin=$(basename $bin); \
       if test -f /usr/bin/$bin-$LLVM_VERSION ; then \
