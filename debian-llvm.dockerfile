@@ -34,11 +34,11 @@ RUN llvm_version=$(ls /usr/bin | grep clang++ | tr -d 'clang++-') \
 	&& ln -s /usr/bin/clang-$llvm_version /usr/bin/cc \
 	&& ln -s /usr/bin/clang++-$llvm_version /usr/bin/c++
 
-RUN	echo "CFLAGS=\$(llvm-config --cflags)" >> /etc/profile && \
-	echo "CXXFLAGS=\$(llvm-config --cxxflags)" >> /etc/profile && \
-	echo "LDFLAGS=\$(llvm-config --ldflags)" >> /etc/profile && \
-	echo "LIBS=\"\$(llvm-config --libs all) \$(llvm-config --system-libs)\"" >> /etc/profile && \
-	echo "export CFLAGS CXXFLAGS LDFLAGS LIBS" >> /etc/profile
+# Set default compilation flags
+ENV CFLAGS=$(llvm-config --cflags)
+ENV CXXFLAGS=$(llvm-config --cxxflags)
+ENV LDFLAGS=$(llvm-config --ldflags)
+ENV LIBS="$(llvm-config --libs all) $(llvm-config --system-libs)"
 
 # Add environment variables directly to Dockerfile
 ENV CC=/usr/bin/clang
