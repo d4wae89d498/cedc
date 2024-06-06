@@ -1,16 +1,19 @@
 FROM debian:12-slim
 
 # Install dependencies
-RUN apt-get update && apt-get install -y \
-	wget \
-	gnupg \
-	lsb-release \
-	software-properties-common \
-	cmake \
-	ninja-build \
-	git \
-	vim \
-	&& rm -rf /var/lib/apt/lists/*
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    wget \
+    gnupg \
+    lsb-release \
+    software-properties-common \
+    cmake \
+    ninja-build \
+    git \
+    vim \
+    libcurl4-openssl-dev \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 # Dynamically add the official LLVM repository based on the Debian codename
 RUN CODENAME=$(lsb_release -cs) \
