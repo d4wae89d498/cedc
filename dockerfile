@@ -2,7 +2,7 @@
 INCLUDE+ debian-llvm.dockerfile
 
 # Grap packages version of locally installed ones
-RUN ANTLR_VERSION=$(cd third-party/antlr4 && git describe --tags | grep -oP '^[0-9]+\.[0-9]+\.[0-9]+') && \
+RUN ANTLR_VERSION=$(cd third-party/antlr && git describe --tags | grep -oP '^[0-9]+\.[0-9]+\.[0-9]+') && \
     LLVM_VERSION=$(cd third-party/llvm-project && git describe --tags | grep -oP '(?<=llvmorg-)[0-9]+') \
     echo "export ANTLR_VERSION=$ANTLR_VERSION" >> /etc/profile && \
     echo "export LLVM_VERSION=$LLVM_VERSION" >> /etc/profile
