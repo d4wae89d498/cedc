@@ -1,6 +1,6 @@
-	#include <iostream>
+	#include "stdio.h"
 
 	int main()
 	{
-		std::cout << "OK" << std::endl;
+		printf("OK");
 	}

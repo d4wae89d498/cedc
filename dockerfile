@@ -1,9 +1,16 @@
 # syntax = edrevo/dockerfile-plus
 INCLUDE+ debian-llvm.dockerfile
 
+# Copy third-party directory first to leverage caching
+COPY third-party /project/third-party
+COPY common.mk /project/common.mk
+
+# Set the working directory for the third-party build
+WORKDIR /project/third-party
+
 # Grap packages version of locally installed ones
 RUN ANTLR_VERSION=$(cd third-party/antlr && git describe --tags | grep -oP '^[0-9]+\.[0-9]+\.[0-9]+') && \
-    LLVM_VERSION=$(cd third-party/llvm-project && git describe --tags | grep -oP '(?<=llvmorg-)[0-9]+') \
+    LLVM_VERSION=$(cd third-party/llvm-project && git describe --tags | grep -oP '(?<=llvmorg-)[0-9]+') && \
     echo "export ANTLR_VERSION=$ANTLR_VERSION" >> /etc/profile && \
     echo "export LLVM_VERSION=$LLVM_VERSION" >> /etc/profile
 
@@ -23,13 +30,6 @@ RUN LATEST_VERSION=$ANTLR_VERSION  && \
 # Verify the installation by printing ANTLR version
 RUN ln -s /usr/local/bin/antlr4 /usr/bin/antlr4
 RUN ln -s $(which antlr4) /usr/bin/antlr
-
-# Copy third-party directory first to leverage caching
-COPY third-party /project/third-party
-COPY common.mk /project/common.mk
-
-# Set the working directory for the third-party build
-WORKDIR /project/third-party
 
 # Build the third-party dependencies
 RUN make
