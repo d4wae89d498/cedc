@@ -1,8 +1,3 @@
-# syntax is folder:branch
-SUBMODULES := 	llvm-project:llvmorg-18\
-				antlr:4
-
-########
 PROJECT_DIR := $(dir $(realpath $(dir $(lastword $(MAKEFILE_LIST)))))
 
 include $(PROJECT_DIR)/common.mk
@@ -11,6 +6,8 @@ LIBS_MADE_MARKER := $(PROJECT_DIR)/$(TMP_DIR)/.libs_made
 
 .PHONY: all std_pcm $(wildcard update_*)
 all: $(LIBS_MADE_MARKER)
+
+SUBMODULES := 	$(shell cat $(PROJECT_DIR)/third-party/versions.txt)
 
 define update_submodule
 	CURRENT_VERSION=$$(cd $(PROJECT_DIR)/third-party/$(1) && git tag -l '$(2).[0-9]*.[0-9]*' --sort=-v:refname | head -n 1); \
