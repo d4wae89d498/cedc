@@ -5,4 +5,5 @@
 	path = third-party/cppmodsort
 	url = git@github.com:d4wae89d498/cppmodsort.git
 [submodule "third-party/antlr"]
-	path = third-party/antlr4
+	path = third-party/antlr
+	url = https://github.com/antlr/antlr4.git
