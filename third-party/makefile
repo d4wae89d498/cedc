@@ -35,7 +35,7 @@ define generate_update_rules
 $(foreach module_version,$(SUBMODULES),\
 	$(eval module=$$(shell echo $(module_version) | cut -d ':' -f 1))\
 	$(eval version=$$(shell echo $(module_version) | cut -d ':' -f 2))\
-	$(eval update_$(module): ;  echo $(module),$(version); $$(call update_submodule,$(module),$(version)))\
+	$(eval update_$(module): ; $$(call update_submodule,$(module),$(version)))\
 )
 endef
 $(eval $(call generate_update_rules))

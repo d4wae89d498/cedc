@@ -34,9 +34,9 @@ RUN export LLVM_VERSION=$(ls /usr/bin | grep clang++ | tr -d 'clang++-'); \
         ln -sf /usr/bin/$bin-$LLVM_VERSION /usr/bin/$bin; \
       fi; \
     done; \
-	rm /usr/bin/cc; \
-	ln -s /usr/bin/clang-$LLVM_VERSION /usr/bin/cc \
-	ln -s /usr/bin/clang++-$LLVM_VERSION /usr/bin/c++
+	rm -f /usr/bin/cc; \
+	ln -sf /usr/bin/clang-$LLVM_VERSION /usr/bin/cc \
+	ln -sf /usr/bin/clang++-$LLVM_VERSION /usr/bin/c++
 
 # Add environment variables directly to Dockerfile
 ENV CC=/usr/bin/clang
