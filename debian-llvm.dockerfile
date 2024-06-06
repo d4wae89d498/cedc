@@ -19,7 +19,7 @@ RUN CODENAME=$(lsb_release -cs) \
 	&& apt-get update
 
 # Download and run the LLVM installation script
-RUN wget https://apt.llvm.org/llvm.sh && chmod +x llvm.sh && ./llvm.sh 18
+RUN wget https://apt.llvm.org/llvm.sh && chmod +x llvm.sh && ./llvm.sh 18 all
 
 # Clean up
 RUN rm llvm.sh
