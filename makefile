@@ -1,22 +1,12 @@
 include common.mk
 
-# Detect the OS
-UNAME_S := $(shell uname -s)
-
-# Set library extensions based on OS
-ifeq ($(UNAME_S),Darwin)
-    LIB_EXT := dylib
-else
-    LIB_EXT := so
-endif
-
 # Set the libraries to link
 LIBS := third-party/libastmatcher-parser/libastmatcher-parser.a\
-        third-party/antlr4/runtime/Cpp/build/runtime/libantlr4-runtime.a\
-        third-party/llvm-project/build/lib/libunwind.$(LIB_EXT)\
-        third-party/llvm-project/build/lib/libc++experimental.a\
-        third-party/llvm-project/build/lib/libc++.$(LIB_EXT)\
-        third-party/llvm-project/build/lib/libc++abi.$(LIB_EXT)
+ 	third-party/antlr/runtime/Cpp/build/runtime/libantlr4-runtime.a\
+ 	third-party/llvm-project/build/lib/libunwind.a\
+ 	third-party/llvm-project/build/lib/libc++experimental.a\
+ 	third-party/llvm-project/build/lib/libc++.a\
+ 	third-party/llvm-project/build/lib/libc++abi.a
 
 
 # Compilation database output

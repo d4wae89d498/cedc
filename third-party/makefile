@@ -1,22 +1,39 @@
-# Root folder
 PROJECT_DIR := $(dir $(realpath $(dir $(lastword $(MAKEFILE_LIST)))))
 
 include $(PROJECT_DIR)/common.mk
 
-# Marker file
 LIBS_MADE_MARKER := $(PROJECT_DIR)/$(TMP_DIR)/.libs_made
 
-.PHONY: all std_pcm
+.PHONY: all std_pcm $(wildcard update_*)
 all: $(LIBS_MADE_MARKER)
 
+define update_submodule
+	@CURRENT_VERSION=$$(cd $(PROJECT_DIR)/third-party/$(1) && git tag -l '$(2).[0-9]*.[0-9]*' --sort=-v:refname | head -n 1) && \
+	NEW_VERSION=$$(cd $(PROJECT_DIR)/third-party/$(1) && git fetch --tags && git tag -l '$(2).[0-9]*.[0-9]*' --sort=-v:refname | head -n 1) && \
+	if test -z "$$NEW_VERSION"; then \
+		echo "No new version found for $(1) $(2)"; \
+		exit 1; \
+	elif test -z "$$CURRENT_VERSION"; then \
+		echo "No current version found for $(1) $(2). Checking out the new version $$NEW_VERSION"; \
+		cd $(PROJECT_DIR)/third-party/$(1) && git checkout tags/$$NEW_VERSION; \
+	elif test "$$CURRENT_VERSION" != "$$NEW_VERSION"; then \
+		echo "Update $(1) from $$CURRENT_VERSION to $$NEW_VERSION..."; \
+		cd $(PROJECT_DIR)/third-party/$(1) && git checkout tags/$$NEW_VERSION; \
+		rm $(LIBS_MADE_MARKER) \
+	else \
+		echo "$(1) is already up-to-date ($$CURRENT_VERSION)"; \
+	fi
+endef
+
 update_llvm:
-	VERSION=$$(cd $(PROJECT_DIR)/llvm-project && git tag -l 'llvmorg-$(LLVM_VERSION).[0-9]*.[0-9]*' --sort=-v:refname | head -n 1)
-	git checkout tags/$(VERSION)
+	$(call update_submodule,llvm-project,llvmorg-18)
 
 update_antlr:
-	VERSION=$$(cd $(PROJECT_DIR)/antlr4 && git tag -l 'llvmorg-$(ANTLR_VERSION).[0-9]*.[0-9]*' --sort=-v:refname | head -n 1)
-	git checkout tags/$(VERSION)
+	$(call update_submodule,antlr,4)
 
+update_deps:
+	make update_llvm
+	make update_antlr
 
 # Build all third party libs
 $(LIBS_MADE_MARKER):
@@ -30,7 +47,7 @@ $(LIBS_MADE_MARKER):
 			-DCMAKE_C_COMPILER=$(shell which clang) \
 			-DCMAKE_CXX_COMPILER=$(shell which clang++) \
 		&& ninja -C build
-	@cd $(PROJECT_DIR)/third-party/antlr4/runtime/Cpp \
+	@cd $(PROJECT_DIR)/third-party/antlr/runtime/Cpp \
 		&& rm -rf build \
 		&& mkdir -p build \
 		&& cd build \

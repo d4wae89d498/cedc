@@ -1,15 +1,22 @@
 # syntax = edrevo/dockerfile-plus
 INCLUDE+ debian-llvm.dockerfile
 
+# Grap packages version of locally installed ones
+RUN ANTLR_VERSION=$(cd third-party/antlr4 && git describe --tags | grep -oP '^[0-9]+\.[0-9]+\.[0-9]+') && \
+    LLVM_VERSION=$(cd third-party/llvm-project && git describe --tags | grep -oP '(?<=llvmorg-)[0-9]+') \
+    echo "export ANTLR_VERSION=$ANTLR_VERSION" >> /etc/profile && \
+    echo "export LLVM_VERSION=$LLVM_VERSION" >> /etc/profile
+
+
 # Install wget, curl, jq, and other dependencies
 RUN apt-get update && apt-get install -y wget curl jq openjdk-17-jre-headless
 
 # Fetch the latest ANTLR release tag from GitHub and download the jar file
-RUN LATEST_VERSION=$(curl -s https://api.github.com/repos/antlr/antlr4/releases/latest | jq -r '.tag_name') && \
-    wget http://www.antlr.org/download/antlr-$LATEST_VERSION-complete.jar -O /usr/local/lib/antlr-$LATEST_VERSION-complete.jar && \
+RUN LATEST_VERSION=$ANTLR_VERSION  && \
+    wget http://www.antlr.org/download/antlr-$ANTLR_VERSION-complete.jar -O /usr/local/lib/antlr-$ANTLR_VERSION-complete.jar && \
     echo '#! /bin/bash\n'\
-'export CLASSPATH=".:/usr/local/lib/antlr-'$LATEST_VERSION'-complete.jar:$CLASSPATH"\n'\
-'java -jar /usr/local/lib/antlr-'$LATEST_VERSION'-complete.jar "$@"\n'\
+'export CLASSPATH=".:/usr/local/lib/antlr-'$ANTLR_VERSION'-complete.jar:$CLASSPATH"\n'\
+'java -jar /usr/local/lib/antlr-'$ANTLR_VERSION'-complete.jar "$@"\n'\
 > /usr/local/bin/antlr4 && \
     chmod +x /usr/local/bin/antlr4
 

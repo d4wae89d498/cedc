@@ -1,9 +1,6 @@
 [submodule "third-party/llvm-project"]
 	path = third-party/llvm-project
 	url = https://github.com/llvm/llvm-project.git
-[submodule "third-party/antlr4"]
-	path = third-party/antlr
-	url = https://github.com/antlr/antlr4.git
 [submodule "third-party/cppmodsort"]
 	path = third-party/cppmodsort
 	url = git@github.com:d4wae89d498/cppmodsort.git
