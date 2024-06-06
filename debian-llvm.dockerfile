@@ -34,12 +34,6 @@ RUN llvm_version=$(ls /usr/bin | grep clang++ | tr -d 'clang++-') \
 	&& ln -s /usr/bin/clang-$llvm_version /usr/bin/cc \
 	&& ln -s /usr/bin/clang++-$llvm_version /usr/bin/c++
 
-# Set default compilation flags
-ENV CFLAGS=$(llvm-config --cflags)
-ENV CXXFLAGS=$(llvm-config --cxxflags)
-ENV LDFLAGS=$(llvm-config --ldflags)
-ENV LIBS="$(llvm-config --libs all) $(llvm-config --system-libs)"
-
 # Add environment variables directly to Dockerfile
 ENV CC=/usr/bin/clang
 ENV CXX=/usr/bin/clang++
