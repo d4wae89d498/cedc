@@ -2,7 +2,7 @@
 INCLUDE+ debian-llvm.dockerfile
 
 # Install wget, curl, jq, and other dependencies
-RUN apt-get update && apt-get install -y wget curl jq openjdk-11-jre-headless
+RUN apt-get update && apt-get install -y wget curl jq openjdk-17-jre-headless
 
 # Fetch the latest ANTLR release tag from GitHub and download the jar file
 RUN LATEST_VERSION=$(curl -s https://api.github.com/repos/antlr/antlr4/releases/latest | jq -r '.tag_name') && \
