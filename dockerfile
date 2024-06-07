@@ -27,8 +27,17 @@ RUN ANTLR_VERSION=4.13.1 && \
 RUN ln -s /usr/local/bin/antlr4 /usr/bin/antlr4
 RUN ln -s $(which antlr4) /usr/bin/antlr
 
-# Build the third-party dependencies
-RUN make
+# Build deps and cleanup
+RUN make && cd llvm-project && rm -rf llvm \
+	&& rm -rf clang \
+	&& rm -rf clang-tools-extra \
+	&& rm -rf lld \
+	&& rm -rf lldb \
+	&& rm -rf polly \
+	&& rm -rf flang \
+	&& rm -rf bolt \
+	&& rm -rf mlir \
+	&& rm -rf libc
 
 # Copy the main project files
 COPY . /project/

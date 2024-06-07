@@ -7,12 +7,8 @@ LIBS_MADE_MARKER := $(PROJECT_DIR)/$(TMP_DIR)/.libs_made
 .PHONY: all std_pcm $(wildcard update_*)
 all: $(LIBS_MADE_MARKER)
 
-SUBMODULES_BRANCHES := 	$(PROJECT_DIR)/third-party/submodule-branches.txt
-SUBMODULES_RELEASES := 	$(PROJECT_DIR)/third-party/submodule-releases.txt
-
-#TODO: fix release file.
 define update_submodule
-	CURRENT_VERSION=$$(cd $(PROJECT_DIR)/third-party/$(1) && git tag -l '$(2).[0-9]*.[0-9]*' --sort=-v:refname | head -n 1); \
+	@CURRENT_VERSION=$$(cd $(PROJECT_DIR)/third-party/$(1) && git tag -l '$(2).[0-9]*.[0-9]*' --sort=-v:refname | head -n 1); \
 	NEW_VERSION=$$(cd $(PROJECT_DIR)/third-party/$(1) && git fetch --tags && git tag -l '$(2).[0-9]*.[0-9]*' --sort=-v:refname | head -n 1); \
 	if ! test "$$NEW_VERSION"; then \
 		echo "No new version found for $(1) $(2)"; \
@@ -23,32 +19,21 @@ define update_submodule
 	elif test "$$CURRENT_VERSION" != "$$NEW_VERSION"; then \
 		echo "Updating $(1) from $$CURRENT_VERSION to $$NEW_VERSION..."; \
 		cd $(PROJECT_DIR)/third-party/$(1) && git checkout tags/$$NEW_VERSION; \
-		cat $(SUBMODULES_RELEASES) | grep -v "^$(1):" > $(SUBMODULES_RELEASES); \
-		echo "$(1):$$NEW_VERSION" >> $(SUBMODULES_RELEASES) ; \
 		rm -f $(LIBS_MADE_MARKER); \
 	else \
 		echo "$(1) is already up-to-date ($$CURRENT_VERSION)";\
-		cat $(SUBMODULES_RELEASES) | grep -v "^$(1):" > $(SUBMODULES_RELEASES) ; \
-		echo "$(1):$$CURRENT_VERSION" >> $(SUBMODULES_RELEASES) ; \
 	fi;
 endef
 
-# Generate individual update rules
-define generate_update_rules
-$(foreach module_version,$(shell cat $(SUBMODULES_BRANCHES)),\
-	$(eval module=$$(shell echo $(module_version) | cut -d ':' -f 1))\
-	$(eval version=$$(shell echo $(module_version) | cut -d ':' -f 2))\
-	$(eval update_$(module): ; $$(call update_submodule,$(module),$(version)))\
-)
-endef
-$(eval $(call generate_update_rules))
+update_antlr:
+	$(call update_submodule,antlr,4)
+
+update_llvm:
+	$(call update_submodule,llvm-project,llvmorg-18)
 
 update_deps:
-	@for module_version in $(shell cat $(SUBMODULES_BRANCHES)); do \
-		module=$$(echo $$module_version | cut -d ':' -f 1); \
-		version=$$(echo $$module_version | cut -d ':' -f 2); \
-		make update_$$module; \
-	done
+	make update_antlr
+	make update_llvm
 
 # Build all third party libs
 $(LIBS_MADE_MARKER):
