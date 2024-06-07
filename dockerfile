@@ -15,7 +15,7 @@ RUN apt-get update && apt-get install -y wget curl jq openjdk-17-jre-headless
 ENV VERSIONS_FILE=versions.txt
 
 # Fetch the latest ANTLR release tag from GitHub and download the jar file
-RUN ANTLR_VERSION=$(awk -F: '/antlr/{print $2}' $VERSIONS_FILE | tr -d -c '0-9') &&  && \
+RUN ANTLR_VERSION=$(awk -F: '/antlr/{print $2}' $VERSIONS_FILE | tr -d -c '0-9') && \
     wget http://www.antlr.org/download/antlr-$ANTLR_VERSION-complete.jar -O /usr/local/lib/antlr-$ANTLR_VERSION-complete.jar && \
     echo '#! /bin/bash\n'\
 'export CLASSPATH=".:/usr/local/lib/antlr-'$ANTLR_VERSION'-complete.jar:$CLASSPATH"\n'\
