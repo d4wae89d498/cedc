@@ -8,16 +8,11 @@ COPY common.mk /project/common.mk
 # Set the working directory for the third-party build
 WORKDIR /project/third-party
 
-# Grap packages version of locally installed ones
-ENV VERSIONS_FILE=versions.txt
-RUN	ANTLR_VERSION=$(awk -F: '/antlr/{print $2}' $VERSIONS_FILE | tr -d -c '0-9') && \
-	LLVM_VERSION=$(awk -F: '/llvm-project/{print $2}' $VERSIONS_FILE | tr -d -c '0-9') && \
-	echo "export ANTLR_VERSION=$ANTLR_VERSION" >> /etc/profile && \
-	echo "export LLVM_VERSION=$LLVM_VERSION" >> /etc/profile
-
-
 # Install wget, curl, jq, and other dependencies
 RUN apt-get update && apt-get install -y wget curl jq openjdk-17-jre-headless
+
+# Grap packages version of locally installed ones
+ENV VERSIONS_FILE=versions.txt
 
 # Fetch the latest ANTLR release tag from GitHub and download the jar file
 RUN ANTLR_VERSION=$(awk -F: '/antlr/{print $2}' $VERSIONS_FILE | tr -d -c '0-9') &&  && \
