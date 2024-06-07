@@ -36,11 +36,16 @@ jobs:
           docker buildx create --use
           docker buildx build --file ./dockerfile --cache-from=type=local,src=/tmp/.buildx-cache --cache-to=type=local,dest=/tmp/.buildx-cache-new --output=type=docker -t cedilla:latest .
 
+      - name: Minimize Docker image size
+        run: docker image prune -f
+
       - name: Test Docker image
         run: docker run --rm cedilla:latest /bin/bash -c "echo 'Docker image built and tested successfully.'"
 
-      - name: Clean up unused Docker layers
-        run: docker system prune -f
+      - name: Clean up unused Docker resources
+        run: |
+          docker system prune -f
+          docker builder prune -f
 
       - name: Save new Docker cache
         if: always()
