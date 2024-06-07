@@ -24,11 +24,11 @@ RUN ANTLR_VERSION=4.13.1 && \
     chmod +x /usr/local/bin/antlr4
 
 # Verify the installation by printing ANTLR version
-RUN ln -s /usr/local/bin/antlr4 /usr/bin/antlr4
-RUN ln -s $(which antlr4) /usr/bin/antlr
-
 # Build deps and cleanup
-RUN make && cd llvm-project && rm -rf llvm \
+
+RUN ln -s /usr/local/bin/antlr4 /usr/bin/antlr4 \
+	&& ln -s $(which antlr4) /usr/bin/antlr \
+	&& cd llvm-project && rm -rf llvm \
 	&& rm -rf clang \
 	&& rm -rf clang-tools-extra \
 	&& rm -rf lld \
@@ -46,7 +46,4 @@ COPY . /project/
 WORKDIR /project/
 
 # Build the main project
-RUN make
-
-# Run the tests
-RUN make test
+RUN make && make test && df -h
