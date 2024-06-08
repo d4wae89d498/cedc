@@ -16,12 +16,16 @@ define update_submodule
 	elif ! test "$$CURRENT_VERSION"; then \
 		echo "No current version found for $(1) $(2). Checking out the new version $$NEW_VERSION"; \
 		cd $(PROJECT_DIR)/third-party/$(1) && git checkout tags/$$NEW_VERSION; \
+		echo $$NEW_VERSION > $(PROJECT_DIR)/third-party/.versions/$(1); \
+		rm -f $(LIBS_MADE_MARKER); \
 	elif test "$$CURRENT_VERSION" != "$$NEW_VERSION"; then \
 		echo "Updating $(1) from $$CURRENT_VERSION to $$NEW_VERSION..."; \
 		cd $(PROJECT_DIR)/third-party/$(1) && git checkout tags/$$NEW_VERSION; \
+		echo $$NEW_VERSION > $(PROJECT_DIR)/third-party/.versions/$(1); \
 		rm -f $(LIBS_MADE_MARKER); \
 	else \
 		echo "$(1) is already up-to-date ($$CURRENT_VERSION)";\
+		echo $$CURRENT_VERSION > $(PROJECT_DIR)/third-party/.versions/$(1); \
 	fi;
 endef
 
