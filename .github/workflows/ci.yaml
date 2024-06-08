@@ -18,37 +18,40 @@ jobs:
         with:
           submodules: true
 
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
         with:
           install: true
 
-      - name: Cache Docker layers
-        uses: actions/cache@v3
+      - name: Load Docker cache from Docker Hub
+        uses: docker/build-push-action@v3
         with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-
+          context: .
+          cache-from: type=registry,ref=whitehat101/cedc:cache
+          cache-to: type=registry,ref=whitehat101/cedc:cache,mode=max
 
-      - name: Build Docker image
-        run: |
-          docker buildx create --use
-          docker buildx build --file ./dockerfile --cache-from=type=local,src=/tmp/.buildx-cache --cache-to=type=local,dest=/tmp/.buildx-cache-new --output=type=docker -t cedilla:latest .
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          push: true
+          tags: whitehat101/cedc:latest
+          cache-from: type=registry,ref=whitehat101/cedc:cache
+          cache-to: type=registry,ref=whitehat101/cedc:cache,mode=max
 
       - name: Minimize Docker image size
         run: docker image prune -f
 
       - name: Test Docker image
-        run: docker run --rm cedilla:latest /bin/bash -c "echo 'Docker image built and tested successfully.'"
+        run: docker run --rm whitehat101/cedc:latest /bin/bash -c "echo 'Docker image built and tested successfully.'"
 
       - name: Clean up unused Docker resources
         run: |
           docker system prune -f
           docker builder prune -f
-
-      - name: Save new Docker cache
-        if: always()
-        run: |
-          rm -rf /tmp/.buildx-cache
-          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
