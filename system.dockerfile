@@ -52,7 +52,7 @@ COPY test/llvm/test.cpp .
 RUN chmod +x test.sh && ./test.sh
 
 ##################################
-#######		  ANTLR 	  ########
+######  ANTLR & STD PCM DEPS #####
 ##################################
 
 # Copy all files
