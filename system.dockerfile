@@ -1,5 +1,9 @@
 FROM debian:12
 
+##################################
+#######		DEBIAN LLVM	  ########
+##################################
+
 # Install dependencies
 RUN apt-get update && apt-get install -y \
 	wget \
@@ -46,6 +50,32 @@ COPY test/llvm/test.sh .
 COPY test/llvm/test.cpp .
 
 RUN chmod +x test.sh && ./test.sh
+
+##################################
+#######		  ANTLR 	  ########
+##################################
+
+# Copy all files
+COPY . /project/
+
+# Set the working directory for the third-party build
+WORKDIR /project/third-party
+
+# Install wget, curl, jq, and other dependencies
+RUN apt-get update && apt-get install -y wget curl jq openjdk-17-jre-headless
+
+# Fetch the latest ANTLR release tag from GitHub, download the jar file and create aliases
+RUN ANTLR_VERSION=$(cat .versions/antlr) && \
+    wget http://www.antlr.org/download/antlr-$ANTLR_VERSION-complete.jar -O /usr/local/lib/antlr-$ANTLR_VERSION-complete.jar && \
+    echo '#! /bin/bash\n'\
+'export CLASSPATH=".:/usr/local/lib/antlr-'$ANTLR_VERSION'-complete.jar:$CLASSPATH"\n'\
+'java -jar /usr/local/lib/antlr-'$ANTLR_VERSION'-complete.jar "$@"\n'\
+> /usr/local/bin/antlr4 && \
+    chmod +x /usr/local/bin/antlr4 && \
+	ln -s $(which antlr4) /usr/bin/antlr
+
+# Build project deps
+RUN make
 
 # Start an interactive bash shell
 CMD ["/bin/bash"]
