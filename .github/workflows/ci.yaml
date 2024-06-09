@@ -30,8 +30,10 @@ jobs:
 
       - name: Check for changes in system.dockerfile or third-party
         run: |
-          git diff --name-only HEAD^ HEAD
-          if git diff --name-only HEAD^ HEAD | grep -qE 'system.dockerfile|third-party'; then
+          git fetch origin main
+          CHANGED_FILES=$(git diff --name-only HEAD $(git merge-base HEAD origin/main))
+          echo "Changed files: $CHANGED_FILES"
+          if echo "$CHANGED_FILES" | grep -qE 'system.dockerfile|third-party'; then
             echo "Changes detected in system.dockerfile or third-party"
             docker build -t whitehat101/cedc-system:latest -f system.dockerfile .
             docker push whitehat101/cedc-system:latest
