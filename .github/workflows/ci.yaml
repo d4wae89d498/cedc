@@ -96,6 +96,10 @@ jobs:
         with:
           install: true
 
+      - name: Ensure system image is available
+        run: |
+          docker pull cedc-system/system:latest || echo "System image not available"
+
       - name: Load Docker cache from Docker Hub (App)
         uses: docker/build-push-action@v3
         with:
@@ -107,8 +111,8 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: .
-          push: true
           file: Dockerfile # Ensure the correct Dockerfile is used
+          push: true
           tags: whitehat101/cedc:latest
           cache-from: type=registry,ref=whitehat101/cedc:cache
           cache-to: type=registry,ref=whitehat101/cedc:cache,mode=max
