@@ -56,13 +56,6 @@ jobs:
         with:
           install: true
 
-      - name: Load Docker cache from Docker Hub (System)
-        uses: docker/build-push-action@v3
-        with:
-          context: .
-          cache-from: type=registry,ref=cedc-system/system:cache
-          cache-to: type=registry,ref=cedc-system/system:cache,mode=max
-
       - name: Build and push base Docker image (System)
         uses: docker/build-push-action@v3
         with:
