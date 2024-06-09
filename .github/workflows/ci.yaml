@@ -45,15 +45,6 @@ jobs:
           submodules: true
           fetch-depth: 2 # Ensure we have enough history for diff
 
-      - name: Cache repository
-        id: cache-repo
-        uses: actions/cache@v3
-        with:
-          path: ${{ github.workspace }}
-          key: ${{ runner.os }}-repo-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-repo-
-
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
@@ -88,17 +79,7 @@ jobs:
     needs: [check-changes, system]
 
     steps:
-      - name: Restore repository cache
-        id: restore-cache
-        uses: actions/cache@v3
-        with:
-          path: ${{ github.workspace }}
-          key: ${{ runner.os }}-repo-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-repo-
-
-      - name: Checkout repository if cache miss
-        if: steps.restore-cache.outputs.cache-hit != 'true'
+      - name: Checkout repository
         uses: actions/checkout@v3
         with:
           submodules: true
@@ -127,6 +108,7 @@ jobs:
         with:
           context: .
           push: true
+          file: Dockerfile # Ensure the correct Dockerfile is used
           tags: whitehat101/cedc:latest
           cache-from: type=registry,ref=whitehat101/cedc:cache
           cache-to: type=registry,ref=whitehat101/cedc:cache,mode=max
