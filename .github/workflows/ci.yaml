@@ -28,14 +28,16 @@ jobs:
         with:
           install: true
 
-      - name: Build and push system image if necessary
-        id: build_system
+      - name: Check for changes in system.dockerfile or third-party
         run: |
+          git diff --name-only HEAD^ HEAD
           if git diff --name-only HEAD^ HEAD | grep -qE 'system.dockerfile|third-party'; then
+            echo "Changes detected in system.dockerfile or third-party"
             docker build -t whitehat101/cedc-system:latest -f system.dockerfile .
             docker push whitehat101/cedc-system:latest
             echo "::set-output name=system_image_built::true"
           else
+            echo "No changes detected in system.dockerfile or third-party"
             echo "::set-output name=system_image_built::false"
           fi
 
