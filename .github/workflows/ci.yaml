@@ -46,7 +46,7 @@ jobs:
         run: echo "CHANGES: ${{ env.CHANGES }}"
 
       - name: Load Docker cache from Docker Hub (System)
-        if: env.CHANGES == 'true'
+        if: steps.check_changes.outputs.CHANGES == 'true'
         uses: docker/build-push-action@v3
         with:
           context: .
@@ -54,11 +54,11 @@ jobs:
           cache-to: type=registry,ref=cedc-system/system:cache,mode=max
 
       - name: Debug: Show Docker context files (System)
-        if: env.CHANGES == 'true'
+        if: steps.check_changes.outputs.CHANGES == 'true'
         run: ls -la .
 
       - name: Build and push base Docker image (System)
-        if: env.CHANGES == 'true'
+        if: steps.check_changes.outputs.CHANGES == 'true'
         uses: docker/build-push-action@v3
         with:
           context: .
