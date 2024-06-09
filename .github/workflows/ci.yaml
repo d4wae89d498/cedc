@@ -42,6 +42,9 @@ jobs:
             echo "CHANGES=false" >> $GITHUB_ENV
           fi
 
+      - name: Print environment variables
+        run: echo "CHANGES: ${{ env.CHANGES }}"
+
       - name: Load Docker cache from Docker Hub (System)
         if: env.CHANGES == 'true'
         uses: docker/build-push-action@v3
@@ -49,6 +52,10 @@ jobs:
           context: .
           cache-from: type=registry,ref=cedc-system/system:cache
           cache-to: type=registry,ref=cedc-system/system:cache,mode=max
+
+      - name: Debug: Show Docker context files (System)
+        if: env.CHANGES == 'true'
+        run: ls -la .
 
       - name: Build and push base Docker image (System)
         if: env.CHANGES == 'true'
