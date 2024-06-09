@@ -29,23 +29,34 @@ jobs:
         with:
           install: true
 
+      - name: Check for changes in system-related files
+        id: check_changes
+        run: |
+          if git diff --name-only HEAD^ HEAD | grep -E '(\.github/workflows/ci.yaml|system.dockerfile|\.system.dockerignore|third-party/)'; then
+            echo "CHANGES=true" >> $GITHUB_ENV
+          else
+            echo "CHANGES=false" >> $GITHUB_ENV
+          fi
+
       - name: Load Docker cache from Docker Hub (System)
+        if: env.CHANGES == 'true'
         uses: docker/build-push-action@v3
         with:
           context: .
-          cache-from: type=registry,ref=cedc-system/system:cache
-          cache-to: type=registry,ref=cedc-system/system:cache,mode=max
+          cache-from: type=registry,ref=whitehat101/cedc-system/system:cache
+          cache-to: type=registry,ref=whitehat101/cedc-system/system:cache,mode=max
 
       - name: Build and push base Docker image (System)
+        if: env.CHANGES == 'true'
         uses: docker/build-push-action@v3
         with:
           context: .
           file: system.dockerfile
           dockerignore: .system.dockerignore
           push: true
-          tags: cedc-system/system:latest
-          cache-from: type=registry,ref=cedc-system/system:cache
-          cache-to: type=registry,ref=cedc-system/system:cache,mode=max
+          tags: whitehat101/cedc-system/system:latest
+          cache-from: type=registry,ref=whitehat101/cedc-system/system:cache
+          cache-to: type=registry,ref=whitehat101/cedc-system/system:cache,mode=max
 
       - name: Load Docker cache from Docker Hub (App)
         uses: docker/build-push-action@v3
