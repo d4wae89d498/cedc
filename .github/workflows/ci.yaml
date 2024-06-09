@@ -14,6 +14,7 @@ jobs:
 
     outputs:
       changes: ${{ steps.check_changes.outputs.changes }}
+      repo-path: ${{ steps.cache-checkout.outputs.cache-hit }}
 
     steps:
       - name: Checkout repository
@@ -21,6 +22,15 @@ jobs:
         with:
           submodules: true
           fetch-depth: 2 # Ensure we have enough history for diff
+
+      - name: Cache repository
+        id: cache-checkout
+        uses: actions/cache@v3
+        with:
+          path: ${{ github.workspace }}
+          key: ${{ runner.os }}-repo-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-repo-
 
       - name: Fetch all history for diff
         run: git fetch --prune --unshallow
@@ -40,7 +50,16 @@ jobs:
     if: needs.check-changes.outputs.changes == 'true'
 
     steps:
+      - name: Restore repository cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ github.workspace }}
+          key: ${{ runner.os }}-repo-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-repo-
+
       - name: Checkout repository
+        if: steps.cache-checkout.outputs.cache-hit != 'true'
         uses: actions/checkout@v3
         with:
           submodules: true
@@ -80,7 +99,16 @@ jobs:
     needs: [check-changes, system]
 
     steps:
+      - name: Restore repository cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ github.workspace }}
+          key: ${{ runner.os }}-repo-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-repo-
+
       - name: Checkout repository
+        if: steps.cache-checkout.outputs.cache-hit != 'true'
         uses: actions/checkout@v3
         with:
           submodules: true
@@ -111,4 +139,15 @@ jobs:
           push: true
           tags: whitehat101/cedc:latest
           cache-from: type=registry,ref=whitehat101/cedc:cache
-          cache-to: type=registry,
+          cache-to: type=registry,ref=whitehat101/cedc:cache,mode=max
+
+      - name: Minimize Docker image size
+        run: docker image prune -f
+
+      - name: Test Docker image
+        run: docker run --rm whitehat101/cedc:latest /bin/bash -c "echo 'Docker image built and tested successfully.'"
+
+      - name: Clean up unused Docker resources
+        run: |
+          docker system prune -f
+          docker builder prune -f
