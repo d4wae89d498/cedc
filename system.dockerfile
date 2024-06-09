@@ -64,6 +64,8 @@ WORKDIR /project/third-party
 # Install wget, curl, jq, and other dependencies
 RUN apt-get update && apt-get install -y wget curl jq openjdk-17-jre-headless
 
+RUN ls
+
 # Fetch the latest ANTLR release tag from GitHub, download the jar file and create aliases
 RUN ANTLR_VERSION=$(cat .versions/antlr) && \
     wget http://www.antlr.org/download/antlr-$ANTLR_VERSION-complete.jar -O /usr/local/lib/antlr-$ANTLR_VERSION-complete.jar && \
