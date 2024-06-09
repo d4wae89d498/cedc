@@ -34,20 +34,20 @@ jobs:
           git fetch origin main
           CHANGED_FILES=$(git diff --name-only HEAD $(git merge-base HEAD origin/main))
           echo "Changed files: $CHANGED_FILES"
-          echo "changed_files=$CHANGED_FILES" >> $GITHUB_ENV
+          echo "CHANGED_FILES=$CHANGED_FILES" >> $GITHUB_ENV
 
       - name: Build and push system image if necessary
-        if: env.changed_files != '' && env.changed_files =~ 'system.dockerfile|third-party'
+        if: env.CHANGED_FILES != '' && env.CHANGED_FILES =~ 'system.dockerfile|third-party'
         uses: docker/build-push-action@v3
         with:
           context: .
           file: system.dockerfile
           tags: whitehat101/cedc-system:latest
           push: true
-        else:
-          run: |
-            echo "No changes detected in system.dockerfile or third-party"
-            echo "::set-output name=system_image_built::false"
+
+      - name: Set output for no changes
+        if: env.CHANGED_FILES == '' || env.CHANGED_FILES !~ 'system.dockerfile|third-party'
+        run: echo "::set-output name=system_image_built::false"
 
   build-app-image:
     runs-on: ubuntu-latest
