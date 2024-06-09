@@ -9,8 +9,35 @@ on:
       - '*'
 
 jobs:
-  build:
+  check-changes:
     runs-on: ubuntu-latest
+
+    outputs:
+      changes: ${{ steps.check_changes.outputs.changes }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+          fetch-depth: 2 # Ensure we have enough history for diff
+
+      - name: Fetch all history for diff
+        run: git fetch --prune --unshallow
+
+      - name: Check for changes in system-related files
+        id: check_changes
+        run: |
+          if git diff --name-only HEAD^ HEAD | grep -E '(\.github/workflows/ci.yaml|system.dockerfile|\.system.dockerignore|third-party/)'; then
+            echo "::set-output name=changes::true"
+          else
+            echo "::set-output name=changes::false"
+          fi
+
+  system:
+    runs-on: ubuntu-latest
+    needs: check-changes
+    if: needs.check-changes.outputs.changes == 'true'
 
     steps:
       - name: Checkout repository
@@ -30,35 +57,14 @@ jobs:
         with:
           install: true
 
-      - name: Fetch all history for diff
-        run: git fetch --prune --unshallow
-
-      - name: Check for changes in system-related files
-        id: check_changes
-        run: |
-          if git diff --name-only HEAD^ HEAD | grep -E '(\.github/workflows/ci.yaml|system.dockerfile|\.system.dockerignore|third-party/)'; then
-            echo "CHANGES=true" >> $GITHUB_ENV
-          else
-            echo "CHANGES=false" >> $GITHUB_ENV
-          fi
-
-      - name: Print environment variables
-        run: echo "CHANGES: ${{ env.CHANGES }}"
-
       - name: Load Docker cache from Docker Hub (System)
-        if: steps.check_changes.outputs.CHANGES == 'true'
         uses: docker/build-push-action@v3
         with:
           context: .
           cache-from: type=registry,ref=cedc-system/system:cache
           cache-to: type=registry,ref=cedc-system/system:cache,mode=max
 
-      - name: Debug: Show Docker context files (System)
-        if: steps.check_changes.outputs.CHANGES == 'true'
-        run: ls -la .
-
       - name: Build and push base Docker image (System)
-        if: steps.check_changes.outputs.CHANGES == 'true'
         uses: docker/build-push-action@v3
         with:
           context: .
@@ -68,6 +74,28 @@ jobs:
           tags: cedc-system/system:latest
           cache-from: type=registry,ref=cedc-system/system:cache
           cache-to: type=registry,ref=cedc-system/system:cache,mode=max
+
+  app:
+    runs-on: ubuntu-latest
+    needs: [check-changes, system]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+          fetch-depth: 2 # Ensure we have enough history for diff
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+        with:
+          install: true
 
       - name: Load Docker cache from Docker Hub (App)
         uses: docker/build-push-action@v3
@@ -83,15 +111,4 @@ jobs:
           push: true
           tags: whitehat101/cedc:latest
           cache-from: type=registry,ref=whitehat101/cedc:cache
-          cache-to: type=registry,ref=whitehat101/cedc:cache,mode=max
-
-      - name: Minimize Docker image size
-        run: docker image prune -f
-
-      - name: Test Docker image
-        run: docker run --rm whitehat101/cedc:latest /bin/bash -c "echo 'Docker image built and tested successfully.'"
-
-      - name: Clean up unused Docker resources
-        run: |
-          docker system prune -f
-          docker builder prune -f
+          cache-to: type=registry,
