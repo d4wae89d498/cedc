@@ -63,9 +63,9 @@ jobs:
           file: system.dockerfile
           dockerignore: .system.dockerignore
           push: true
-          tags: cedc-system/system:latest
-          cache-from: type=registry,ref=cedc-system/system:cache
-          cache-to: type=registry,ref=cedc-system/system:cache,mode=max
+          tags: whitehat101/cedc-system:latest
+          cache-from: type=registry,ref=whitehat101/cedc-system:cache
+          cache-to: type=registry,ref=whitehat101/cedc-system:cache,mode=max
 
   app:
     runs-on: ubuntu-latest
@@ -91,7 +91,7 @@ jobs:
 
       - name: Ensure system image is available
         run: |
-          docker pull cedc-system/system:latest || echo "System image not available"
+          docker pull whitehat101/cedc-system:latest || echo "System image not available"
 
       - name: Load Docker cache from Docker Hub (App)
         uses: docker/build-push-action@v3
