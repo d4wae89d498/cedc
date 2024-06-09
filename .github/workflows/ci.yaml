@@ -43,8 +43,8 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: .
-          cache-from: type=registry,ref=whitehat101/cedc-system/system:cache
-          cache-to: type=registry,ref=whitehat101/cedc-system/system:cache,mode=max
+          cache-from: type=registry,ref=whitehat101/cedc-system:cache
+          cache-to: type=registry,ref=whitehat101/cedc-system:cache,mode=max
 
       - name: Build and push base Docker image (System)
         if: env.CHANGES == 'true'
@@ -54,9 +54,9 @@ jobs:
           file: system.dockerfile
           dockerignore: .system.dockerignore
           push: true
-          tags: whitehat101/cedc-system/system:latest
-          cache-from: type=registry,ref=whitehat101/cedc-system/system:cache
-          cache-to: type=registry,ref=whitehat101/cedc-system/system:cache,mode=max
+          tags: whitehat101/cedc-system:latest
+          cache-from: type=registry,ref=whitehat101/cedc-system:cache
+          cache-to: type=registry,ref=whitehat101/cedc-system:cache,mode=max
 
       - name: Load Docker cache from Docker Hub (App)
         uses: docker/build-push-action@v3
