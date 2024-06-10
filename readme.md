@@ -7,8 +7,8 @@
 
 
 ![Docker Pulls](https://img.shields.io/docker/pulls/whitehat101/cedc.svg)
-![Docker Image Version](https://img.shields.io/docker/v/whitehat101/cedc.svg)
-![Docker Image Size](https://img.shields.io/docker/image-size/whitehat101/cedc.svg)
+![Docker Image Version](https://img.shields.io/docker/v/whitehat101/cedc/latest)
+![Docker Image Size](https://img.shields.io/docker/image-size/whitehat101/cedc/latest)
 
 ## Overview
 
