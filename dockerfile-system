@@ -1,7 +1,7 @@
 FROM debian:12
 
 ##################################
-#######		DEBIAN LLVM	  ########
+#######	  DEBIAN & LLVM	  ########
 ##################################
 
 # Install dependencies
@@ -52,11 +52,12 @@ COPY test/llvm/test.cpp .
 RUN chmod +x test.sh && ./test.sh
 
 ##################################
-######  ANTLR & STD PCM DEPS #####
+######  THIRD-PARTY FOLDER   #####
 ##################################
 
 # Copy all files
-COPY . /project/
+COPY third-party /project/third-party
+COPY common.mk /project/common.mk
 
 # Set the working directory for the third-party build
 WORKDIR /project/third-party

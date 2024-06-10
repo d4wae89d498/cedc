@@ -27,7 +27,7 @@ jobs:
       - name: Check for changes in system-related files
         id: check_changes
         run: |
-          if git diff --name-only HEAD^ HEAD | grep -E '(\.github/workflows/ci.yaml|system.dockerfile|\.system.dockerignore|third-party/)'; then
+          if git diff --name-only HEAD^ HEAD | grep -E '(\.github/workflows/ci.yaml|dockerfile-system|\.dockerignore|third-party/)'; then
             echo "::set-output name=changes::true"
           else
             echo "::set-output name=changes::false"
@@ -60,8 +60,8 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: .
-          file: system.dockerfile
-          dockerignore: .system.dockerignore
+          file: dockerfile-system
+          dockerignore: .dockerignore
           push: true
           tags: whitehat101/cedc-system:latest
           cache-from: type=registry,ref=whitehat101/cedc-system:cache
