@@ -94,6 +94,7 @@ jobs:
           install: true
 
       - name: Ensure system image is available
+        if: needs.system.result == 'success'
         run: |
           docker pull whitehat101/cedc-system:latest || echo "System image not available"
 
@@ -108,7 +109,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: .
-          file: dockerfile # Ensure the correct dockerfile is used
+          file: Dockerfile # Ensure the correct Dockerfile is used
           push: true
           tags: whitehat101/cedc:latest
           cache-from: type=registry,ref=whitehat101/cedc:cache
