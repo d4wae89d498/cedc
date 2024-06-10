@@ -70,8 +70,6 @@ jobs:
           tags: whitehat101/cedc-system:latest
           cache-from: type=registry,ref=whitehat101/cedc-system:cache
           cache-to: type=registry,ref=whitehat101/cedc-system:cache,mode=max
-        # Setting output to indicate the system was built
-        run: echo "::set-output name=built::true"
 
   app:
     runs-on: ubuntu-latest
@@ -126,3 +124,4 @@ jobs:
       - name: Clean up unused Docker resources
         run: |
           docker system prune -f
+          docker builder prune -f
