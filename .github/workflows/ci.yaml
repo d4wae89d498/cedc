@@ -75,8 +75,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: [check-changes, system]
 
-    if: needs.check-changes.outputs.changes == 'false' || needs.system.outputs.system_built == 'true'
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
