@@ -6,9 +6,9 @@
 [![Work in Progress](https://img.shields.io/badge/status-work%20in%20progress-orange.svg)](https://github.com/d4wae89d498/cedc)
 
 
-![Docker Pulls](https://img.shields.io/docker/pulls/whitehat101/cedc.svg)
 ![Docker Image Version](https://img.shields.io/docker/v/whitehat101/cedc/latest)
 ![Docker Image Size](https://img.shields.io/docker/image-size/whitehat101/cedc/latest)
+![Docker Pulls](https://img.shields.io/docker/pulls/whitehat101/cedc.svg)
 
 ## Overview
 
