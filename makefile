@@ -115,8 +115,23 @@ $(CXXDB): $(EXECS)
 	| jq -nR '[inputs | {directory: env.PWD, command: (. + " -DCLANGD") , file: (match("\\S+\\.(cpp|cppm|hpp)(?=\\s|$$)").string)}]' \
 	> $(CXXDB)
 
+
+
+define run-and-check
+    @output=$$($1 2>&1); \
+    return_code=$$?; \
+    if [ $$return_code -ne 0 ]; then \
+        echo "$$output"; \
+    else \
+		echo "$1 OK"; \
+	fi; \
+    exit $$return_code
+endef
 test:
-	./bin/test/lexer.out
+	$(call run-and-check, ./bin/test/linked_list.out)
+	$(call run-and-check, ./bin/test/tree.out)
+#	$(call run-and-check, ./bin/test/ast.out)
+	$(call run-and-check, ./bin/test/lexer.out)
 
 clean:
 	rm -f $(DEPS) $(OBJS) $(CXXDB)
