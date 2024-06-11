@@ -23,7 +23,7 @@ COPY third-party /project/third-party
 COPY common.mk /project/common.mk
 
 # Set the working directory for the third-party build
-WORKDIR /project/third-party
+WORKDIR /project/
 
 ##################################
 #######	  DEBIAN & LLVM	  ########
@@ -36,7 +36,7 @@ RUN CODENAME=$(lsb_release -cs) \
 	&& apt-get update
 
 # Download and run the LLVM installation script
-RUN wget https://apt.llvm.org/llvm.sh && chmod +x llvm.sh && ./llvm.sh $(cat .versions/llvm-project | awk -F'[-.]' '{print $2}' | tr -s '\n') all
+RUN wget https://apt.llvm.org/llvm.sh && chmod +x llvm.sh && ./llvm.sh $(cat third-party/.versions/llvm-project | awk -F'[-.]' '{print $2}' | tr -s '\n') all
 
 # Clean up
 RUN rm llvm.sh
@@ -62,13 +62,14 @@ ENV CXX=/usr/bin/clang++
 COPY test/llvm/test.sh .
 COPY test/llvm/test.cpp .
 RUN chmod +x test.sh && ./test.sh
+RUN rm test.sh
 
 ##################################
 ######      ANTLR            #####
 ##################################
 
 # Fetch the latest ANTLR release tag from GitHub, download the jar file and create aliases
-RUN ANTLR_VERSION=$(cat .versions/antlr) && \
+RUN ANTLR_VERSION=$(cat third-party/.versions/antlr) && \
     wget http://www.antlr.org/download/antlr-$ANTLR_VERSION-complete.jar -O /usr/local/lib/antlr-$ANTLR_VERSION-complete.jar && \
     echo '#! /bin/bash\n'\
 'export CLASSPATH=".:/usr/local/lib/antlr-'$ANTLR_VERSION'-complete.jar:$CLASSPATH"\n'\
@@ -81,10 +82,8 @@ RUN ANTLR_VERSION=$(cat .versions/antlr) && \
 ####    BUILD THIRD-PARTY    #####
 ##################################
 
-
 # Build project deps
-RUN make
-
+RUN cd third-party && make
 
 ##################################
 ####      ENTRYPOINT         #####
