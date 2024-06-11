@@ -3,7 +3,9 @@ LLVM_BUILD_DIR := $(PROJECT_DIR)/third-party/llvm-project/build
 
 include $(PROJECT_DIR)/common.mk
 
-all:  $(LIBS_MADE_MARKER)
+.PHONY: deps $(wildcard update_*) clean_deps std_pcm
+
+all:  $(THIRD_PARTY_MADE_MARKER)
 
 # Build LLVM
 LLVM_MADE_MARKER := $(PROJECT_DIR)/$(TMP_DIR)/.llvm_made
@@ -21,7 +23,6 @@ $(LLVM_MADE_MARKER):
 	@touch $(LLVM_MADE_MARKER)
 llvm: $(LLVM_MADE_MARKER)
 
-
 # Build ANTLR
 ANTLR_MADE_MARKER := $(PROJECT_DIR)/$(TMP_DIR)/.antlr_made
 $(ANTLR_MADE_MARKER): $(LLVM_MADE_MARKER)
@@ -31,6 +32,7 @@ $(ANTLR_MADE_MARKER): $(LLVM_MADE_MARKER)
 		&& mkdir -p build \
 		&& cd build \
 		&& export DYLD_LIBRARY_PATH=$(LLVM_BUILD_DIR)/lib \
+		&& export LD_LIBRARY_PATH=$(LLVM_BUILD_DIR)/lib \
 		&& cmake .. \
 			-DCMAKE_C_COMPILER=$(shell which clang) \
 			-DCMAKE_CXX_COMPILER=$(shell which clang++) \
@@ -44,14 +46,20 @@ $(ANTLR_MADE_MARKER): $(LLVM_MADE_MARKER)
 antlr: $(ANTLR_MADE_MARKER)
 
 # Build all third party libs
-LIBS_MADE_MARKER := $(PROJECT_DIR)/$(TMP_DIR)/.libs_made
-$(LIBS_MADE_MARKER):
+THIRD_PARTY_MADE_MARKER := $(PROJECT_DIR)/$(TMP_DIR)/.third_party_made
+$(THIRD_PARTY_MADE_MARKER):
 	make $(LLVM_MADE_MARKER)
 	make $(ANTLR_MADE_MARKER)
 	@make -C $(PROJECT_DIR)/third-party/libastmatcher-parser
 	@make -C $(PROJECT_DIR)/third-party/cppmodsort
-	@touch $(LIBS_MADE_MARKER)
-deps: $(LIBS_MADE_MARKER)
+	@touch $(THIRD_PARTY_MADE_MARKER)
+deps: $(THIRD_PARTY_MADE_MARKER)
+clean_deps:
+	rm -f $(THIRD_PARTY_MADE_MARKER)
+	make clean -C third-party/cppmodsort
+	make clean -C third-party/libastmatcher-parser
+	rm -rf third-party/runtime/Cpp/build
+	rm -rf third-party/llvm-project/build
 
 # Build std.pcm
 $(PROJECT_DIR)/$(PCM_DIR)/std.pcm: $(PROJECT_DIR)/third-party/llvm-project/build/modules/c++/v1/std.cppm $(PROJECT_DIR)/common.mk
@@ -79,12 +87,12 @@ define update_submodule
 		echo "No current version found for $(1) $(2). Checking out the new version $$NEW_VERSION"; \
 		cd $(PROJECT_DIR)/third-party/$(1) && git checkout tags/$$NEW_VERSION; \
 		echo $$NEW_VERSION > $(PROJECT_DIR)/third-party/.versions/$(1); \
-		rm -f $(LIBS_MADE_MARKER); \
+		rm -f $(THIRD_PARTY_MADE_MARKER); \
 	elif test "$$CURRENT_VERSION" != "$$NEW_VERSION"; then \
 		echo "Updating $(1) from $$CURRENT_VERSION to $$NEW_VERSION..."; \
 		cd $(PROJECT_DIR)/third-party/$(1) && git checkout tags/$$NEW_VERSION; \
 		echo $$NEW_VERSION > $(PROJECT_DIR)/third-party/.versions/$(1); \
-		rm -f $(LIBS_MADE_MARKER); \
+		rm -f $(THIRD_PARTY_MADE_MARKER); \
 	else \
 		echo "$(1) is already up-to-date ($$CURRENT_VERSION)";\
 		echo $$CURRENT_VERSION > $(PROJECT_DIR)/third-party/.versions/$(1); \
@@ -100,6 +108,3 @@ update_llvm:
 update_deps:
 	make update_antlr
 	make update_llvm
-
-.PHONY: std_pcm $(wildcard update_*)
-all: $(LIBS_MADE_MARKER)

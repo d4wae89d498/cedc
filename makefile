@@ -27,19 +27,12 @@ PCMS := 	$(MODULES:$(SRC_DIR)/%.cppm=$(PCM_DIR)/%.pcm)
 NAME :=		$(LIB_DIR)/libcedilla.a
 
 # Project executables
-MAINS :=	cli/main.cpp\
-			\
-			test/ast.cpp\
-			test/linked_list.cpp\
-			test/tree.cpp\
-			test/lexer.cpp
-
-MAINS :=	$(MAINS:%=$(SRC_DIR)/%)
+MAINS :=	$(shell find src/cli -type f -name "*.cpp") \
+			$(shell find src/test -type f -name "*.cpp")
 EXECS :=	$(MAINS:$(SRC_DIR)/%.cpp=$(BIN_DIR)/%.out)
 
 # Project headers
-HEADERS :=	include/common.hpp
-HEADERS := 	$(HEADERS:%=$(SRC_DIR)/%)
+HEADERS :=	$(shell find src/include -type f -name "*.hpp")
 PCHS	:=	$(HEADERS:$(SRC_DIR)/%.hpp=$(PCH_DIR)/%.pch)
 INCPCHS :=	$(PCHS:%=-include-pch %)
 
@@ -55,7 +48,7 @@ include third-party/makefile
 .PRECIOUS: 	$(PCHS) $(PCMS)
 .PHONY: 	all test clean fclean re
 
-all: $(LIBS_MADE_MARKER) $(NAME) $(EXECS)
+all: $(THIRD_PARTY_MADE_MARKER) $(NAME) $(EXECS)
 
 $(PCH_DIR)/%.pch: $(SRC_DIR)/%.hpp makefile third-party/makefile
 	@mkdir -p $(@D)
@@ -133,9 +126,7 @@ fclean: clean
 	rm -f $(EXECS)
 	rm -f $(PCMS)
 	rm -f $(PCHS)
-	rm -f $(LIBS_MADE_MARKER)
 	rm -rf $(LIBS)
-	make clean -C third-party/libastmatcher-parser
-	rm -rf third-party/runtime/Cpp/build
+	make clean_deps
 
 re: clean all
