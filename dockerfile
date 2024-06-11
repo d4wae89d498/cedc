@@ -8,4 +8,4 @@ COPY --exclude=third-party . /project/
 WORKDIR /project/
 
 # Compiles the app
-RUN make
+RUN make && make test
