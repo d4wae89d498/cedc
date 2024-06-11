@@ -64,8 +64,8 @@ $(PROJECT_DIR)/$(PCM_DIR)/std.compat.pcm: $(PROJECT_DIR)/third-party/llvm-projec
 
 # Build both
 std_pcm:
-	make $(PROJECT_DIR)/$(PCM_DIR)/std.compat.pcm
 	make $(PROJECT_DIR)/$(PCM_DIR)/std.pcm
+	make $(PROJECT_DIR)/$(PCM_DIR)/std.compat.pcm
 
 # Submodules updater
 define update_submodule
