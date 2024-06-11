@@ -1,21 +1,33 @@
 FROM debian:12
 
-##################################
-#######	  DEBIAN & LLVM	  ########
-##################################
-
-# Install dependencies
 RUN apt-get update && apt-get install -y \
 	wget \
-	gnupg \
+	curl \
+	vim \
 	lsb-release \
+	openjdk-17-jre-headless \
+	gnupg \
 	software-properties-common \
 	cmake \
 	ninja-build \
 	git \
-	vim \
 	&& apt-get clean \
 	&& rm -rf /var/lib/apt/lists/*
+
+##################################
+#####  THIRD-PARTY FOLDER  #######
+##################################
+
+# Copy all files
+COPY third-party /project/third-party
+COPY common.mk /project/common.mk
+
+# Set the working directory for the third-party build
+WORKDIR /project/third-party
+
+##################################
+#######	  DEBIAN & LLVM	  ########
+##################################
 
 # Dynamically add the official LLVM repository based on the Debian codename
 RUN CODENAME=$(lsb_release -cs) \
@@ -24,7 +36,7 @@ RUN CODENAME=$(lsb_release -cs) \
 	&& apt-get update
 
 # Download and run the LLVM installation script
-RUN wget https://apt.llvm.org/llvm.sh && chmod +x llvm.sh && ./llvm.sh 18 all
+RUN wget https://apt.llvm.org/llvm.sh && chmod +x llvm.sh && ./llvm.sh $(cat .versions/llvm-project | awk -F'[-.]' '{print $2}' | tr -s '\n') all
 
 # Clean up
 RUN rm llvm.sh
@@ -52,18 +64,8 @@ COPY test/llvm/test.cpp .
 RUN chmod +x test.sh && ./test.sh
 
 ##################################
-######  THIRD-PARTY FOLDER   #####
+######      ANTLR            #####
 ##################################
-
-# Copy all files
-COPY third-party /project/third-party
-COPY common.mk /project/common.mk
-
-# Set the working directory for the third-party build
-WORKDIR /project/third-party
-
-# Install wget, curl, jq, and other dependencies
-RUN apt-get update && apt-get install -y wget curl jq openjdk-17-jre-headless
 
 # Fetch the latest ANTLR release tag from GitHub, download the jar file and create aliases
 RUN ANTLR_VERSION=$(cat .versions/antlr) && \
@@ -75,8 +77,18 @@ RUN ANTLR_VERSION=$(cat .versions/antlr) && \
     chmod +x /usr/local/bin/antlr4 && \
 	ln -s $(which antlr4) /usr/bin/antlr
 
+##################################
+####    BUILD THIRD-PARTY    #####
+##################################
+
+
 # Build project deps
 RUN make
+
+
+##################################
+####      ENTRYPOINT         #####
+##################################
 
 # Start an interactive bash shell
 CMD ["/bin/bash"]
