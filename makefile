@@ -43,7 +43,7 @@ HEADERS := 	$(HEADERS:%=$(SRC_DIR)/%)
 PCHS	:=	$(HEADERS:$(SRC_DIR)/%.hpp=$(PCH_DIR)/%.pch)
 INCPCHS :=	$(PCHS:%=-include-pch %)
 
-# Deps
+# Makefile dependecy files
 DEPS 	:= 	$(MODULES:$(SRC_DIR)/%=$(DEP_DIR)/%.d) $(IMPLS:$(SRC_DIR)/%=$(DEP_DIR)/%.d)
 
 # Include third-party makefile

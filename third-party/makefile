@@ -30,6 +30,7 @@ $(ANTLR_MADE_MARKER): $(LLVM_MADE_MARKER)
 		&& rm -rf build \
 		&& mkdir -p build \
 		&& cd build \
+		&& export DYLD_LIBRARY_PATH=$(LLVM_BUILD_DIR)/lib \
 		&& cmake .. \
 			-DCMAKE_C_COMPILER=$(shell which clang) \
 			-DCMAKE_CXX_COMPILER=$(shell which clang++) \

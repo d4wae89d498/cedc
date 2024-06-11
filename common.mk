@@ -35,3 +35,10 @@ CXXFLAGS := -g \
 ifeq ($(shell uname -s), Darwin)
 	CXXFLAGS += -target x86_64-apple-macos10.9
 endif
+
+LIBS := third-party/libastmatcher-parser/libastmatcher-parser.a\
+ 	third-party/antlr/runtime/Cpp/build/runtime/libantlr4-runtime.a\
+ 	third-party/llvm-project/build/lib/libunwind.a\
+ 	third-party/llvm-project/build/lib/libc++experimental.a\
+ 	third-party/llvm-project/build/lib/libc++.a\
+ 	third-party/llvm-project/build/lib/libc++abi.a
