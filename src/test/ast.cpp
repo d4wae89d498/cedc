@@ -127,11 +127,15 @@ REGISTER_DESERIALIZABLE(AstNode, Int);
 
 fn main() -> int
 {
+	return 0;
+
 	auto myast = AstNodeRegistry::get().deserialize("Identifier", "salut");
 
 
 	print("myast: {}\n", (void*)myast.get());
 
+
+	return 0;
 	myast->next =  AstNodeRegistry::get().deserialize("Int", "4");
 
 	print("ptr is : {}", (void*)myast->next.get());

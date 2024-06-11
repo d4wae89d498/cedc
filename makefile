@@ -8,10 +8,8 @@ LIBS := third-party/libastmatcher-parser/libastmatcher-parser.a\
  	third-party/llvm-project/build/lib/libc++.a\
  	third-party/llvm-project/build/lib/libc++abi.a
 
-
 # Compilation database output
 CXXDB := 	$(TMP_DIR)/compile_commands.json
-
 
 # Project sources
 VOID := 	$(shell cd ./third-party/cppmodsort/ && make)
@@ -48,11 +46,7 @@ INCPCHS :=	$(PCHS:%=-include-pch %)
 # Deps
 DEPS 	:= 	$(MODULES:$(SRC_DIR)/%=$(DEP_DIR)/%.d) $(IMPLS:$(SRC_DIR)/%=$(DEP_DIR)/%.d)
 
-# Extract the path of the current Makefile
-CURRENT_MAKEFILE := $(lastword $(MAKEFILE_LIST))
-
-
-
+# Include third-party makefile
 include third-party/makefile
 
 #-------------------------------------------------#
@@ -114,8 +108,6 @@ $(CXXDB): $(EXECS)
 	| grep -wE 'clang\+\+' \
 	| jq -nR '[inputs | {directory: env.PWD, command: (. + " -DCLANGD") , file: (match("\\S+\\.(cpp|cppm|hpp)(?=\\s|$$)").string)}]' \
 	> $(CXXDB)
-
-
 
 define run-and-check
     @output=$$($1 2>&1); \
