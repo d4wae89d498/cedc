@@ -24,7 +24,8 @@ llvm: $(LLVM_MADE_MARKER)
 
 # Build ANTLR
 ANTLR_MADE_MARKER := $(PROJECT_DIR)/$(TMP_DIR)/.antlr_made
-$(ANTLR_MADE_MARKER):
+$(ANTLR_MADE_MARKER): $(LLVM_MADE_MARKER)
+	@mkdir -p $(PROJECT_DIR)/$(TMP_DIR)
 	@cd $(PROJECT_DIR)/third-party/antlr/runtime/Cpp \
 		&& rm -rf build \
 		&& mkdir -p build \
@@ -44,7 +45,7 @@ antlr: $(ANTLR_MADE_MARKER)
 # Build all third party libs
 LIBS_MADE_MARKER := $(PROJECT_DIR)/$(TMP_DIR)/.libs_made
 $(LIBS_MADE_MARKER):
-	make $(LLVM_BUILD_DIR)
+	make $(LLVM_MADE_MARKER)
 	make $(ANTLR_MADE_MARKER)
 	@make -C $(PROJECT_DIR)/third-party/libastmatcher-parser
 	@make -C $(PROJECT_DIR)/third-party/cppmodsort
