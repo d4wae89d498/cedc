@@ -1,7 +1,8 @@
 {
 	"files.associations": {
 		"*.cppm": "cpp",
-		"*.d": "makefile"
+		"*.d": "makefile",
+  		"dockerfile-system": "dockerfile"
 	},
 	"search.exclude": {
         "**/.git": true,

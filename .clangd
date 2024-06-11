@@ -1,7 +1,6 @@
 ---
-# TODO: generate compiler path using a template file during the build process
 CompileFlags:
-  Compiler: '/usr/local/opt/llvm/bin/clang'
+  Compiler: 'clang'
   Add:
     - '-std=c++26'
   CompilationDatabase: './tmp'

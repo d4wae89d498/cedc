@@ -1,5 +1,5 @@
 PROJECT_DIR := $(dir $(realpath $(dir $(lastword $(MAKEFILE_LIST)))))
-LLVM_BUILD_DIR :=  $(PROJECT_DIR)/third-party/llvm-project/build
+LLVM_BUILD_DIR := $(PROJECT_DIR)/third-party/llvm-project/build
 
 include $(PROJECT_DIR)/common.mk
 

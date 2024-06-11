@@ -1,1 +1,2 @@
 *.cppm linguist-language=C++
+dockerfile-system linguist-language=Dockerfile

@@ -4,6 +4,7 @@ RUN apt-get update && apt-get install -y \
 	wget \
 	curl \
 	vim \
+	jq \
 	lsb-release \
 	openjdk-17-jre-headless \
 	gnupg \
