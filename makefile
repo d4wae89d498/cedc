@@ -1,3 +1,5 @@
+default: all
+
 include common.mk
 
 # Set the libraries to link
@@ -11,9 +13,14 @@ LIBS := third-party/libastmatcher-parser/libastmatcher-parser.a\
 # Compilation database output
 CXXDB := 	$(TMP_DIR)/compile_commands.json
 
+# Project modules
+VOID := $(shell cd ./third-party/cppmodsort/ && make)
+MODULES := $(shell find src/module -type f -name "*.cppm")
+VOID := $(shell ./third-party/cppmodsort/cppmodsort -m --src-dir src/ --pcm-dir tmp/pcm/ $(MODULES) > tmp/dep/module.d)
+include tmp/dep/module.d
+#MODULES := $(shell ./third-party/cppmodsort/cppmodsort $(shell find src/module -type f -name "*.cppm"))
+
 # Project sources
-VOID := 	$(shell cd ./third-party/cppmodsort/ && make)
-MODULES :=	$(shell ./third-party/cppmodsort/cppmodsort $(shell find src/module -type f -name "*.cppm"))
 IMPLS :=	$(shell find src/module -type f -name "*.cpp")
 
 # Project objects
@@ -47,10 +54,9 @@ include third-party/makefile
 .SUFFIXES:
 .PRECIOUS: 	$(PCHS) $(PCMS)
 .PHONY: 	all test clean fclean re
-.NOTPARALLEL: $(PCMS)
 
 all: $(THIRD_PARTY_BUILT_MARKER)
-	make -j $(EXECS)
+	$(MAKE) -j $(EXECS)
 
 $(PCH_DIR)/%.pch: $(SRC_DIR)/%.hpp makefile third-party/makefile
 	@mkdir -p $(@D)
