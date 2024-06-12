@@ -14,11 +14,12 @@ LIBS := third-party/libastmatcher-parser/libastmatcher-parser.a\
 CXXDB := 	$(TMP_DIR)/compile_commands.json
 
 # Project modules
-VOID := $(shell cd ./third-party/cppmodsort/ && make)
 MODULES := $(shell find src/module -type f -name "*.cppm")
-VOID := $(shell mkdir -p $(DEP_DIR) && \
-		./third-party/cppmodsort/cppmodsort \
-		-m --src-dir src/ --pcm-dir tmp/pcm/ $(MODULES) > tmp/dep/module.d)
+VOID := $(shell cd ./third-party/cppmodsort/ \
+			&& make && \
+			&& mkdir -p $(DEP_DIR) \
+			&& ./third-party/cppmodsort/cppmodsort \
+			-m --src-dir src/ --pcm-dir tmp/pcm/ $(MODULES) > tmp/dep/module.d)
 include tmp/dep/module.d
 
 # Project sources
