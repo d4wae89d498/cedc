@@ -19,7 +19,7 @@ $(LLVM_BUILT_MARKER):
 			-DCMAKE_C_COMPILER=$(shell which clang) \
 			-DCMAKE_CXX_COMPILER=$(shell which clang++) \
 		&& ninja -C build
-	@make std_pcm
+	@make build_std_pcm
 	@touch $(LLVM_BUILT_MARKER)
 build_llvm: $(LLVM_BUILT_MARKER)
 
