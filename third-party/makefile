@@ -10,7 +10,7 @@ all:  $(THIRD_PARTY_BUILT_MARKER)
 # Build LLVM
 LLVM_BUILT_MARKER := $(PROJECT_DIR)/$(TMP_DIR)/.marker/llvm
 $(LLVM_BUILT_MARKER):
-	@mkdir -p $(PROJECT_DIR)/$(TMP_DIR)
+	@mkdir -p $(PROJECT_DIR)/$(TMP_DIR)/.marker
 	@cd $(PROJECT_DIR)/third-party/llvm-project \
 		&& rm -rf build \
 		&& mkdir -p build \
@@ -26,7 +26,7 @@ build_llvm: $(LLVM_BUILT_MARKER)
 # Build ANTLR
 ANTLR_BUILT_MARKER := $(PROJECT_DIR)/$(TMP_DIR)/.marker/antlr
 $(ANTLR_BUILT_MARKER): $(LLVM_BUILT_MARKER)
-	@mkdir -p $(PROJECT_DIR)/$(TMP_DIR)
+	@mkdir -p $(PROJECT_DIR)/$(TMP_DIR)/.marker
 	@cd $(PROJECT_DIR)/third-party/antlr/runtime/Cpp \
 		&& rm -rf build \
 		&& mkdir -p build \
