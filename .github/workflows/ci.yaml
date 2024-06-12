@@ -68,8 +68,8 @@ jobs:
           dockerignore: .dockerignore
           push: true
           tags: whitehat101/cedc-system:latest
-          cache-from: type=registry,ref=whitehat101/cedc-system:cache
-          cache-to: type=registry,ref=whitehat101/cedc-system:cache,mode=max
+#          cache-from: type=registry,ref=whitehat101/cedc-system:cache
+#          cache-to: type=registry,ref=whitehat101/cedc-system:cache,mode=max
 
   app:
     runs-on: ubuntu-latest
