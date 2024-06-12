@@ -16,9 +16,10 @@ CXXDB := 	$(TMP_DIR)/compile_commands.json
 # Project modules
 VOID := $(shell cd ./third-party/cppmodsort/ && make)
 MODULES := $(shell find src/module -type f -name "*.cppm")
-VOID := $(shell ./third-party/cppmodsort/cppmodsort -m --src-dir src/ --pcm-dir tmp/pcm/ $(MODULES) > tmp/dep/module.d)
+VOID := $(shell mkdir -p $(DEP_DIR) && \
+		./third-party/cppmodsort/cppmodsort \
+		-m --src-dir src/ --pcm-dir tmp/pcm/ $(MODULES) > tmp/dep/module.d)
 include tmp/dep/module.d
-#MODULES := $(shell ./third-party/cppmodsort/cppmodsort $(shell find src/module -type f -name "*.cppm"))
 
 # Project sources
 IMPLS :=	$(shell find src/module -type f -name "*.cpp")
