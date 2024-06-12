@@ -49,6 +49,8 @@ include third-party/makefile
 .PHONY: 	all test clean fclean re
 
 all: $(THIRD_PARTY_BUILT_MARKER)
+	make $(PCHS)
+	make $(PCMS)
 	make -j $(EXECS)
 
 $(PCH_DIR)/%.pch: $(SRC_DIR)/%.hpp makefile third-party/makefile
@@ -83,7 +85,7 @@ $(OBJ_DIR)/%.cppm.o: $(PCM_DIR)/%.pcm
 	@mkdir -p $(@D)
 	$(CXX) $(CXXFLAGS)  -c $< -o $@
 
-$(OBJ_DIR)/%.cpp.o: $(SRC_DIR)/%.cpp $(PCHS)
+$(OBJ_DIR)/%.cpp.o: $(SRC_DIR)/%.cpp $(PCHS) $(PCMS)
 	@mkdir -p $(@D)
 	$(CXX) $(CXXFLAGS)  -c $< -o $@
 
@@ -91,7 +93,7 @@ $(NAME): $(OBJS)
 	@mkdir -p $(@D)
 	ar -rcs $@ $(OBJS)
 
-$(BIN_DIR)/%.out: $(SRC_DIR)/%.cpp $(NAME)
+$(BIN_DIR)/%.out: $(SRC_DIR)/%.cpp $(NAME) $(PCMS)
 	@mkdir -p $(@D)
 	$(CXX) $(CXXFLAGS) $< -o $@ $(INCPCHS) $(NAME) $(LIBS) -w
 
