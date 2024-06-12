@@ -3,13 +3,13 @@ LLVM_BUILD_DIR := $(PROJECT_DIR)/third-party/llvm-project/build
 
 include $(PROJECT_DIR)/common.mk
 
-.PHONY: deps $(wildcard update_*) clean_deps std_pcm
+.PHONY: build_deps $(wildcard update_*) clean_deps build_std_pcm
 
-all:  $(THIRD_PARTY_MADE_MARKER)
+all:  $(THIRD_PARTY_BUILT_MARKER)
 
 # Build LLVM
-LLVM_MADE_MARKER := $(PROJECT_DIR)/$(TMP_DIR)/.llvm_made
-$(LLVM_MADE_MARKER):
+LLVM_BUILT_MARKER := $(PROJECT_DIR)/$(TMP_DIR)/.llvm_built
+$(LLVM_BUILT_MARKER):
 	@mkdir -p $(PROJECT_DIR)/$(TMP_DIR)
 	@cd $(PROJECT_DIR)/third-party/llvm-project \
 		&& rm -rf build \
@@ -20,12 +20,12 @@ $(LLVM_MADE_MARKER):
 			-DCMAKE_CXX_COMPILER=$(shell which clang++) \
 		&& ninja -C build
 	@make std_pcm
-	@touch $(LLVM_MADE_MARKER)
-llvm: $(LLVM_MADE_MARKER)
+	@touch $(LLVM_BUILT_MARKER)
+build_llvm: $(LLVM_BUILT_MARKER)
 
 # Build ANTLR
-ANTLR_MADE_MARKER := $(PROJECT_DIR)/$(TMP_DIR)/.antlr_made
-$(ANTLR_MADE_MARKER): $(LLVM_MADE_MARKER)
+ANTLR_BUILT_MARKER := $(PROJECT_DIR)/$(TMP_DIR)/.antlr_built
+$(ANTLR_BUILT_MARKER): $(LLVM_BUILT_MARKER)
 	@mkdir -p $(PROJECT_DIR)/$(TMP_DIR)
 	@cd $(PROJECT_DIR)/third-party/antlr/runtime/Cpp \
 		&& rm -rf build \
@@ -42,20 +42,20 @@ $(ANTLR_MADE_MARKER): $(LLVM_MADE_MARKER)
 			-DCMAKE_MODULE_LINKER_FLAGS="-L$(LLVM_BUILD_DIR)/lib -lc++ -lc++abi -lunwind" \
 			-DCMAKE_BUILD_TYPE=Release \
 		&& make
-	@touch $(ANTLR_MADE_MARKER)
-antlr: $(ANTLR_MADE_MARKER)
+	@touch $(ANTLR_BUILT_MARKER)
+build_antlr: $(ANTLR_BUILT_MARKER)
 
 # Build all third party libs
-THIRD_PARTY_MADE_MARKER := $(PROJECT_DIR)/$(TMP_DIR)/.third_party_made
-$(THIRD_PARTY_MADE_MARKER):
-	make $(LLVM_MADE_MARKER)
-	make $(ANTLR_MADE_MARKER)
+THIRD_PARTY_BUILT_MARKER := $(PROJECT_DIR)/$(TMP_DIR)/.third_party_built
+$(THIRD_PARTY_BUILT_MARKER):
+	make $(LLVM_BUILT_MARKER)
+	make $(ANTLR_BUILT_MARKER)
 	@make -C $(PROJECT_DIR)/third-party/libastmatcher-parser
 	@make -C $(PROJECT_DIR)/third-party/cppmodsort
-	@touch $(THIRD_PARTY_MADE_MARKER)
-deps: $(THIRD_PARTY_MADE_MARKER)
+	@touch $(THIRD_PARTY_BUILT_MARKER)
+build_deps: $(THIRD_PARTY_BUILT_MARKER)
 clean_deps:
-	rm -f $(THIRD_PARTY_MADE_MARKER)
+	rm -f $(THIRD_PARTY_BUILT_MARKER)
 	make clean -C third-party/cppmodsort
 	make clean -C third-party/libastmatcher-parser
 	rm -rf third-party/runtime/Cpp/build
@@ -72,7 +72,7 @@ $(PROJECT_DIR)/$(PCM_DIR)/std.compat.pcm: $(PROJECT_DIR)/third-party/llvm-projec
 	$(CXX) $(CXXFLAGS) --precompile -Wno-reserved-module-identifier $< -o $@
 
 # Build both
-std_pcm:
+build_std_pcm:
 	make $(PROJECT_DIR)/$(PCM_DIR)/std.pcm
 	make $(PROJECT_DIR)/$(PCM_DIR)/std.compat.pcm
 
@@ -87,12 +87,12 @@ define update_submodule
 		echo "No current version found for $(1) $(2). Checking out the new version $$NEW_VERSION"; \
 		cd $(PROJECT_DIR)/third-party/$(1) && git checkout tags/$$NEW_VERSION; \
 		echo $$NEW_VERSION > $(PROJECT_DIR)/third-party/.versions/$(1); \
-		rm -f $(THIRD_PARTY_MADE_MARKER); \
+		rm -f $(THIRD_PARTY_BUILT_MARKER); \
 	elif test "$$CURRENT_VERSION" != "$$NEW_VERSION"; then \
 		echo "Updating $(1) from $$CURRENT_VERSION to $$NEW_VERSION..."; \
 		cd $(PROJECT_DIR)/third-party/$(1) && git checkout tags/$$NEW_VERSION; \
 		echo $$NEW_VERSION > $(PROJECT_DIR)/third-party/.versions/$(1); \
-		rm -f $(THIRD_PARTY_MADE_MARKER); \
+		rm -f $(THIRD_PARTY_BUILT_MARKER); \
 	else \
 		echo "$(1) is already up-to-date ($$CURRENT_VERSION)";\
 		echo $$CURRENT_VERSION > $(PROJECT_DIR)/third-party/.versions/$(1); \
