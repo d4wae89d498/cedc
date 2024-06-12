@@ -53,7 +53,7 @@ default:
 .PRECIOUS: 	$(PCHS) $(PCMS)
 .PHONY: 	all test clean fclean re
 
-all: $(THIRD_PARTY_MADE_MARKER) $(NAME) $(EXECS)
+all: $(THIRD_PARTY_BUILT_MARKER) $(NAME) $(EXECS)
 
 $(PCH_DIR)/%.pch: $(SRC_DIR)/%.hpp makefile third-party/makefile
 	@mkdir -p $(@D)
@@ -129,8 +129,5 @@ fclean: clean
 	rm -f $(EXECS)
 	rm -f $(PCMS)
 	rm -f $(PCHS)
-
-dclean: fclean
-	$(MAKE) clean_deps
 
 re: clean all
