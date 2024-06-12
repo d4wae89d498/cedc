@@ -20,27 +20,27 @@ Imagine a world where you can bend the syntax to your will—no limits, just pur
 
 ## Goals
 
-- **Limitless Extensibility**: Create custom syntax extensions without boundaries.
-- **AST Preprocessing**: Dive deep into the AST of your code and manipulate it to fit your needs.
-- **Developer Freedom**: Whether you want to tweak the syntax or overhaul it completely, the choice is yours.
+- **Limitless extensibility**: Create custom syntax extensions without boundaries.
+- **AST preprocessing**: Dive deep into the AST of your code and manipulate it to fit your needs.
+- **Developer freedom**: Whether you want to tweak the syntax or overhaul it completely, the choice is yours.
 
-### Building and Running the Project with Docker
+### Building and running the project with Docker
 
 To build and run the project using Docker, follow these steps:
 
-1. **Build the Docker Image for Third-Party Dependencies**:
+1. **Build the Docker image for third-party dependencies**:
     This step creates a Docker image containing all the necessary third-party dependencies for the project. This image will serve as the base for the main project image.
     ```sh
     docker build -f dockerfile-system -t my-project-deps .
     ```
 
-2. **Build the Docker Image for the Main Project**:
+2. **Build the Docker image for the main project**:
     Now, create the Docker image for the main project, using the previously built `my-project-deps` image as the base.
     ```sh
-    docker build -f dockerfile -t my-project .
+    docker build -t my-project .
     ```
 
-3. **Run the Project in Docker**:
+3. **Run the project in Docker**:
     Finally, run the Docker container from the `my-project` image, which includes both the project and its dependencies.
     ```sh
     docker run -it my-project
@@ -48,11 +48,11 @@ To build and run the project using Docker, follow these steps:
 
 These steps ensure that the environment is consistently set up with all required dependencies, making it easy to build and run the project in a controlled and reproducible Docker container.
 
-### Non-Docker Instructions
+### Non-Docker instructions
 
-#### Building and Running without Docker
+#### Building and running without Docker
 
-1. **Install Dependencies**:
+1. **Install dependencies**:
     Ensure you have all necessary dependencies installed on your system. This includes:
     - git
     - make
@@ -62,26 +62,17 @@ These steps ensure that the environment is consistently set up with all required
     - antlr4 (see third-party/.versions for the needed version)
     - llvm (see third-party/.versions for the needed version)
 
-2. **Clone the Repository**:
+2. **Clone and build the repository**:
     ```sh
     git clone <repository-url>
     cd project-root
-
-    ```
-3. **Build the Project**:
-    ```sh
     make
-    ```
-
-4. **Run Tests**:
-    ```sh
     make test
     ```
 
-By following these instructions, you can set up and run the project either using Docker for a containerized environment or directly on your local machine.
 
 
-## Project Folder Structure
+## Project folder structure
 
 The following is an overview of the project's folder structure, illustrating the organization and purpose of each directory and file:
 
@@ -121,9 +112,9 @@ project-root/
 └── dockerfile-system           # Base image for the main Dockerfile
 ```
 
-## Make Commands
+## Make commands
 
-### General Make Commands
+### General commands
 
 - `make`: Triggers a multi-threaded build. Builds all targets, including third-party dependencies, project library, and executables.
 - `make test`: Runs the unit test executables.
@@ -131,15 +122,15 @@ project-root/
 - `make fclean`: Performs a clean operation and additionally removes compiled libraries, executables, precompiled modules, and headers.
 - `make re`: Cleans the project and rebuilds everything from scratch.
 
-### Submodules Make Commands
+### Submodules commands
 
 - `make deps`: Builds all third-party dependencies.
 - `make llvm`: Specifically builds the LLVM dependency.
 - `make std_pcm`: Builds the standard precompiled modules (libcxx pcm).
 - `make antlr`: Specifically builds the ANTLR dependency.
-- `make update_antlr`: Updates the ANTLR submodule to the latest version.
-- `make update_llvm`: Updates the LLVM submodule to the latest version.
-- `make update_deps`: Updates all submodules to their latest versions.
+- `make update_antlr`: Updates the ANTLR submodule to the latest compatible version.
+- `make update_llvm`: Updates the LLVM submodule to the latest compatible version.
+- `make update_deps`: Updates all submodules to their latest compatible versions.
 - `make clean_deps`: Cleans all third-party dependencies.
 
 ## Contributing
