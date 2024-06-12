@@ -54,13 +54,13 @@ project-root/
 │       ├── antlr               # File containing version information (e.g., '4.13.1')
 │       └── ...                 # Other version files
 ├── tmp/                        # Temporary files and build artifacts
+│   ├── .cache/                 # Folder for tools cachings (clangd...)
+│   ├── .marker/                # Folder containing build markers for dependencies
 │   ├── dep/                    # Dependency files
 │   ├── obj/                    # Object files
 │   ├── pcm/                    # Precompiled module files
 │   ├── pch/                    # Precompiled header files
-│   ├── .antlr_built            # Marker file indicating ANTLR is built
-│   ├── .llvm_built             # Marker file indicating LLVM is built
-│   └── .third_party_built      # Marker file indicating all third-party dependencies are built
+│   └── .compile_commands       # Compilation database
 ├── test/                       # Contains test files for the Docker image (end-to-end tests)
 ├── common.mk                   # Common Makefile variables and settings
 ├── makefile                    # Main Makefile
@@ -113,7 +113,7 @@ The Makefile supports several commands to manage the build process, including co
   make deps
   ```
 
-- **uild_llvm**: Specifically builds the LLVM dependency.
+- **build_llvm**: Specifically builds the LLVM dependency.
   ```sh
   make llvm
   ```

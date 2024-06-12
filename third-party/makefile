@@ -8,7 +8,7 @@ include $(PROJECT_DIR)/common.mk
 all:  $(THIRD_PARTY_BUILT_MARKER)
 
 # Build LLVM
-LLVM_BUILT_MARKER := $(PROJECT_DIR)/$(TMP_DIR)/.llvm_built
+LLVM_BUILT_MARKER := $(PROJECT_DIR)/$(TMP_DIR)/.marker/llvm
 $(LLVM_BUILT_MARKER):
 	@mkdir -p $(PROJECT_DIR)/$(TMP_DIR)
 	@cd $(PROJECT_DIR)/third-party/llvm-project \
@@ -24,7 +24,7 @@ $(LLVM_BUILT_MARKER):
 build_llvm: $(LLVM_BUILT_MARKER)
 
 # Build ANTLR
-ANTLR_BUILT_MARKER := $(PROJECT_DIR)/$(TMP_DIR)/.antlr_built
+ANTLR_BUILT_MARKER := $(PROJECT_DIR)/$(TMP_DIR)/.marker/antlr
 $(ANTLR_BUILT_MARKER): $(LLVM_BUILT_MARKER)
 	@mkdir -p $(PROJECT_DIR)/$(TMP_DIR)
 	@cd $(PROJECT_DIR)/third-party/antlr/runtime/Cpp \
@@ -46,7 +46,7 @@ $(ANTLR_BUILT_MARKER): $(LLVM_BUILT_MARKER)
 build_antlr: $(ANTLR_BUILT_MARKER)
 
 # Build all third party libs
-THIRD_PARTY_BUILT_MARKER := $(PROJECT_DIR)/$(TMP_DIR)/.third_party_built
+THIRD_PARTY_BUILT_MARKER := $(PROJECT_DIR)/$(TMP_DIR)/.marker/third_party
 $(THIRD_PARTY_BUILT_MARKER):
 	make $(LLVM_BUILT_MARKER)
 	make $(ANTLR_BUILT_MARKER)
