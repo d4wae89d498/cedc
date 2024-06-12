@@ -24,130 +24,6 @@ Imagine a world where you can bend the syntax to your will—no limits, just pur
 - **AST Preprocessing**: Dive deep into the AST of your code and manipulate it to fit your needs.
 - **Developer Freedom**: Whether you want to tweak the syntax or overhaul it completely, the choice is yours.
 
-## Contributing
-
-We'd love your help to make this project even better! If you're interested in contributing, take a look at our [Contributing Guidelines](contributing.md). Whether it's reporting a bug, suggesting a feature, or writing code, your input is welcome.
-
-## Project Folder Structure
-
-The following is an overview of the project's folder structure, illustrating the organization and purpose of each directory and file:
-
-```
-project-root/
-├── bin/                        # Directory for compiled executables
-├── lib/                        # Directory for compiled libraries
-├── src/                        # Source code directory
-│   ├── cli/                    # Command-line interface sources
-│   ├── include/                # Header files
-│   ├── module/                 # Modules source files
-│   └── test/                   # Unit test source files
-├── third-party/                # Third-party libraries and dependencies
-│   ├── antlr/                  # ANTLR library
-│   │   └── runtime/            # ANTLR runtime
-│   ├── cppmodsort/             # Custom tool for module sorting
-│   ├── libastmatcher-parser/   # AST Matcher Parser library
-│   ├── llvm-project/           # LLVM project for C++ runtime
-│   ├── ...                     # Other third-party packages
-│   ├── makefile                # Makefile for third-party dependencies
-│   ├── submodule.sh            # Tool script to move/delete submodules
-│   └── .versions/              # Contains versions of dependencies
-│       ├── antlr               # File containing version information (e.g., '4.13.1')
-│       └── ...                 # Other version files
-├── tmp/                        # Temporary files and build artifacts
-│   ├── .cache/                 # Folder for tools cachings (clangd...)
-│   ├── .marker/                # Folder containing build markers for dependencies
-│   ├── dep/                    # Dependency files
-│   ├── obj/                    # Object files
-│   ├── pcm/                    # Precompiled module files
-│   ├── pch/                    # Precompiled header files
-│   └── .compile_commands       # Compilation database
-├── test/                       # Contains test files for the Docker image (end-to-end tests)
-├── common.mk                   # Common Makefile variables and settings
-├── makefile                    # Main Makefile
-├── dockerfile                  # Main Dockerfile for building the project environment
-└── dockerfile-system           # Base image for the main Dockerfile
-```
-
-
-## Make Commands
-
-The Makefile supports several commands to manage the build process, including compiling, cleaning, and testing. Below is a list of available commands and their descriptions:
-
-### General Make Commands
-
-- **default**: The default goal that triggers a multi-threaded build.
-  ```sh
-  make
-  ```
-
-- **all**: Builds all targets, including the third-party dependencies, project library, and executables.
-  ```sh
-  make all
-  ```
-
-- **test**: Runs the test executables to verify the functionality of the project.
-  ```sh
-  make test
-  ```
-
-- **clean**: Removes all the dependency files, object files, and the compilation database.
-  ```sh
-  make clean
-  ```
-
-- **fclean**: Performs a `clean` operation and additionally removes the compiled libraries, executables, precompiled modules, and headers.
-  ```sh
-  make fclean
-  ```
-
-- **re**: Cleans the project and rebuilds everything from scratch.
-  ```sh
-  make re
-  ```
-
-### Submodules Make Commands
-
-
-- **build_deps**: Builds all third-party dependencies.
-  ```sh
-  make deps
-  ```
-
-- **build_llvm**: Specifically builds the LLVM dependency.
-  ```sh
-  make llvm
-  ```
-
-- **build_std_pcm**: Builds the standard precompiled modules (libcxx pcm).
-  ```sh
-  make std_pcm
-  ```
-
-- **build_antlr**: Specifically builds the ANTLR dependency.
-  ```sh
-  make antlr
-  ```
-
-- **update_antlr**: Updates the ANTLR submodule to the latest version.
-  ```sh
-  make update_antlr
-  ```
-
-- **update_llvm**: Updates the LLVM submodule to the latest version.
-  ```sh
-  make update_llvm
-  ```
-
-- **update_deps**: Updates all submodules to their latest versions.
-  ```sh
-  make update_deps
-  ```
-
-- **clean_deps**: Cleans all third-party dependencies.
-  ```sh
-  make clean_deps
-  ```
-
 ### Building and Running the Project with Docker
 
 To build and run the project using Docker, follow these steps:
@@ -203,6 +79,73 @@ These steps ensure that the environment is consistently set up with all required
     ```
 
 By following these instructions, you can set up and run the project either using Docker for a containerized environment or directly on your local machine.
+
+
+## Project Folder Structure
+
+The following is an overview of the project's folder structure, illustrating the organization and purpose of each directory and file:
+
+```
+project-root/
+├── bin/                        # Directory for compiled executables
+├── lib/                        # Directory for compiled libraries
+├── src/                        # Source code directory
+│   ├── cli/                    # Command-line interface sources
+│   ├── include/                # Header files
+│   ├── module/                 # Modules source files
+│   └── test/                   # Unit test source files
+├── third-party/                # Third-party libraries and dependencies
+│   ├── antlr/                  # ANTLR library
+│   │   └── runtime/            # ANTLR runtime
+│   ├── cppmodsort/             # Custom tool for module sorting
+│   ├── libastmatcher-parser/   # AST Matcher Parser library
+│   ├── llvm-project/           # LLVM project for C++ runtime
+│   ├── ...                     # Other third-party packages
+│   ├── makefile                # Makefile for third-party dependencies
+│   ├── submodule.sh            # Tool script to move/delete submodules
+│   └── .versions/              # Contains versions of dependencies
+│       ├── antlr               # File containing version information (e.g., '4.13.1')
+│       └── ...                 # Other version files
+├── tmp/                        # Temporary files and build artifacts
+│   ├── .cache/                 # Folder for tools cachings (clangd...)
+│   ├── .marker/                # Folder containing build markers for dependencies
+│   ├── dep/                    # Dependency files
+│   ├── obj/                    # Object files
+│   ├── pcm/                    # Precompiled module files
+│   ├── pch/                    # Precompiled header files
+│   └── .compile_commands       # Compilation database
+├── test/                       # Contains test files for the Docker image (end-to-end tests)
+├── common.mk                   # Common Makefile variables and settings
+├── makefile                    # Main Makefile
+├── dockerfile                  # Main Dockerfile for building the project environment
+└── dockerfile-system           # Base image for the main Dockerfile
+```
+
+## Make Commands Summary
+
+### General Make Commands
+
+- `make`: Triggers a multi-threaded build.
+- `make all`: Builds all targets, including third-party dependencies, project library, and executables.
+- `make test`: Runs the unit test executables.
+- `make clean`: Removes all dependency files, object files, and the compilation database.
+- `make fclean`: Performs a clean operation and additionally removes compiled libraries, executables, precompiled modules, and headers.
+- `make re`: Cleans the project and rebuilds everything from scratch.
+
+### Submodules Make Commands
+
+- `make deps`: Builds all third-party dependencies.
+- `make llvm`: Specifically builds the LLVM dependency.
+- `make std_pcm`: Builds the standard precompiled modules (libcxx pcm).
+- `make antlr`: Specifically builds the ANTLR dependency.
+- `make update_antlr`: Updates the ANTLR submodule to the latest version.
+- `make update_llvm`: Updates the LLVM submodule to the latest version.
+- `make update_deps`: Updates all submodules to their latest versions.
+- `make clean_deps`: Cleans all third-party dependencies.
+
+## Contributing
+
+We'd love your help to make this project even better! If you're interested in contributing, take a look at our [Contributing Guidelines](contributing.md). Whether it's reporting a bug, suggesting a feature, or writing code, your input is welcome.
 
 ## License
 
