@@ -47,10 +47,9 @@ include third-party/makefile
 .SUFFIXES:
 .PRECIOUS: 	$(PCHS) $(PCMS)
 .PHONY: 	all test clean fclean re
+.NOTPARALLEL: $(PCMS)
 
 all: $(THIRD_PARTY_BUILT_MARKER)
-	make $(PCHS)
-	make $(PCMS)
 	make -j $(EXECS)
 
 $(PCH_DIR)/%.pch: $(SRC_DIR)/%.hpp makefile third-party/makefile
