@@ -42,18 +42,14 @@ DEPS 	:= 	$(MODULES:$(SRC_DIR)/%=$(DEP_DIR)/%.d) $(IMPLS:$(SRC_DIR)/%=$(DEP_DIR)
 # Include third-party makefile
 include third-party/makefile
 
-# Multi threaded build
-.DEFAULT_GOAL := default
-default:
-	$(MAKE) -j all
-
 #-------------------------------------------------#
 
 .SUFFIXES:
 .PRECIOUS: 	$(PCHS) $(PCMS)
 .PHONY: 	all test clean fclean re
 
-all: $(THIRD_PARTY_BUILT_MARKER) $(NAME) $(EXECS)
+all: $(THIRD_PARTY_BUILT_MARKER)
+	make -j $(EXECS)
 
 $(PCH_DIR)/%.pch: $(SRC_DIR)/%.hpp makefile third-party/makefile
 	@mkdir -p $(@D)

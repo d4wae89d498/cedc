@@ -121,12 +121,11 @@ project-root/
 └── dockerfile-system           # Base image for the main Dockerfile
 ```
 
-## Make Commands Summary
+## Make Commands
 
 ### General Make Commands
 
-- `make`: Triggers a multi-threaded build.
-- `make all`: Builds all targets, including third-party dependencies, project library, and executables.
+- `make`: Triggers a multi-threaded build. Builds all targets, including third-party dependencies, project library, and executables.
 - `make test`: Runs the unit test executables.
 - `make clean`: Removes all dependency files, object files, and the compilation database.
 - `make fclean`: Performs a clean operation and additionally removes compiled libraries, executables, precompiled modules, and headers.
