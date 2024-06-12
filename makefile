@@ -95,7 +95,7 @@ $(NAME): $(OBJS)
 	@mkdir -p $(@D)
 	ar -rcs $@ $(OBJS)
 
-$(BIN_DIR)/%.out: $(SRC_DIR)/%.cpp $(NAME) $(OBJS)
+$(BIN_DIR)/%.out: $(SRC_DIR)/%.cpp $(NAME)
 	@mkdir -p $(@D)
 	$(CXX) $(CXXFLAGS) $< -o $@ $(INCPCHS) $(NAME) $(LIBS) -w
 
