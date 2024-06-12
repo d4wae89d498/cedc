@@ -5,6 +5,7 @@ include $(PROJECT_DIR)/common.mk
 
 .PHONY: build_deps $(wildcard update_*) clean_deps build_std_pcm
 
+THIRD_PARTY_BUILT_MARKER := $(PROJECT_DIR)/$(TMP_DIR)/.marker/third_party
 all:  $(THIRD_PARTY_BUILT_MARKER)
 
 # Build LLVM
@@ -46,7 +47,6 @@ $(ANTLR_BUILT_MARKER): $(LLVM_BUILT_MARKER)
 build_antlr: $(ANTLR_BUILT_MARKER)
 
 # Build all third party libs
-THIRD_PARTY_BUILT_MARKER := $(PROJECT_DIR)/$(TMP_DIR)/.marker/third_party
 $(THIRD_PARTY_BUILT_MARKER):
 	make $(LLVM_BUILT_MARKER)
 	make $(ANTLR_BUILT_MARKER)
