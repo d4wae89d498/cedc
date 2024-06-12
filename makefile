@@ -84,6 +84,7 @@ $(PCM_DIR)/%.pcm: $(SRC_DIR)/%.cppm $(PCHS)
 			fi; \
 		;;\
 		*)\
+			echo "Warning: Unknown module file location '$<'"; \
 		;;\
 	esac
 
