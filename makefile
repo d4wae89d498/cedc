@@ -42,6 +42,11 @@ DEPS 	:= 	$(MODULES:$(SRC_DIR)/%=$(DEP_DIR)/%.d) $(IMPLS:$(SRC_DIR)/%=$(DEP_DIR)
 # Include third-party makefile
 include third-party/makefile
 
+# Multi threaded build
+.DEFAULT_GOAL := default
+default:
+	$(MAKE) -j all
+
 #-------------------------------------------------#
 
 .SUFFIXES:
@@ -82,19 +87,17 @@ $(OBJ_DIR)/%.cppm.o: $(PCM_DIR)/%.pcm
 	@mkdir -p $(@D)
 	$(CXX) $(CXXFLAGS)  -c $< -o $@
 
-$(OBJ_DIR)/%.cpp.o: $(SRC_DIR)/%.cpp
+$(OBJ_DIR)/%.cpp.o: $(SRC_DIR)/%.cpp $(PCHS)
 	@mkdir -p $(@D)
 	$(CXX) $(CXXFLAGS)  -c $< -o $@
 
 $(NAME): $(OBJS)
 	@mkdir -p $(@D)
 	ar -rcs $@ $(OBJS)
-	@make $(CXXDB)
 
-$(BIN_DIR)/%.out: $(SRC_DIR)/%.cpp $(OBJS)
+$(BIN_DIR)/%.out: $(SRC_DIR)/%.cpp $(NAME) $(OBJS)
 	@mkdir -p $(@D)
 	$(CXX) $(CXXFLAGS) $< -o $@ $(INCPCHS) $(NAME) $(LIBS) -w
-	@make $(CXXDB)
 
 $(CXXDB): $(EXECS)
 	@make --always-make --dry-run \
@@ -126,7 +129,8 @@ fclean: clean
 	rm -f $(EXECS)
 	rm -f $(PCMS)
 	rm -f $(PCHS)
-	rm -rf $(LIBS)
-	make clean_deps
+
+dclean: fclean
+	$(MAKE) clean_deps
 
 re: clean all

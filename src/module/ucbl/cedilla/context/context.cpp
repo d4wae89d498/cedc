@@ -7,29 +7,23 @@ namespace cedilla
 	fn Context::lex(string src) -> void
 	{
 		auto csrc = src.c_str();
-		unsigned i = 0;
+		unsigned int i = 0;
 
 		while (csrc[i])
 		{
-			// Keep longest match only
+			LexerOutput longest_match { 0, nullptr };
 
-			println("i={}\n", i);
-			auto longest_match = LexerOutput { 0, nullptr };
-
-			for (auto& lexer : this->lexers)
+			for (const auto& lexer : this->lexers)
 			{
 				auto result = lexer(csrc + i);
 				if (result.first > longest_match.first)
 				{
 					longest_match.first = result.first;
-					if (result.second)
-						longest_match.second = move(result.second);
-					else
-						longest_match.second = 0;
+					longest_match.second = result.second ? move(result.second) : nullptr;
 				}
 				else if (result.first < 0)
 				{
-					throw runtime_error("Lexer runtime error at : " + string(csrc + i));
+					throw runtime_error("Lexer runtime error at: " + string(csrc + i));
 				}
 			}
 
@@ -39,36 +33,41 @@ namespace cedilla
 				if (longest_match.second)
 				{
 					this->ast.link_back(move(longest_match.second));
-					// todo: apply parser rules
-
 					this->parse(this->ast);
-
-
 				}
-
-				continue ;
+				continue;
 			}
 
 			if (csrc[i])
-					throw runtime_error("Lexer unknown syntax at : " + string(csrc + i));
+			{
+				throw runtime_error("Lexer unknown syntax at: " + string(csrc + i));
+			}
 		}
 	}
 
 	fn Context::parse(Ast& ast) -> void
 	{
-		redo:
-		for (auto& parser : this->parsers)
+		while (true)
 		{
-			auto result = parser(ast);
-			if (result > 0)
+			auto parsed = false;
+
+			for (const auto& parser : this->parsers)
 			{
-				// iter until lastt
-				// TODO: finish me
-				goto redo;
+				auto result = parser(ast);
+				if (result > 0)
+				{
+					parsed = true;
+					break;
+				}
+				else if (result < 0)
+				{
+					throw runtime_error("Parser runtime error.");
+				}
 			}
-			else if (result < 0)
+
+			if (!parsed)
 			{
-				throw new runtime_error("Parser runtime error.");
+				break;
 			}
 		}
 	}

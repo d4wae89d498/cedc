@@ -18,9 +18,8 @@ DEP_DIR := $(TMP_DIR)/dep
 
 # C++ settings
 CXX := clang++ -std=c++26
-CXXFLAGS := -g \
-			-O0 \
-			-fsanitize=address \
+CXXDBGFLAGS :=  -g -fsanitize=address
+CXXFLAGS := $(CXXDBGFLAGS) -O0 \
 			-nostdinc++ \
 			-nostdlib++ \
 			-I$(PROJECT_DIR)/third-party/llvm-project/build/include/c++/v1 \
@@ -35,10 +34,3 @@ CXXFLAGS := -g \
 ifeq ($(shell uname -s), Darwin)
 	CXXFLAGS += -target x86_64-apple-macos10.9
 endif
-
-LIBS := third-party/libastmatcher-parser/libastmatcher-parser.a\
- 	third-party/antlr/runtime/Cpp/build/runtime/libantlr4-runtime.a\
- 	third-party/llvm-project/build/lib/libunwind.a\
- 	third-party/llvm-project/build/lib/libc++experimental.a\
- 	third-party/llvm-project/build/lib/libc++.a\
- 	third-party/llvm-project/build/lib/libc++abi.a
