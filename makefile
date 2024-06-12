@@ -16,7 +16,7 @@ CXXDB := 	$(TMP_DIR)/compile_commands.json
 # Project modules
 MODULES := $(shell find src/module -type f -name "*.cppm")
 VOID := $(shell cd ./third-party/cppmodsort/ \
-			&& make && \
+			&& make \
 			&& mkdir -p $(DEP_DIR) \
 			&& ./third-party/cppmodsort/cppmodsort \
 			-m --src-dir src/ --pcm-dir tmp/pcm/ $(MODULES) > tmp/dep/module.d)
