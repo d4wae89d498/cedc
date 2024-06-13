@@ -16,6 +16,8 @@ struct AstNodeState final : public State
 		}
 	}
 
+	// TODO: implement copy and move constructors
+
 	~AstNodeState()
 	{
 		delete any_cast<void*>(this->value);
