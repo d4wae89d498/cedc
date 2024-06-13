@@ -4,34 +4,38 @@ import ucbl.cedilla;
 
 using namespace cedilla;
 
+// 'any' cant store unique_ptr, so we have to use manual memory management here
 struct AstNodeState final : public State
 {
-   AstNodeState(unique_ptr<AstNode> value = {})
-        : State(__func__, value->clone().release())
-    {
-
-    }
+	AstNodeState(unique_ptr<AstNode> value = {})
+		: State(__func__, value->clone().release())
+	{
+		if (!value)
+		{
+			throw invalid_argument("value cannot be null");
+		}
+	}
 
 	~AstNodeState()
 	{
-		free(std::any_cast<void*>(this->value));
+		delete any_cast<void*>(this->value);
 	}
 
-    fn clone() -> unique_ptr<State> override
-    {
-        return make_unique<AstNodeState>(any_cast<AstNode*>(this->value)->clone());
-    }
+	fn clone() -> unique_ptr<State> override
+	{
+		return make_unique<AstNodeState>(any_cast<AstNode*>(this->value)->clone());
+	}
 
-    fn serialize() -> string override
-    {
-       auto node = any_cast<AstNode*>(this->value);
-       return format("{}({})", type, node->serialize());
-    }
+	fn serialize() -> string override
+	{
+		auto node = any_cast<AstNode*>(this->value);
+		return format("{}({})", type, node->serialize());
+	}
 
-    static fn deserialize(const string &s) -> unique_ptr<State>
-    {
-    	return make_unique<AstNodeState>(AstNode::deserialize(s));
-    }
+	static fn deserialize(const string &s) -> unique_ptr<State>
+	{
+		return make_unique<AstNodeState>(AstNode::deserialize(s));
+	}
 };
 REGISTER_DESERIALIZABLE(State, AstNodeState);
 
