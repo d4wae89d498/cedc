@@ -30,4 +30,19 @@ export namespace cedilla
 		operator T&& () const { return std::move(*ptr); } // restitute rvalue ref
 
 	};
+
+	template <typename T>
+	fn alloc(const T data) -> T*
+	{
+		auto new_data = static_cast<T*>(malloc(sizeof(T)));
+		if (new_data)
+		{
+			memcpy(new_data, &data, sizeof(T));
+		}
+		else
+		{
+			throw runtime_error("OOM error");
+		}
+		return new_data;
+	}
 };
