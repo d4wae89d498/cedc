@@ -57,7 +57,7 @@ include third-party/makefile
 .PHONY: 	all test clean fclean re
 
 all: $(THIRD_PARTY_BUILT_MARKER)
-	$(MAKE) -j $(EXECS)
+	$(MAKE) -j $(EXECS) $(CXXDB)
 
 $(PCH_DIR)/%.pch: $(SRC_DIR)/%.hpp makefile third-party/makefile
 	@mkdir -p $(@D)
