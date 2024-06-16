@@ -6,7 +6,7 @@ import :ast_node;
 import :string;
 import :state_registry;
 
-namespace cedilla
+export namespace cedilla
 {
 	// 'any' cant store unique_ptr, so we have to use manual memory management here
 	struct AstNodeState final : public State
@@ -43,5 +43,9 @@ namespace cedilla
 			return make_unique<AstNodeState>(AstNode::deserialize(s));
 		}
 	};
+}
+
+namespace cedilla
+{
 	REGISTER_DESERIALIZABLE(State, AstNodeState);
 }

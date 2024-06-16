@@ -6,7 +6,7 @@ import :ast_node;
 import :string;
 import :state_registry;
 
-namespace cedilla
+export namespace cedilla
 {
 	struct UIntState final : public State
 	{
@@ -31,5 +31,8 @@ namespace cedilla
 			return make_unique<UIntState>(value);
 		}
 	};
+}
+
+namespace cedilla {
 	REGISTER_DESERIALIZABLE(State, UIntState);
 }

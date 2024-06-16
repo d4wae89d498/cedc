@@ -4,50 +4,6 @@ import ucbl.cedilla;
 
 using namespace cedilla;
 
-struct StringState final : public State
-{
-	StringState(string str) : State(__func__, str)
-	{
-
-	}
-
-	fn serialize() -> string
-	{
-		return "";
-	}
-
-	fn clone() -> unique_ptr<State>
-	{
-		return 0;
-	}
-};
-
-struct AstNodeState final : public State
-{
-	AstNodeState(unique_ptr<AstNode> node) : State(__func__, node.release())
-	{
-
-	}
-
-	fn serialize() -> string
-	{
-		return "";
-	}
-
-	fn clone() -> unique_ptr<State>
-	{
-		auto ptr = any_cast<AstNode*>(value);
-		return make_unique<AstNodeState>(ptr->clone());
-	}
-
-	~AstNodeState()
-	{
-		auto ptr = any_cast<AstNode*>(value);
-		delete ptr;
-	}
-
-};
-
 struct Identifier final : public AstNode
 {
 	string value;

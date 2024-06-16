@@ -1,5 +1,7 @@
 export module ucbl.cedilla;
 
+// Core
+
 export import :common;
 export import :string;
 export import :linked_list_node;
@@ -16,7 +18,7 @@ export import :tree;
 export import :ast;
 export import :context;
 
-// STD
+// STD states
 
 export import :ast_node_state;
 export import :float_state;
