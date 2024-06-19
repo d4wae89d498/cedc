@@ -11,7 +11,7 @@ export namespace cedilla
 		fn count_substring_occurrences(const string& needle) const -> u64;
 
 		template<typename T>
-		fn assign_to(T& value) -> bool
+		fn assign_to(T& value) const -> bool
 		{
 			auto str = this;
 			if constexpr (is_same_v<T, string>)
@@ -35,6 +35,16 @@ export namespace cedilla
 				return ec == errc();
 			}
 			// todo handle operator >> for generic class but  LIBCXX PCM modules currently crash with it
+		}
+
+		template <typename T>
+		operator T() const {
+			T value;
+			auto r = this->assign_to<T>(value);
+			if (!r) {
+				throw invalid_argument("Conversion failed");
+			}
+			return value;
 		}
 
 		template<typename T>

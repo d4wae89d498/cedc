@@ -1,3 +1,5 @@
+#include <cassert>
+
 import ucbl.cedilla;
 import ucbl.astmatcher;
 
@@ -113,8 +115,19 @@ fn main() -> int
 	print("begin...\n");
 
 	auto test = String("yoo pomme yoo");
+
 	int i;
-	auto my = test.assign_to<int>(i);
+
+	auto my = String("42").assign_to<int>(i);
+	if (!my) {
+		print("conversion error for {}", i);
+		exit(1);
+	}
+	assert(i == 42);
+
+	i = String("43");
+	assert(i == 43);
+	println("i={}", i);
 
 	println("my: {}", test.replace_substring_occurrences("yoo", "hello").c_str());
 
