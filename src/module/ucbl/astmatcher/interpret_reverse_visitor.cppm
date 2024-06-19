@@ -4,10 +4,17 @@ module;
 
 export module ucbl.astmatcher:interpret_reverse_visitor;
 
+import ucbl.cedilla;
+
 export namespace astmatcher
 {
 	class InterpretReverseVisitor : public AstMatcherVisitor {
 	public:
+
+		cedilla::Ast&	ast;
+
+		InterpretReverseVisitor(cedilla::Ast& ast)
+			: ast(ast) {}
 
 		std::string getTypeName(antlr4::tree::ParseTree *node) {
 			if (dynamic_cast<antlr4::tree::TerminalNode*>(node)) {

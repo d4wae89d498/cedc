@@ -16,7 +16,7 @@ export namespace astmatcher
 	 *		interpret(TXT(skip dawdw; capture dwda;), Ast) -> map <str, node>
 	 *
 	 */
-	fn interpret(const string pattern, Ast &Ast) -> unordered_map<string, unique_ptr<AstNode>>
+	fn interpret(const string pattern, Ast &ast) -> unordered_map<string, unique_ptr<AstNode>>
 	{
 		println("Input: {}", pattern);
 		cedilla::cout << "Input: " << pattern << cedilla::endl;
@@ -36,7 +36,7 @@ export namespace astmatcher
 		}
 		AstMatcherParser parser(&tokens);
 		AstMatcherParser::AstPatternDescriptionContext* tree = parser.astPatternDescription();
-		InterpretReverseVisitor visitor;
+		InterpretReverseVisitor visitor(ast);
 		visitor.visit(tree);
 
 

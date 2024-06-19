@@ -33,6 +33,7 @@ export namespace cedilla
 	};
 }
 
-namespace cedilla {
+namespace cedilla
+{
 	REGISTER_DESERIALIZABLE(State, UIntState);
 }

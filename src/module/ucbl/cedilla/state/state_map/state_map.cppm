@@ -16,6 +16,8 @@ export namespace cedilla
 
         StateMap(StateMap&& other) noexcept : BaseType(std::move(other)) {}
         StateMap(initializer_list<pair<const string, RrefCapture<unique_ptr<State>>>> init);
+        StateMap(initializer_list<pair<const string, RrefCapture<State>>> init);
+
 
     	//StateMap(const StateMap&) = delete;
         //fn operator=(const StateMap&) -> StateMap& = delete;

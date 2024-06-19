@@ -130,11 +130,11 @@ fn main() -> int
 		{string("test"), StringState::deserialize("yoo")}
 	});
 */
-	auto gg = StateMap({{"test", StringState::deserialize("yoo")}});
+	auto gg = StateMap({{"test", StringState("yoo")}});
 
 	auto test33 = Ast({
 		{Word(
-		StateMap({{"test", StringState::deserialize("yoo")}}),
+		StateMap({{"test", StringState("yoo")}}),
 		Ast({
 				{Word(
 				StateMap(),

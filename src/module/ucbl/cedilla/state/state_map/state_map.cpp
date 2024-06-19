@@ -14,6 +14,14 @@ namespace cedilla
 		}
 	}
 
+	StateMap::StateMap(initializer_list<pair<const string, RrefCapture<State>>> init)
+	{
+		for (auto&& elem : init)
+		{
+			this->emplace(elem.first, elem.second.ptr->clone());
+		}
+	}
+
 	fn StateMap::clone() -> unique_ptr<StateMap>
 	{
 		auto out = make_unique<StateMap>();
