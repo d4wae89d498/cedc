@@ -1,47 +1,58 @@
 module;
 
+#include <iostream>
+#include <unordered_map>
+#include <string>
+#include <vector>
+#include <functional>
+#include "antlr4-runtime.h"
 #include "AstMatcherLexer.h"
 #include "AstMatcherParser.h"
+#include "AstMatcherVisitor.h"
 
 export module ucbl.astmatcher:interpret;
 
-import ucbl.cedilla;
 import :interpret_reverse_visitor;
+import ucbl.cedilla;
 
-using namespace cedilla;
+using namespace std;
+using namespace antlr4;
 
-export namespace astmatcher
-{
-	/*
-	 *		interpret(TXT(skip dawdw; capture dwda;), Ast) -> map <str, node>
-	 *
-	 */
-	fn interpret(const string pattern, Ast &ast) -> unordered_map<string, unique_ptr<AstNode>>
-	{
-		println("Input: {}", pattern);
-		cedilla::cout << "Input: " << pattern << cedilla::endl;
+export namespace astmatcher {
+	unordered_map<string, unique_ptr<cedilla::AstNode>> interpret(const string& pattern, cedilla::Ast& ast) {
+		cout << "Input: " << pattern << endl;
 
-		antlr4::ANTLRInputStream input(pattern.c_str());
-
-	//	TODO:: fix these lines
-
+		ANTLRInputStream input(pattern);
 		AstMatcherLexer lexer(&input);
-
-
-		antlr4::CommonTokenStream tokens(&lexer);
-
+		CommonTokenStream tokens(&lexer);
 		tokens.fill();
+
 		for (auto token : tokens.getTokens()) {
-			println("token: {}", token->toString());
+			cout << "token: " << token->toString() << endl;
 		}
+
 		AstMatcherParser parser(&tokens);
 		AstMatcherParser::AstPatternDescriptionContext* tree = parser.astPatternDescription();
-		InterpretReverseVisitor visitor(ast);
+
+		// Define property checkers
+		std::unordered_map<std::string, InterpretReverseVisitor::PropertyChecker> checkers = {
+			{"type", [](cedilla::AstNode* node, const std::string& value) {
+				return false;//node->states["type"] == value;
+			}},
+			{"value", [](cedilla::AstNode* node, const std::string& value) {
+				return false;//node->states["value"] == value;
+			}}
+		};
+
+		InterpretReverseVisitor visitor(ast, checkers);
 		visitor.visit(tree);
 
+		unordered_map<string, unique_ptr<cedilla::AstNode>> matchedNodes;
+		for (const auto& [alias, node] : visitor.matches) {
+			matchedNodes[alias] = node->clone();
+		}
 
-
-		return unordered_map<string, unique_ptr<AstNode>>{};
+		return matchedNodes;
 	}
 
 }

@@ -3,7 +3,7 @@ export module ucbl.cedilla;
 // Core
 
 export import :common;
-export import :string;
+export import :util;
 export import :linked_list_node;
 export import :linked_list;
 export import :tree_node;

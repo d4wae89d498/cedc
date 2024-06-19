@@ -1,4 +1,4 @@
-export module ucbl.cedilla:string;
+export module ucbl.cedilla:_string;
 
 import :common;
 
@@ -6,9 +6,28 @@ export namespace cedilla
 {
 	struct String : public string
 	{
-		fn replace_substring_occurrences(const string& from, const string& to) -> String;
+		fn replace_substring_occurrences(const string& from, const string& to) -> String
+		{
+			String original = String(this->c_str());
+			size_t start_pos = 0;
+			while ((start_pos = original.find(from, start_pos)) != string::npos) {
+				original.replace(start_pos, from.length(), to);
+				start_pos += to.length();
+			}
+			return original;
+		}
 
-		fn count_substring_occurrences(const string& needle) const -> u64;
+		fn count_substring_occurrences(const string& needle) const -> u64
+		{
+			size_t count = 0;
+			size_t pos = 0;
+			while ((pos = this->find(needle, pos)) != string::npos)
+			{
+				count += 1;
+				pos += needle.length();
+			}
+			return count;
+		}
 
 		template<typename T>
 		fn assign_to(T& value) const -> bool

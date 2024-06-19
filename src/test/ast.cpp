@@ -50,11 +50,11 @@ struct Identifier final : public AstNode
 REGISTER_DESERIALIZABLE(AstNode, Identifier);
 
 
-struct Int final : public AstNode
+struct IntNode final : public AstNode
 {
 	int value;
 
-	Int(int b = 42) : AstNode(__func__)
+	IntNode(int b = 42) : AstNode(__func__)
 	{
 		this->value = b;
 	}
@@ -74,12 +74,12 @@ struct Int final : public AstNode
 	static fn deserialize(const string& str) -> unique_ptr<AstNode>
 	{
 		print("unserializing...");
-		auto out = make_unique<Int>();
+		auto out = make_unique<IntNode>();
 		scan(str, "{}", out->value);
 		return out;
 	}
 };
-REGISTER_DESERIALIZABLE(AstNode, Int);
+//REGISTER_DESERIALIZABLE(AstNode, IntNode);
 
 fn main() -> int
 {
@@ -92,13 +92,13 @@ fn main() -> int
 
 
 	return 0;
-	myast->next =  AstNodeRegistry::get().deserialize("Int", "4");
+	myast->next =  AstNodeRegistry::get().deserialize("IntNode", "4");
 
 	print("ptr is : {}", (void*)myast->next.get());
 
 	Identifier	id;
 
-	Int* tmp = (Int*)myast->next.get();
+	IntNode* tmp = (IntNode*)myast->next.get();
 
 	assert(tmp->value == 4);
 

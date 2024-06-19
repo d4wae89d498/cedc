@@ -1,6 +1,7 @@
 export module ucbl.cedilla:ast_node;
 
 import :common;
+import :util;
 import :tree_node;
 import :state_map;
 import :tree;

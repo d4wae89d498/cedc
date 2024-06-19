@@ -3,7 +3,7 @@ export module ucbl.cedilla:uint_state;
 import :common;
 import :state;
 import :ast_node;
-import :string;
+import :util;
 import :state_registry;
 
 export namespace cedilla

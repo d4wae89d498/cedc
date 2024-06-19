@@ -35,9 +35,11 @@ PCMS := 	$(MODULES:$(SRC_DIR)/%.cppm=$(PCM_DIR)/%.pcm)
 NAME :=		$(LIB_DIR)/libcedilla.a
 
 # Project executables
-MAINS :=	$(shell find src/cli -type f -name "*.cpp") \
-			$(shell find src/test -type f -name "*.cpp")
-EXECS :=	$(MAINS:$(SRC_DIR)/%.cpp=$(BIN_DIR)/%.out)
+MAINS :=	$(shell find src/cli -type f -name "*.cpp")
+TESTS := 	$(shell find src/test -type f -name "*.cpp")
+MAINS_OUT := $(MAINS:$(SRC_DIR)/%.cpp=$(BIN_DIR)/%.out)
+TESTS_OUT := $(TESTS:$(SRC_DIR)/%.cpp=$(BIN_DIR)/%.out)
+EXECS :=	$(MAINS_OUT) $(TESTS_OUT)
 
 # Project headers
 HEADERS :=	$(shell find src/include -type f -name "*.hpp")
@@ -50,14 +52,20 @@ DEPS 	:= 	$(MODULES:$(SRC_DIR)/%=$(DEP_DIR)/%.d) $(IMPLS:$(SRC_DIR)/%=$(DEP_DIR)
 # Include third-party makefile
 include third-party/makefile
 
+# Multithreaded build by default
+ifeq ($(shell uname), Darwin)
+    CPU_CORES := $(shell sysctl -n hw.ncpu)
+else
+    CPU_CORES := $(shell nproc)
+endif
+all: $(THIRD_PARTY_BUILT_MARKER)
+	$(MAKE) -j$(CPU_CORES) $(EXECS) $(CXXDB)
+
 #-------------------------------------------------#
 
 .SUFFIXES:
 .PRECIOUS: 	$(PCHS) $(PCMS)
 .PHONY: 	all test clean fclean re
-
-all: $(THIRD_PARTY_BUILT_MARKER)
-	$(MAKE) -j $(EXECS) $(CXXDB)
 
 $(PCH_DIR)/%.pch: $(SRC_DIR)/%.hpp makefile third-party/makefile
 	@mkdir -p $(@D)
@@ -111,20 +119,17 @@ $(CXXDB): $(EXECS)
 	> $(CXXDB)
 
 define run-and-check
-    @output=$$($1 2>&1); \
+    output=$$($1 2>&1); \
     return_code=$$?; \
-    if [ $$return_code -ne 0 ]; then \
-        echo "$$output"; \
+    if test $$return_code != "0"; then \
+        echo "$1 exited with return code $$return_code \n\n --> $$output\n\n\n\n"; \
+		exit 1; \
     else \
 		echo "$1 OK"; \
-	fi; \
-    exit $$return_code
+	fi;
 endef
-test:
-	$(call run-and-check, ./bin/test/linked_list.out)
-	$(call run-and-check, ./bin/test/tree.out)
-#	$(call run-and-check, ./bin/test/ast.out)
-	$(call run-and-check, ./bin/test/lexer.out)
+test: $(TESTS_OUT)
+	$(foreach file,$(TESTS_OUT),$(call run-and-check,$(file)))
 
 clean:
 	rm -f $(DEPS) $(OBJS) $(CXXDB)

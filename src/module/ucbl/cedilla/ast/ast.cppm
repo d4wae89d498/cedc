@@ -1,6 +1,7 @@
 export module ucbl.cedilla:ast;
 
 import :common;
+import :util;
 import :tree;
 import :linked_list;
 

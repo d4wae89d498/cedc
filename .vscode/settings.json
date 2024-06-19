@@ -7,7 +7,9 @@
 	"search.exclude": {
         "**/.git": true,
         "**/lib": true,
-        "**/tmp": true
+        "**/tmp": true,
+		"third-party/llvm-project": true,
+		"third-party/antlr": true
 	},
 	"clangd.arguments": [
 		"-header-insertion=never"

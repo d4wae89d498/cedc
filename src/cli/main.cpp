@@ -9,6 +9,6 @@ using namespace cedilla;
 
 fn main() -> int
 {
-	throw runtime_error("Not implemented");
+	throw runtime_error("Main CLI: Not implemented");
 	return 0;
 }

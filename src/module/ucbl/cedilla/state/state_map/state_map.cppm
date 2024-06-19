@@ -1,6 +1,7 @@
 export module ucbl.cedilla:state_map;
 
 import :common;
+import :util;
 import :state;
 
 export namespace cedilla
