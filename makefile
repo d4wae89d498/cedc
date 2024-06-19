@@ -119,7 +119,7 @@ $(CXXDB): $(EXECS)
 	> $(CXXDB)
 
 define run-and-check
-    output=$$($1 2>&1); \
+    @output=$$($1 2>&1); \
     return_code=$$?; \
     if test $$return_code != "0"; then \
         echo "$1 exited with return code $$return_code \n\n --> $$output\n\n\n\n"; \

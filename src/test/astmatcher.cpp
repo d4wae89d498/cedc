@@ -81,15 +81,13 @@ int main()
 	});
 
 	auto out = astmatcher::interpret(R"(
-////////////////////////////////////////////////////////////////////
+########################################################
 
-				// Simple test case
-
+				# Simple test case
 				Word as id1;
 
-				/* this should be a comment too */
 
-////////////////////////////////////////////////////////////////////
+########################################################
 	)", test_ast);
 
 	assert(any_cast<string>(out["id1"]->states["test"]->value) == "yoo");
