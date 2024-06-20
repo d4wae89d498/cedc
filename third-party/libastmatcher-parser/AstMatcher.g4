@@ -3,13 +3,11 @@ grammar AstMatcher;
 astPatternDescription:
     nodeType*;
 
-nodeTypeList:
-    (nodeType (SCOL)*);
-
 nodeType:
 	(IDENTIFIER (AS IDENTIFIER)?)
 	(LBRACKET nodePropertiesDescription* RBRACKET)?
-	(LBRACE nodeTypeList RBRACE)?;
+	(LBRACE nodeType* RBRACE)?
+	SCOL*;
 
 nodePropertiesDescription:
     STRING EQUAL STRING

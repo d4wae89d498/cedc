@@ -92,5 +92,13 @@ fn main() -> int
 	assert(lst.first->prev == nullptr);
 	assert(lst.last->next == nullptr);
 
+
+	LinkedList<IntNode> lst9;
+
+	lst9.link_back(make_unique<IntNode>(-42));
+	assert(lst9.first->x == -42);
+	assert(lst9.last->x == -42);
+
+
 	print ("--- LinkedList tests succeed\n");
 }

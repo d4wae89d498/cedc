@@ -1,11 +1,6 @@
 module;
 
 #include "AstMatcherVisitor.h"
-#include <iostream>
-#include <stdexcept>
-#include <any>
-#include <unordered_map>
-#include <functional>
 
 export module ucbl.cedilla:ast_matcher_reverse_visitor;
 
@@ -15,29 +10,31 @@ import :ast_node;
 
 export namespace cedilla
 {
-	class InterpretReverseVisitor : public AstMatcherVisitor {
-	public:
-		using PropertyChecker = function<bool(cedilla::AstNode*, const string&)>;
+	struct InterpretReverseVisitor : public AstMatcherVisitor
+	{
+		using PropertyChecker = function<bool(AstNode*, const string&)>;
 
-		cedilla::AstNode *it;
-		unordered_map<string, cedilla::AstNode*> matches;
+		AstNode *it;
+		unordered_map<string, AstNode*> matches;
 		unordered_map<string, PropertyChecker> propertyCheckers;
+		bool match = true;
 
-		InterpretReverseVisitor(cedilla::Ast& ast, unordered_map<string, PropertyChecker> checkers)
+		InterpretReverseVisitor(Ast& ast, unordered_map<string, PropertyChecker> checkers)
 			: propertyCheckers(move(checkers))
 		{
-			it = ast.first.get();
-			if (!it)
-				throw runtime_error("Trying to analyse an empty file.");
+			it = ast.last;
+			println("it {} = [{}]", __LINE__, it ? it->serialize() : "NULL");
+			if (!it) {
+				throw runtime_error("Trying to match ast with an empty string.");
+			}
 		}
 
-		string getTypeName(antlr4::tree::ParseTree *node) {
+		fn getTypeName(antlr4::tree::ParseTree *node) -> string
+		{
 			if (dynamic_cast<antlr4::tree::TerminalNode*>(node)) {
 				return "TerminalNode";
 			} else if (dynamic_cast<AstMatcherParser::AstPatternDescriptionContext*>(node)) {
 				return "visitAstPatternDescription";
-			} else if (dynamic_cast<AstMatcherParser::NodeTypeListContext*>(node)) {
-				return "visitNodeTypeList";
 			} else if (dynamic_cast<AstMatcherParser::NodeTypeContext*>(node)) {
 				return "visitNodeType";
 			} else if (dynamic_cast<AstMatcherParser::NodePropertiesDescriptionContext*>(node)) {
@@ -49,24 +46,10 @@ export namespace cedilla
 			}
 		}
 
-		void matchNode(AstMatcherParser::NodeTypeContext *context) {
-			string expectedType = context->IDENTIFIER(0)->getText();
-			string alias;
-			if (context->AS()) {
-				alias = context->IDENTIFIER(1)->getText();
-			}
-
-			if (it && it->type == expectedType) {
-				if (!alias.empty()) {
-					matches[alias] = it;
-				}
-				it = it->next.get();
-			}
-		}
-
-		bool checkProperties(cedilla::AstNode* node, AstMatcherParser::NodePropertiesDescriptionContext* context) {
-			string key = context->STRING(0)->getText();
-			string value = context->STRING(1)->getText();
+		fn checkProperties(AstNode* node, AstMatcherParser::NodePropertiesDescriptionContext* context) -> bool
+		{
+			auto key = context->STRING(0)->getText();
+			auto value = context->STRING(1)->getText();
 			auto checkerIt = propertyCheckers.find(key);
 			if (checkerIt != propertyCheckers.end()) {
 				return checkerIt->second(node, value);
@@ -74,49 +57,95 @@ export namespace cedilla
 			return false;
 		}
 
-		any visitAstPatternDescription(AstMatcherParser::AstPatternDescriptionContext *context) override {
-			cout << "Visiting visitAstPatternDescription in reverse order" << endl;
-			for (int i = context->children.size() - 1; i >= 0; --i) {
-				if (context->children[i]->getText() == string("<EOF>"))
+		fn visitAstPatternDescription(AstMatcherParser::AstPatternDescriptionContext *context) -> any override
+		{
+			println("Visiting visitAstPatternDescription in reverse order");
+
+			if (!it) {
+				println("{}", __LINE__);
+				match = false;
+				return nullptr;
+			}
+			for (s64 i = static_cast<s64>(context->children.size()) - 1; i >= 0; i -= 1) {
+				if (context->children[i]->getText() == string("<EOF>")) {
 					continue;
-				cout << "Visiting child ..." << getTypeName(context->children[i]) << " " << context->children[i]->getText() << endl;
+				}
 				visit(context->children[i]);
 			}
 			return nullptr;
 		}
 
-		any visitNodeTypeList(AstMatcherParser::NodeTypeListContext *context) override {
-			cout << "Visiting visitNodeTypeList in reverse order" << endl;
-			for (int i = context->children.size() - 1; i >= 0; --i) {
-				visit(context->children[i]);
+		fn visitNodeType(AstMatcherParser::NodeTypeContext *context) -> any override
+		{
+			println("Visiting visitNodeType: {}", context->getText());
+
+			if (!it) {
+				match = false;
+				println("{}", __LINE__);
+				return nullptr;
 			}
+			auto expectedType = context->IDENTIFIER(0)->getText();
+			string alias;
+			if (context->AS()) {
+				alias = context->IDENTIFIER(1)->getText();
+			}
+			auto prev = it->prev;
+			if (it->type == expectedType) {
+				if (!alias.empty()) {
+					matches[alias] = it;
+				}
+				if (context->children.size()) {
+					println("----");
+					println("[{}], [{}], [{}]", (u64) it->childs.first.get(), (u64) it->childs.last, it->childs.serialize());
+					println("----");
+					if (it->childs.first)
+						it = it->childs.first->last(); // TODO: check why this is needed, last pointer is not set correctly.
+					else
+						it = NULL;
+					println("it {} = [{}]", __LINE__, it ? it->serialize() : "NULL");
+					for (s64 i = static_cast<s64>(context->children.size()) - 1; i >= 0; i -= 1) {
+						visit(context->children[i]);
+					}
+				}
+			} else {
+				match = false;
+				it = nullptr;
+				println("{}", __LINE__);
+			}
+			it = prev;
+			println("it {} = [{}]", __LINE__, it ? it->serialize() : "NULL");
+			println("visitNodeType end.");
 			return nullptr;
 		}
 
-		any visitNodeType(AstMatcherParser::NodeTypeContext *context) override {
-			cout << "Visiting visitNodeType: " << context->getText() << endl;
-			matchNode(context);
-			for (int i = context->children.size() - 1; i >= 0; --i) {
-				visit(context->children[i]);
-			}
-			return nullptr;
-		}
+		fn visitNodePropertiesDescription(AstMatcherParser::NodePropertiesDescriptionContext *context) -> any override
+		{
+			println("Visiting visitNodePropertiesDescription: {}", context->getText());
 
-		any visitNodePropertiesDescription(AstMatcherParser::NodePropertiesDescriptionContext *context) override {
-			cout << "Visiting visitNodePropertiesDescription: " << context->getText() << endl;
+			if (!it) {
+				return nullptr;
+			}
 			if (!checkProperties(it, context)) {
-				it = nullptr; // Skip this node
+				it = nullptr;
+				match = false;
+				println("{}", __LINE__);
+				return nullptr;
 			}
-			for (int i = context->children.size() - 1; i >= 0; --i) {
+			for (s64 i = static_cast<s64>(context->children.size()) - 1; i >= 0; i -= 1) {
 				visit(context->children[i]);
 			}
 			return nullptr;
 		}
 
-		any visitFuncCall(AstMatcherParser::FuncCallContext *context) override {
-			cout << "Visiting FuncCall: " << context->getText() << endl;
-			// Function call matching logic goes here
-			for (int i = context->children.size() - 1; i >= 0; --i) {
+		fn visitFuncCall(AstMatcherParser::FuncCallContext *context) -> any override
+		{
+			println("Visiting FuncCall: {}", context->getText());
+
+			// TODO: check that
+			if (!it) {
+				return nullptr;
+			}
+			for (s64 i = static_cast<s64>(context->children.size()) - 1; i >= 0; i -= 1) {
 				visit(context->children[i]);
 			}
 			return nullptr;

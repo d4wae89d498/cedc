@@ -24,7 +24,11 @@ Imagine a world where you can bend the syntax to your will—no limits, just pur
 - **AST preprocessing**: Dive deep into the AST of your code and manipulate it to fit your needs.
 - **Developer freedom**: Whether you want to tweak the syntax or overhaul it completely, the choice is yours.
 
-### Building and running the project with Docker
+## Documentations
+
+- [AST Matcher DSL](third-party/libastmatcher-parser/readme.md): Documentation for the AST pattern matching tool DSL.
+
+## Building and running the project with Docker
 
 To build and run the project using Docker, follow these steps:
 
@@ -48,9 +52,7 @@ To build and run the project using Docker, follow these steps:
 
 These steps ensure that the environment is consistently set up with all required dependencies, making it easy to build and run the project in a controlled and reproducible Docker container.
 
-### Non-Docker instructions
-
-#### Building and running without Docker
+## Building and running without Docker
 
 1. **Install dependencies**:
     Ensure you have all necessary dependencies installed on your system. This includes:

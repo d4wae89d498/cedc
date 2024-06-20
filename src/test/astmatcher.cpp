@@ -65,16 +65,16 @@ struct Word final : public AstNode
 };
 REGISTER_DESERIALIZABLE(AstNode, Word);
 
-int main()
+fn main() -> int
 {
 	auto test_ast = Ast({
-	{Word(
-		StateMap({{"test", StringState("yoo")}}),
-		Ast({
-				{Word(
-				StateMap(),
-				Ast()
-				)},
+		{Word(
+			StateMap({{"test", StringState("yoo")}}),
+			Ast({
+					{Word(
+					StateMap(),
+					Ast()
+					)},
 			})
 		)},
 	});
@@ -89,6 +89,79 @@ int main()
 ########################################################
 	)", test_ast);
 
+	assert(out.contains("id1"));
 	assert(any_cast<string>(out["id1"]->states["test"]->value) == "yoo");
+
+
+
+//////////////////////////////////////////////////////////
+
+
+
+	test_ast = Ast({
+		{Word(
+			StateMap({{"test", StringState("yoo")}}),
+			Ast({
+					{Word(
+						StateMap({{"test2", StringState("yoo2")}}),
+						Ast()
+					)},
+			})
+		)},
+	});
+
+	out = ast_matcher_interpret(R"(
+########################################################
+
+				# Test child matching
+				Word as id1
+				{
+					Word as id1_child;
+				};
+
+
+
+########################################################
+	)", test_ast);
+
+	println("-----");
+	println("{}", test_ast.serialize());
+	println("-----");
+
+			test_ast.first->childs.last = test_ast.last->childs.first->last();
+
+	println("------");
+	println("first: {}", (s64)test_ast.first.get());
+	println("last: {}", (s64)test_ast.last);
+
+	println("[0]first: {}", (s64)test_ast.first->childs.first.get());
+	println("[0]last: {}", (s64)test_ast.first->childs.last);
+	println("------");
+
+	assert(out.contains("id1"));
+	assert(out["id1"]->states.contains("test"));
+	assert(any_cast<string>(out["id1"]->states["test"]->value) == "yoo");
+
+
+	assert(out.contains("id1_child"));
+	println("->[{}]", out["id1_child"]->serialize());
+	assert(out["id1_child"]->states.contains("test2"));
+
+	exit(0);
+
+//	println("{}", out["id1"]->states.count("test"));
+//	println("id1_child? {}", out.count("id1_child"));
+
+//	exit(1);
+	assert(any_cast<string>(out["id1_child"]->states["test2"]->value) == "yoo2");
+
+
+
+//////////////////////////////////////////////////////////
+
+
+
+
+
 
 }

@@ -18,40 +18,43 @@ The lexer rules define the tokens used in the DSL:
 - **RBRACE**: Represents the `}` character.
 - **EQUAL**: Represents the `=` character.
 - **COMMA**: Represents the `,` character.
+- **SCOL**: Represents the `;` character.
 - **IDENTIFIER**: Matches alphanumeric identifiers (letters, digits, and underscores) starting with a letter.
 - **STRING**: Matches double-quoted string literals.
+- **COMMENT**: Skips comments starting with `#`.
 - **WHITESPACE**: Skips whitespace characters (space, tab, newline).
 
 ## Grammar Rules
 
 The grammar rules define the structure and hierarchy of the DSL.
 
-### Root Rule: `astDescription`
+### Root Rule: `astPatternDescription`
 
-The `astDescription` rule is the entry point for parsing the DSL. It describes the node type statements, along with optional property descriptions and match lists.
+The `astPatternDescription` rule is the entry point for parsing the DSL. It describes the list of node types.
 
 ```antlr
-astDescription:
-    nodeTypeStmt
-    (LBRACKET astPropertyDescription* RBRACKET)?
-    (LBRACE matchList RBRACE)?;
+astPatternDescription:
+    nodeType*;
 ```
 
-### Node Type Statement: `nodeTypeStmt`
+### Node Type: `nodeType`
 
-The `nodeTypeStmt` rule defines a node type statement, which may optionally specify an alias using the `as` keyword.
+The `nodeType` rule defines a node type statement, which may optionally specify an alias using the `as` keyword. It may also include property descriptions and nested node types.
 
 ```antlr
-nodeTypeStmt:
-    IDENTIFIER (AS IDENTIFIER)?;
+nodeType:
+    IDENTIFIER (AS IDENTIFIER)?
+    (LBRACKET nodePropertiesDescription* RBRACKET)?
+    (LBRACE nodeType* RBRACE)?
+    SCOL*;
 ```
 
-### Property Description: `astPropertyDescription`
+### Node Properties Description: `nodePropertiesDescription`
 
-The `astPropertyDescription` rule describes properties of a node, which can be either a string assignment or a function call.
+The `nodePropertiesDescription` rule describes properties of a node, which can be either a string assignment or a function call.
 
 ```antlr
-astPropertyDescription:
+nodePropertiesDescription:
     STRING EQUAL STRING
     | STRING funcCall;
 ```
@@ -62,35 +65,7 @@ The `funcCall` rule defines a function call that may include a dollar sign and a
 
 ```antlr
 funcCall:
-    IDENTIFIER LPARENTHESE (DOLLAR COMMA? STRING?)? RPARENTHESE;
-```
-
-### Match List: `matchList`
-
-The `matchList` rule defines a list of match statements separated by commas.
-
-```antlr
-matchList:
-    (matchStmt (COMMA matchStmt)*)?;
-```
-
-### Match Statement: `matchStmt`
-
-The `matchStmt` rule can be a node type statement or nested node type.
-
-```antlr
-matchStmt:
-    nodeTypeStmt
-    | nestedNodeType;
-```
-
-### Nested Node Type: `nestedNodeType`
-
-The `nestedNodeType` rule allows for nested node types within braces, containing a match list.
-
-```antlr
-nestedNodeType:
-    IDENTIFIER LBRACE matchList RBRACE;
+    IDENTIFIER LPARENTHESE (DOLLAR (COMMA STRING)?)? RPARENTHESE;
 ```
 
 ## Example
@@ -98,13 +73,12 @@ nestedNodeType:
 The following is an example of the DSL and how it conforms to the specified grammar:
 
 ```dsl
-
-	Expr["type"="int"] as number
-	Symbol["value"="!"]
-
+Expr["type"="int"] as number;
+Symbol["value"="!"];
 ```
 
 In this example:
 - Capture the `Expr` node if it has a property `"type"="int"`, and name it as `number`.
-- Skip the `Symbol` node if it has a property `"value"="!"`
-- The structure showcases how to define node types with properties and nested node types, supporting recursive pattern matching in the AST.
+- Skip the `Symbol` node if it has a property `"value"="!"`.
+
+The structure showcases how to define node types with properties and nested node types, supporting recursive pattern matching in the AST.
