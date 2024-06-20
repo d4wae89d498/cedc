@@ -119,17 +119,17 @@ $(CXXDB): $(EXECS)
 	> $(CXXDB)
 
 define run-and-check
-    @output=$$($1 2>&1); \
-    return_code=$$?; \
-    if test $$return_code != "0"; then \
-        echo "$1 exited with return code $$return_code \n\n --> $$output\n\n\n\n"; \
+	output=$$($1 2>&1); \
+	return_code=$$?; \
+	if test $$return_code != "0"; then \
+		echo "$1 exited with return code $$return_code \n\n --> $$output\n\n\n\n"; \
 		exit 1; \
-    else \
+	else \
 		echo "$1 OK"; \
 	fi;
 endef
-test: $(TESTS_OUT)
-	$(foreach file,$(TESTS_OUT),$(call run-and-check,$(file)))
+test:	$(TESTS_OUT)
+	@$(foreach file,$(TESTS_OUT),$(call run-and-check,$(file)))
 
 clean:
 	rm -f $(DEPS) $(OBJS) $(CXXDB)
