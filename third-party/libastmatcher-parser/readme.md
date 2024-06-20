@@ -68,17 +68,21 @@ funcCall:
     IDENTIFIER LPARENTHESE (DOLLAR (COMMA STRING)?)? RPARENTHESE;
 ```
 
+The '$' symbol represents the property passed to the function. Functions are provided to the interpreter using a function map.
+
 ## Example
 
 The following is an example of the DSL and how it conforms to the specified grammar:
 
 ```dsl
+Symbol["value" is($, ".")]; // This is equivalent to Symbol["value" = "."].
 Expr["type"="int"] as number;
 Symbol["value"="!"];
 ```
 
 In this example:
-- Capture the `Expr` node if it has a property `"type"="int"`, and name it as `number`.
-- Skip the `Symbol` node if it has a property `"value"="!"`.
+- `Symbol["value" is($, ".")]` captures the `Symbol` node if its `value` property, processed by the `is` function, matches the string `"."`.
+- `Expr["type"="int"] as number` captures the `Expr` node if it has a property `type` with the value `int` and assigns it the alias `number`.
+- `Symbol["value"="!"]` captures the `Symbol` node if it has a property `value` with the value `!`.
 
 The structure showcases how to define node types with properties and nested node types, supporting recursive pattern matching in the AST.
