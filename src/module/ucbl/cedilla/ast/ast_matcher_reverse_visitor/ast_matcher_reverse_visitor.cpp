@@ -161,4 +161,16 @@ namespace cedilla
 		}
 		return nullptr;
 	}
+
+	fn InterpretReverseVisitor::visitNodeTypeOr(AstMatcherParser::NodeTypeOrContext *context) -> any
+	{
+		throw runtime_error("Not implemented");
+		return nullptr;
+	}
+
+	fn InterpretReverseVisitor::visitNodePropertiesDescriptionOr(AstMatcherParser::NodePropertiesDescriptionOrContext *context) -> any
+	{
+		throw runtime_error("Not implemented");
+		return nullptr;
+	}
 }

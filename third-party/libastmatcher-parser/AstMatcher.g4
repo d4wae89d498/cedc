@@ -12,10 +12,19 @@ nodeType:
 nodePropertiesDescription:
     (STRING EQUAL STRING)
     |
-	(STRING IDENTIFIER LPARENTHESE STRING RPARENTHESE);
+	(STRING IDENTIFIER LPARENTHESE STRING RPARENTHESE)
+	|
+	(LBRACE nodeType* RBRACE)
+	;
 
+nodePropertiesDescriptionOr:
+	nodePropertiesDescription	OR 	 OrExpr;
+
+nodeTypeOr:
+	nodeType	OR 	 OrExpr;
 
 // Lexer rules
+OR: '|';
 AS: 'as';
 LPARENTHESE: '(';
 RPARENTHESE: ')';

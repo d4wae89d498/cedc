@@ -20,9 +20,14 @@ export namespace cedilla
 		bool match = true;
 
 		InterpretReverseVisitor(Ast& ast, unordered_map<string, StateChecker> checkers);
+
 		fn getTypeName(antlr4::tree::ParseTree *node) -> string;
+
 		fn visitAstPatternDescription(AstMatcherParser::AstPatternDescriptionContext *context) -> any override;
 		fn visitNodeType(AstMatcherParser::NodeTypeContext *context) -> any override;
+		fn visitNodeTypeOr(AstMatcherParser::NodeTypeOrContext *context) -> any override;
 		fn visitNodePropertiesDescription(AstMatcherParser::NodePropertiesDescriptionContext *context) -> any override;
+		fn visitNodePropertiesDescriptionOr(AstMatcherParser::NodePropertiesDescriptionOrContext *context) -> any override;
+
 	};
 }

@@ -83,7 +83,7 @@ fn main() -> int
 ########################################################
 
 				# Simple test case
-				Word as id1;
+				Word as id1
 
 
 ########################################################
@@ -116,8 +116,8 @@ fn main() -> int
 				# Test child matching
 				Word as id1
 				{
-					Word as id1_child;
-				};
+					Word as id1_child
+				}
 
 
 
@@ -168,10 +168,22 @@ fn main() -> int
 ########################################################
 
 				# Test child matching with properties
-				Word  as id1 ["test" = "yoo"]
+				Word as id1 [
+					"test" = "yoo"
+#					test2 {
+#						Word as ...
+#					}
+#					test3 is_in("blue, red, orange")
+#
+#					(test3 == "blue")
+#					|
+#					(test3 == "red")
+#					|
+#					(test3 == "orange")
+				]
 				{
-					Word as id1_child ["test2" = "yoo2"];
-				};
+					Word as id1_child ["test2" = "yoo2"]
+				}
 
 
 
@@ -221,8 +233,8 @@ fn main() -> int
 				# Test child matching
 				NonExists as id1
 				{
-					Word as id1_child;
-				};
+					Word as id1_child
+				}
 
 
 
