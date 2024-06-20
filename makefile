@@ -104,7 +104,7 @@ $(OBJ_DIR)/%.cppm.o: $(PCM_DIR)/%.pcm
 
 $(OBJ_DIR)/%.cpp.o: $(SRC_DIR)/%.cpp $(PCHS) $(PCMS)
 	@mkdir -p $(@D)
-	$(CXX) $(CXXFLAGS)  -c $< -o $@
+	$(CXX) $(CXXFLAGS)  -c $< -o $@ $(INCPCHS)
 
 $(NAME): $(OBJS)
 	@mkdir -p $(@D)

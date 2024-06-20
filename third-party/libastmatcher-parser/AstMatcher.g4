@@ -10,16 +10,12 @@ nodeType:
 	SCOL*;
 
 nodePropertiesDescription:
-    STRING EQUAL STRING
+    (STRING EQUAL STRING)
     |
-	STRING funcCall;
-
-funcCall:
-    IDENTIFIER LPARENTHESE (DOLLAR (COMMA STRING)?)? RPARENTHESE;
+	(STRING IDENTIFIER LPARENTHESE STRING RPARENTHESE);
 
 
 // Lexer rules
-DOLLAR: '$';
 AS: 'as';
 LPARENTHESE: '(';
 RPARENTHESE: ')';
@@ -28,7 +24,6 @@ RBRACKET: ']';
 LBRACE: '{';
 RBRACE: '}';
 EQUAL: '=';
-COMMA: ',';
 SCOL: ';';
 IDENTIFIER: [a-zA-Z_][a-zA-Z_0-9]*;
 STRING: '"' (ESC | ~["\\])* '"';

@@ -5,7 +5,7 @@ module;
 #include "AstMatcherParser.h"
 #include "AstMatcherVisitor.h"
 
-export module ucbl.cedilla:ast_matcher_interpret;
+module ucbl.cedilla;
 
 import :common;
 import :ast;
@@ -16,28 +16,20 @@ using namespace antlr4;
 
 namespace cedilla
 {
-	struct TrackingErrorListener : public antlr4::BaseErrorListener
+	fn AstMatcherTrackingErrorListener::syntaxError(Recognizer *recognizer, Token *offendingSymbol, size_t line, size_t charPositionInLine,
+											const string &msg, exception_ptr e) -> void
 	{
-		bool error = false;
+		println(cerr, "line {}:{} {}", line, charPositionInLine, msg);
+		error = true;
+	}
 
-		virtual fn syntaxError(Recognizer *recognizer, Token *offendingSymbol, size_t line, size_t charPositionInLine,
-										const string &msg, exception_ptr e) -> void override
-		{
-			println(cerr, "line {}:{} {}", line, charPositionInLine, msg);
-			error = true;
-		}
-	};
-}
-
-export namespace cedilla
-{
 	fn ast_matcher_interpret(const string& pattern, Ast& ast) -> unordered_map<string, AstNode*>
 	{
 		// Lexing
 		println("Input: [{}]", pattern);
 		ANTLRInputStream input(pattern);
 		AstMatcherLexer lexer(&input);
-		auto lexerErrorListener = TrackingErrorListener();
+		auto lexerErrorListener = AstMatcherTrackingErrorListener();
 		lexer.removeErrorListeners();
 		lexer.addErrorListener(&lexerErrorListener);
 		CommonTokenStream tokens(&lexer);
@@ -48,7 +40,7 @@ export namespace cedilla
 
 		// Parsing
 		AstMatcherParser parser(&tokens);
-		auto parserErrorListener = TrackingErrorListener();
+		auto parserErrorListener = AstMatcherTrackingErrorListener();
 		parser.removeErrorListeners();
 		parser.addErrorListener(&parserErrorListener);
 		AstMatcherParser::AstPatternDescriptionContext* tree = parser.astPatternDescription();
@@ -59,13 +51,10 @@ export namespace cedilla
 
 		// Define property checkers
 		// TODO: implement and test some Property Checkers or expose the map.
-		unordered_map<string, InterpretReverseVisitor::PropertyChecker> checkers = {
-			{"type", [](AstNode* node, const string& value) {
-				return false;//node->states["type"] == value;
+		unordered_map<string, InterpretReverseVisitor::StateChecker> checkers = {
+			{"is", [](const string& serialized_state, const string& rvalue) {
+				return serialized_state == rvalue;
 			}},
-			{"value", [](AstNode* node, const string& value) {
-				return false;//node->states["value"] == value;
-			}}
 		};
 
 		// Visit & match AST

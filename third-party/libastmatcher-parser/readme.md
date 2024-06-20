@@ -8,7 +8,6 @@ This document specifies the ANTLR grammar for the AST Node Matcher DSL. This DSL
 
 The lexer rules define the tokens used in the DSL:
 
-- **DOLLAR**: Represents the `$` character.
 - **AS**: The keyword `as`.
 - **LPARENTHESE**: Represents the `(` character.
 - **RPARENTHESE**: Represents the `)` character.
@@ -61,27 +60,25 @@ nodePropertiesDescription:
 
 ### Function Call: `funcCall`
 
-The `funcCall` rule defines a function call that may include a dollar sign and an optional string argument.
+The `funcCall` rule defines a function call that that takes a string argument.
 
 ```antlr
 funcCall:
-    IDENTIFIER LPARENTHESE (DOLLAR (COMMA STRING)?)? RPARENTHESE;
+    IDENTIFIER LPARENTHESE STRING RPARENTHESE;
 ```
-
-The '$' symbol represents the property passed to the function. Functions are provided to the interpreter using a function map.
 
 ## Example
 
 The following is an example of the DSL and how it conforms to the specified grammar:
 
 ```dsl
-Symbol["value" is($, ".")]; // This is equivalent to Symbol["value" = "."].
+Symbol["value" is(".")]; // This is equivalent to Symbol["value" = "."].
 Expr["type"="int"] as number;
 Symbol["value"="!"];
 ```
 
 In this example:
-- `Symbol["value" is($, ".")]` captures the `Symbol` node if its `value` property, processed by the `is` function, matches the string `"."`.
+- `Symbol["value" is(".")]` captures the `Symbol` node if its `value` property, processed by the `is` function, matches the string `"."`.
 - `Expr["type"="int"] as number` captures the `Expr` node if it has a property `type` with the value `int` and assigns it the alias `number`.
 - `Symbol["value"="!"]` captures the `Symbol` node if it has a property `value` with the value `!`.
 
