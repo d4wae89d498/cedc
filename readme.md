@@ -106,7 +106,7 @@ project-root/
 │   ├── pch/                    # Precompiled header files
 │   └── .compile_commands       # Compilation database
 ├── test/                       # Contains test files for the Docker image (end-to-end tests)
-├── common.mk                   # Common Makefile variables and settings
+├── common.mk                   # Common Makefile build settings
 ├── makefile                    # Main Makefile
 ├── dockerfile                  # Main Dockerfile for building the project environment
 └── dockerfile-system           # Base image for the main Dockerfile

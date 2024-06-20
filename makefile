@@ -60,6 +60,7 @@ else
 endif
 default:
 	make -j$(CPU_CORES) all
+
 #-------------------------------------------------#
 
 .SUFFIXES:
