@@ -1,4 +1,4 @@
-default: all
+.DEFAULT_GOAL := default
 
 include common.mk
 
@@ -58,14 +58,15 @@ ifeq ($(shell uname), Darwin)
 else
     CPU_CORES := $(shell nproc)
 endif
-all: $(THIRD_PARTY_BUILT_MARKER)
-	$(MAKE) -j$(CPU_CORES) $(EXECS) $(CXXDB)
-
+default:
+	make -j$(CPU_CORES) all
 #-------------------------------------------------#
 
 .SUFFIXES:
 .PRECIOUS: 	$(PCHS) $(PCMS)
-.PHONY: 	all test clean fclean re
+.PHONY: 	default all test clean fclean re
+
+all: $(THIRD_PARTY_BUILT_MARKER) $(EXECS) $(CXXDB)
 
 $(PCH_DIR)/%.pch: $(SRC_DIR)/%.hpp makefile third-party/makefile
 	@mkdir -p $(@D)
