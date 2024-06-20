@@ -7,13 +7,13 @@ module;
 #include <unordered_map>
 #include <functional>
 
-export module ucbl.astmatcher:interpret_reverse_visitor;
+export module ucbl.cedilla:ast_matcher_reverse_visitor;
 
-import ucbl.cedilla;
+import :common;
+import :ast;
+import :ast_node;
 
-using namespace std;
-
-export namespace astmatcher
+export namespace cedilla
 {
 	class InterpretReverseVisitor : public AstMatcherVisitor {
 	public:

@@ -10,28 +10,30 @@ module;
 #include "AstMatcherParser.h"
 #include "AstMatcherVisitor.h"
 
-export module ucbl.astmatcher:interpret;
+export module ucbl.cedilla:ast_matcher_interpret;
 
-import :interpret_reverse_visitor;
-import ucbl.cedilla;
+import :common;
+import :ast;
+import :ast_node;
+import :ast_matcher_reverse_visitor;
 
-using namespace std;
 using namespace antlr4;
 
-struct TrackingErrorListener : public antlr4::BaseErrorListener {
-	bool error = false;
+namespace cedilla {
+	struct TrackingErrorListener : public antlr4::BaseErrorListener {
+		bool error = false;
 
-	virtual void syntaxError(Recognizer *recognizer, Token *offendingSymbol, size_t line, size_t charPositionInLine,
-									const string &msg, exception_ptr e) override
-	{
-		println(cerr, "line {}:{} {}", line, charPositionInLine, msg);
-		error = true;
-    }
-};
+		virtual void syntaxError(Recognizer *recognizer, Token *offendingSymbol, size_t line, size_t charPositionInLine,
+										const string &msg, exception_ptr e) override
+		{
+			println(cerr, "line {}:{} {}", line, charPositionInLine, msg);
+			error = true;
+		}
+	};
+}
 
-
-export namespace astmatcher {
-	unordered_map<string, unique_ptr<cedilla::AstNode>> interpret(const string& pattern, cedilla::Ast& ast) {
+export namespace cedilla {
+	unordered_map<string, unique_ptr<AstNode>> ast_matcher_interpret(const string& pattern, Ast& ast) {
 		cout << "Input: " << pattern << endl;
 
 		ANTLRInputStream input(pattern);
@@ -63,10 +65,10 @@ export namespace astmatcher {
 
 		// Define property checkers
 		unordered_map<string, InterpretReverseVisitor::PropertyChecker> checkers = {
-			{"type", [](cedilla::AstNode* node, const string& value) {
+			{"type", [](AstNode* node, const string& value) {
 				return false;//node->states["type"] == value;
 			}},
-			{"value", [](cedilla::AstNode* node, const string& value) {
+			{"value", [](AstNode* node, const string& value) {
 				return false;//node->states["value"] == value;
 			}}
 		};
@@ -74,7 +76,7 @@ export namespace astmatcher {
 		InterpretReverseVisitor visitor(ast, checkers);
 		visitor.visit(tree);
 
-		unordered_map<string, unique_ptr<cedilla::AstNode>> matchedNodes;
+		unordered_map<string, unique_ptr<AstNode>> matchedNodes;
 		for (const auto& [alias, node] : visitor.matches) {
 			matchedNodes[alias] = node->clone();
 		}

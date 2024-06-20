@@ -1,7 +1,6 @@
 #include <cassert>
 
 import ucbl.cedilla;
-import ucbl.astmatcher;
 
 using namespace cedilla;
 
@@ -160,7 +159,7 @@ fn main() -> int
 	if (test33.first)
 		print("type is ... {}\n", test33.first->type);
 
-	astmatcher::interpret("\
+	ast_matcher_interpret("\
 								\
 			Identifier; 		\n\
 			Identifier; 		\n\

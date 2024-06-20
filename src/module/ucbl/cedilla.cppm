@@ -18,6 +18,11 @@ export import :tree;
 export import :ast;
 export import :context;
 
+// Ast matcher DSL
+
+export import :ast_matcher_reverse_visitor;
+export import :ast_matcher_interpret;
+
 // STD states
 
 export import :ast_node_state;

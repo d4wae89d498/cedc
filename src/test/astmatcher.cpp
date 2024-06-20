@@ -2,7 +2,6 @@
 #include <cassert>
 
 import ucbl.cedilla;
-import ucbl.astmatcher;
 
 using namespace cedilla;
 
@@ -80,7 +79,7 @@ int main()
 		)},
 	});
 
-	auto out = astmatcher::interpret(R"(
+	auto out = ast_matcher_interpret(R"(
 ########################################################
 
 				# Simple test case
