@@ -59,9 +59,9 @@ namespace cedilla
 
 		// Visit & match AST
 		InterpretReverseVisitor visitor(ast, checkers);
-		visitor.visit(tree);
-		if (!visitor.match)
+		auto out = any_cast<AstMatcherVisitBag>(visitor.visit(tree));
+		if (!out.success)
 			return {};
-		return visitor.matches;
+		return out.matches;
 	}
 }

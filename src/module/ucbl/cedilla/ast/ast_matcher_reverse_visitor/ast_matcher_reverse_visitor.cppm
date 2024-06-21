@@ -10,14 +10,18 @@ import :ast_node;
 
 export namespace cedilla
 {
+	struct AstMatcherVisitBag
+	{
+		unordered_map<string, AstNode*> matches;
+		bool success;
+	};
+
 	struct InterpretReverseVisitor : public AstMatcherVisitor
 	{
 		using StateChecker = function<bool(const string&, const string&)>;
 
 		AstNode *it;
-		unordered_map<string, AstNode*> matches;
 		unordered_map<string, StateChecker> StateCheckers;
-		bool match = true;
 
 		InterpretReverseVisitor(Ast& ast, unordered_map<string, StateChecker> checkers);
 

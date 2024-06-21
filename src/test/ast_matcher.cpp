@@ -169,7 +169,8 @@ fn main() -> int
 
 				# Test child matching with properties
 				Word as id1 [
-					"test" = "yoo"
+					test = "yoo"
+#	Todo: implement these syntax:
 #					test2 {
 #						Word as ...
 #					}
@@ -182,7 +183,7 @@ fn main() -> int
 #					(test3 == "orange")
 				]
 				{
-					Word as id1_child ["test2" = "yoo2"]
+					Word as id1_child [test2 = "yoo2"]
 				}
 
 
@@ -244,6 +245,36 @@ fn main() -> int
 	assert(out.size() == 0);
 
 
+//////////////////////////////////////////////////////////
+	test_ast = Ast({
+		{Word(
+			StateMap({{"test", StringState("yoo")}}),
+			Ast({
+					{Word(
+						StateMap({{"test2", StringState("yoo2")}}),
+						Ast()
+					)},
+			})
+		)},
+	});
+
+	out = ast_matcher_interpret(R"(
+########################################################
+
+				# Test child matching
+				NonExists as id1
+				{
+					Word as id1_child
+				}
+				|
+				Word as id1
+
+
+
+########################################################
+	)", test_ast);
+
+	assert(out.size() == 1);
 
 
 
