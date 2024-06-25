@@ -10,7 +10,7 @@ import :ast_node;
 
 export namespace cedilla
 {
-	struct AstMatcherVisitBag
+	struct AstMatcherVisitorOutput
 	{
 		unordered_map<string, AstNode*> matches;
 		bool success;

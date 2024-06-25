@@ -64,7 +64,7 @@ namespace cedilla
 		-> any
 	{
 		println("Visiting visitAstPatternDescription in reverse order");
-		AstMatcherVisitBag out = {unordered_map<string, AstNode*>(), true};
+		AstMatcherVisitorOutput out = {unordered_map<string, AstNode*>(), true};
 
 		if (!it) {
 			println("{}", __LINE__);
@@ -73,7 +73,7 @@ namespace cedilla
 		}
 		for (s64 i = static_cast<s64>(context->nodeTypeOr().size()) - 1; i >= 0; i -= 1) {
 			auto result = visit(context->nodeTypeOr(i));
-			auto resultMap = any_cast<AstMatcherVisitBag>(result);
+			auto resultMap = any_cast<AstMatcherVisitorOutput>(result);
 			if (!resultMap.success) {
 				out.success = false;
 				return out;
@@ -84,10 +84,10 @@ namespace cedilla
 	}
 
 	fn InterpretReverseVisitor::visitNodeType(AstMatcherParser::NodeTypeContext *context)
-		-> any
+	-> any
 	{
 		println("Visiting visitNodeType: {}", context->getText());
-		AstMatcherVisitBag out = {unordered_map<string, AstNode*>(), true};
+		AstMatcherVisitorOutput out = {unordered_map<string, AstNode*>(), true};
 
 		if (!it) {
 			out.success = false;
@@ -108,7 +108,7 @@ namespace cedilla
 			println("Checking states...");
 			for (size_t i = 0; i < context->nodePropertiesDescriptionOr().size(); i += 1) {
 				auto result = visit(context->nodePropertiesDescriptionOr(i));
-				auto resultMap = any_cast<AstMatcherVisitBag>(result);
+				auto resultMap = any_cast<AstMatcherVisitorOutput>(result);
 				if (!resultMap.success) {
 					out.success = false;
 					return out;
@@ -128,7 +128,7 @@ namespace cedilla
 				println("it {} = [{}]", __LINE__, it ? it->serialize() : "NULL");
 				for (size_t i = 0; i < context->nodeTypeOr().size(); i += 1) {
 					auto result = visit(context->nodeTypeOr(i));
-					auto resultMap = any_cast<AstMatcherVisitBag>(result);
+					auto resultMap = any_cast<AstMatcherVisitorOutput>(result);
 					if (!resultMap.success) {
 						out.success = false;
 						return out;
@@ -138,7 +138,6 @@ namespace cedilla
 			}
 		} else {
 			out.success = false;
-			it = nullptr;
 			println("{}", __LINE__);
 			return out;
 		}
@@ -157,7 +156,7 @@ namespace cedilla
 		auto state_key = context->IDENTIFIER(0)->getText();
 
 
-		AstMatcherVisitBag out = {unordered_map<string, AstNode*>(), true};
+		AstMatcherVisitorOutput out = {unordered_map<string, AstNode*>(), true};
 
 		if (!it) {
 			out.success = false;
@@ -200,63 +199,75 @@ namespace cedilla
 	}
 
 
-	fn InterpretReverseVisitor::visitNodeTypeOr(AstMatcherParser::NodeTypeOrContext *context) -> any
+	fn InterpretReverseVisitor::visitNodeTypeOr(AstMatcherParser::NodeTypeOrContext *context)
+	-> any
 	{
 		println("Visiting visitNodeTypeOr: {}", context->getText());
-		AstMatcherVisitBag out = {unordered_map<string, AstNode*>(), false};
+		AstMatcherVisitorOutput out = {unordered_map<string, AstNode*>(), true};
 
 		auto prev = it;
 
-		auto result = visit(context->nodeType());
-		auto resultMap = any_cast<AstMatcherVisitBag>(result);
-		if (resultMap.success) {
-			out.success = true;
-			out.matches.insert(resultMap.matches.begin(), resultMap.matches.end());
-		} else if (context->nodeTypeOr()) {
-			it = prev; // Reset the iterator for the alternative
-			result = visit(context->nodeTypeOr());
-			resultMap = any_cast<AstMatcherVisitBag>(result);
+		// Process all nodeType elements
+		for (s64 i = static_cast<s64>(context->nodeType().size()) - 1; i >= 0; i -= 1) {
+			auto result = visit(context->nodeType(i));
+			auto resultMap = any_cast<AstMatcherVisitorOutput>(result);
 			if (resultMap.success) {
-				out.success = true;
 				out.matches.insert(resultMap.matches.begin(), resultMap.matches.end());
+				out.success = true;  // Set success to true since at least one match succeeded
 			}
+			it = prev; // Reset the iterator for the next alternative
 		}
 
-		if (!out.success) {
-			it = nullptr;
+		// Process alternative nodeTypeOr if present
+		if (context->nodeTypeOr()) {
+			it = prev; // Reset the iterator for the alternative
+			auto result = visit(context->nodeTypeOr());
+			auto resultMap = any_cast<AstMatcherVisitorOutput>(result);
+			if (resultMap.success) {
+				out.matches.insert(resultMap.matches.begin(), resultMap.matches.end());
+				out.success = true;  // Set success to true since at least one match succeeded
+			}
 		}
 
 		println("visitNodeTypeOr end.");
 		return out;
 	}
 
-	fn InterpretReverseVisitor::visitNodePropertiesDescriptionOr(AstMatcherParser::NodePropertiesDescriptionOrContext *context) -> any
+
+
+	fn InterpretReverseVisitor::visitNodePropertiesDescriptionOr(AstMatcherParser::NodePropertiesDescriptionOrContext *context)
+	-> any
 	{
 		println("Visiting visitNodePropertiesDescriptionOr: {}", context->getText());
-		AstMatcherVisitBag out = {unordered_map<string, AstNode*>(), false};
+		AstMatcherVisitorOutput out = {unordered_map<string, AstNode*>(), true};
 
 		auto prev = it;
 
-		auto result = visit(context->nodePropertiesDescription());
-		auto resultMap = any_cast<AstMatcherVisitBag>(result);
-		if (resultMap.success) {
-			out.success = true;
-			out.matches.insert(resultMap.matches.begin(), resultMap.matches.end());
-		} else if (context->nodePropertiesDescriptionOr()) {
-			it = prev; // Reset the iterator for the alternative
-			result = visit(context->nodePropertiesDescriptionOr());
-			resultMap = any_cast<AstMatcherVisitBag>(result);
+		// Process all nodePropertiesDescription elements
+		for (s64 i = static_cast<s64>(context->nodePropertiesDescription().size()) - 1; i >= 0; i -= 1) {
+			auto result = visit(context->nodePropertiesDescription(i));
+			auto resultMap = any_cast<AstMatcherVisitorOutput>(result);
 			if (resultMap.success) {
-				out.success = true;
 				out.matches.insert(resultMap.matches.begin(), resultMap.matches.end());
+				out.success = true;  // Set success to true since at least one match succeeded
 			}
+			it = prev; // Reset the iterator for the next alternative
 		}
 
-		if (!out.success) {
-			it = nullptr;
+		// Process alternative nodePropertiesDescriptionOr if present
+		if (context->nodePropertiesDescriptionOr()) {
+			it = prev; // Reset the iterator for the alternative
+			auto result = visit(context->nodePropertiesDescriptionOr());
+			auto resultMap = any_cast<AstMatcherVisitorOutput>(result);
+			if (resultMap.success) {
+				out.matches.insert(resultMap.matches.begin(), resultMap.matches.end());
+				out.success = true;  // Set success to true since at least one match succeeded
+			}
 		}
 
 		println("visitNodePropertiesDescriptionOr end.");
 		return out;
 	}
+
+
 }

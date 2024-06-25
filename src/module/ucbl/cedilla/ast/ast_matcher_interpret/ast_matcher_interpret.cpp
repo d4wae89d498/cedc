@@ -59,7 +59,7 @@ namespace cedilla
 
 		// Visit & match AST
 		InterpretReverseVisitor visitor(ast, checkers);
-		auto out = any_cast<AstMatcherVisitBag>(visitor.visit(tree));
+		auto out = any_cast<AstMatcherVisitorOutput>(visitor.visit(tree));
 		if (!out.success)
 			return {};
 		return out.matches;

@@ -1,30 +1,34 @@
 grammar AstMatcher;
 
 astPatternDescription:
-    nodeTypeOr*;
+    nodeTypeOr+;
 
 nodeType:
 	(IDENTIFIER (AS IDENTIFIER)?)
-	(LBRACKET nodePropertiesDescriptionOr* RBRACKET)?
-	(LBRACE nodeTypeOr* RBRACE)?
+	('[' nodePropertiesDescriptionOr* ']')?
+	('{' nodeTypeOr* '}')?
 	SCOL*;
 
 nodePropertiesDescription:
     (IDENTIFIER EQUAL STRING)
     |
-	(IDENTIFIER IDENTIFIER LPARENTHESE STRING RPARENTHESE)
+	(IDENTIFIER IDENTIFIER '(' STRING ')')
 	|
-	(IDENTIFIER LBRACE nodeType* RBRACE)
+	(IDENTIFIER '{' nodeType* '}')
 	;
 
 nodePropertiesDescriptionOr:
-	nodePropertiesDescription	(OR 	nodePropertiesDescriptionOr)?;
+	('(' nodePropertiesDescription+ (OR nodePropertiesDescriptionOr)? ')')
+	|
+	(nodePropertiesDescription+ (OR nodePropertiesDescriptionOr)?);
 
 nodeTypeOr:
-	nodeType	(OR 	 nodeTypeOr)?;
+	('(' nodeType+ (OR nodeTypeOr)? ')')
+	|
+	nodeType+ (OR nodeTypeOr)?;
 
 // Lexer rules
-OR: '|';
+OR: ('|' | 'OR' | 'or');
 AS: 'as';
 LPARENTHESE: '(';
 RPARENTHESE: ')';
