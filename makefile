@@ -18,8 +18,8 @@ MODULES := $(shell find src/module -type f -name "*.cppm")
 VOID := $(shell make -C ./third-party/cppmodsort/ \
 			&& mkdir -p $(DEP_DIR) \
 			&& ./third-party/cppmodsort/cppmodsort \
-			-m --src-dir src/ --pcm-dir tmp/pcm/ $(MODULES) > tmp/dep/module.d)
-include tmp/dep/module.d
+			-m --src-dir src/ --pcm-dir tmp/pcm/ $(MODULES) > tmp/dep/modules.d)
+include tmp/dep/modules.d
 
 # Project sources
 IMPLS :=	$(shell find src/module -type f -name "*.cpp")
