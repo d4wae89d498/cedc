@@ -10,48 +10,46 @@ fn main() -> int
 			})
 		)},
 		{Word(
+			StateMap({{"test21", StringState("yoo21")}}),
+			Ast()
+		)},
+		{Word(
 			StateMap(),
 			Ast()
 		)},
 	});
 
 	auto out = ast_matcher_interpret(R"(
-########################################################
 
-not not (
-				NonExists as id1 [
-					test = "yoo"
+		Noo
+		or
+		(
+					NonExists as id1 [
+						test = "yoo"
+					] {
+						Word as id1_child
+					}
+					or
+					(
+						Word as id1 [
+							test = "yoo"
+						] {
+							Word as id1_child [ test2 = "yoo2" ]
+						}
+						Word as id2
+						NOT Poo
+					)
+		)
 
-				] {
-					Word as id1_child
-				}
-
-				or
-
-				(
-					Word as id1
-
-					and # optional
-
-					Word as id2
-				)
-
-				not Nothin
-
-	) or Nothin
-
-
-########################################################
 	)", test_ast);
 
-	for (auto itm : out) {
-		println("- {} : {}\n\n", itm.first, itm.second->serialize());
-	}
-
-	println("out.size() == {}", out.size());
 
 	assert(out["id1"]->type == "Word");
 	assert(out["id2"]->type == "Word");
+	assert(any_cast<string>(out["id1"]->states["test"]->value) == "yoo");
+	assert(any_cast<string>(out["id1_child"]->states["test2"]->value) == "yoo2");
+	assert(any_cast<string>(out["id2"]->states["test21"]->value) == "yoo21");
 
-	println("hello\n");
+
+	return 0;
 }

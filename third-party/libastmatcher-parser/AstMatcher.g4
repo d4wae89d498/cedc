@@ -23,7 +23,11 @@ nodeProperty:
     ;
 
 nodePropertySequence:
-    nodePropertyElement (OR? nodePropertyElement)*
+    elem=nodePropertyElement
+    |
+	nodePropertySequence isor=OR nodePropertySequence
+    |
+	nodePropertySequence nodePropertySequence
     ;
 
 nodePropertyElement:
@@ -35,7 +39,9 @@ nodePropertyElement:
     ;
 
 nodeTypeSequence:
-    nodeTypeElement (OR? nodeTypeElement)*
+    elem=nodeTypeElement
+    | nodeTypeSequence isor=OR nodeTypeSequence
+    | nodeTypeSequence nodeTypeSequence
     ;
 
 nodeTypeElement:
@@ -56,4 +62,3 @@ STRING: '"' (ESC | ~["\\])* '"';
 fragment ESC: '\\' .;
 COMMENT: '#' ~[\r\n]* -> skip;
 WHITESPACE: [ \t\r\n]+ -> skip;
-AND: 'and' -> skip;

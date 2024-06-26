@@ -15,14 +15,10 @@ fn main() -> int
 	});
 
 	auto out = ast_matcher_interpret(R"(
-########################################################
-
-				# Simple test case
-				Word as id1
-
-########################################################
+		Word as id1
 	)", test_ast);
 
 	assert(out.contains("id1"));
 	assert(any_cast<string>(out["id1"]->states["test"]->value) == "yoo");
+
 }
