@@ -9,15 +9,9 @@ This document specifies the ANTLR grammar for the AST Node Matcher DSL. This DSL
 The lexer rules define the tokens used in the DSL:
 
 - **AS**: The keyword `as`.
-- **LPARENTHESE**: Represents the `(` character.
-- **RPARENTHESE**: Represents the `)` character.
-- **LBRACKET**: Represents the `[` character.
-- **RBRACKET**: Represents the `]` character.
-- **LBRACE**: Represents the `{` character.
-- **RBRACE**: Represents the `}` character.
 - **EQUAL**: Represents the `=` character.
-- **OR**: Represents the `|` character.
-- **SCOL**: Represents the `;` character.
+- **OR**: Represents the `|`, `OR`, or `or` characters.
+- **NOT**: Represents the `!`, `NOT`, or `not` characters.
 - **IDENTIFIER**: Matches alphanumeric identifiers (letters, digits, and underscores) starting with a letter.
 - **STRING**: Matches double-quoted string literals.
 - **ESC**: Matches escape sequences within strings.
@@ -34,7 +28,8 @@ The `astPatternDescription` rule is the entry point for parsing the DSL. It desc
 
 ```antlr
 astPatternDescription:
-    nodeType*;
+    astRoot=nodeTypeSequence
+    ;
 ```
 
 ### Node Type: `nodeType`
@@ -43,47 +38,91 @@ The `nodeType` rule defines a node type statement, which may optionally specify 
 
 ```antlr
 nodeType:
-    IDENTIFIER (AS IDENTIFIER)?
-    (LBRACKET nodePropertiesDescription* RBRACKET)?
-    (LBRACE nodeType* RBRACE)?
-    SCOL*;
-```
-
-### Node Properties Description: `nodePropertiesDescription`
-
-The `nodePropertiesDescription` rule describes properties of a node, which can be either a string assignment, a function call, or nested node types. It also supports the OR operator for alternative property matches.
-
-```antlr
-nodePropertiesDescription:
-    (STRING EQUAL STRING)
-    | (STRING IDENTIFIER LPARENTHESE STRING RPARENTHESE)
-    | (LBRACE nodeType* RBRACE)
+    IDENTIFIER
+        (AS IDENTIFIER)?
+    ('[' nodePropertySequence ']')?
+    ('{' nodeTypeSequence '}')?
+    ';'*
     ;
 ```
 
-### Node Properties Description with OR: `nodePropertiesDescriptionOr`
+### Node Property: `nodeProperty`
 
-The `nodePropertiesDescriptionOr` rule allows for alternative property matches using the OR operator.
+The `nodeProperty` rule describes properties of a node, which can be either a string assignment, a function call, or nested node types.
 
 ```antlr
-nodePropertiesDescriptionOr:
-    nodePropertiesDescription OR nodePropertiesDescription;
+nodeProperty:
+    STRING EQUAL STRING
+    |
+    IDENTIFIER EQUAL STRING
+    |
+    IDENTIFIER IDENTIFIER '(' STRING ')'
+    |
+    IDENTIFIER '{' nodeTypeSequence '}'
+    ;
 ```
 
-### Node Type with OR: `nodeTypeOr`
+### Node Property Sequence: `nodePropertySequence`
 
-The `nodeTypeOr` rule allows for alternative node type matches using the OR operator.
+The `nodePropertySequence` rule describes sequences of node properties. It supports nested properties and alternatives using the OR operator.
 
 ```antlr
-nodeTypeOr:
-    nodeType OR nodeType;
+nodePropertySequence:
+    elem=nodePropertyElement
+    |
+    nodePropertySequence isor=OR nodePropertySequence
+    |
+    nodePropertySequence nodePropertySequence
+    ;
+```
+
+### Node Property Element: `nodePropertyElement`
+
+The `nodePropertyElement` rule describes individual node properties or nested property sequences.
+
+```antlr
+nodePropertyElement:
+    nodeProperty
+    |
+    '(' nodePropertySequence ')'
+    |
+    NOT nodePropertyElement
+    ;
+```
+
+### Node Type Sequence: `nodeTypeSequence`
+
+The `nodeTypeSequence` rule describes sequences of node types. It supports nested types and alternatives using the OR operator.
+
+```antlr
+nodeTypeSequence:
+    elem=nodeTypeElement
+    |
+    nodeTypeSequence isor=OR nodeTypeSequence
+    |
+    nodeTypeSequence nodeTypeSequence
+    ;
+```
+
+### Node Type Element: `nodeTypeElement`
+
+The `nodeTypeElement` rule describes individual node types or nested type sequences.
+
+```antlr
+nodeTypeElement:
+    nodeType
+    |
+    '(' nodeTypeSequence ')'
+    |
+    NOT nodeTypeElement
+    ;
 ```
 
 ## Example
 
 The following is an example of the DSL and how it conforms to the specified grammar:
 
-```dsl
+```plaintext
 Symbol["value" = "." | "value" = "!"];
 Expr["type"="int"] as number {
     Value["val"="10"] | Value["val"="20"];
@@ -91,7 +130,8 @@ Expr["type"="int"] as number {
 ```
 
 In this example:
-- `Symbol["value" = "." | "value" = "!"]` captures the `Symbol` node if its `value` property matches either `"."` or `"!"`.
+
+- `Symbol["value" = "." | "value" = "!"]` captures the `Symbol` node if its `value` property matches either `.` or `!`.
 - `Expr["type"="int"] as number { ... }` captures the `Expr` node if it has a property `type` with the value `int` and assigns it the alias `number`. Inside this node, it matches either `Value["val"="10"]` or `Value["val"="20"]`.
 
 The structure showcases how to define node types with properties, nested node types, and alternatives, supporting recursive and flexible pattern matching in the AST.

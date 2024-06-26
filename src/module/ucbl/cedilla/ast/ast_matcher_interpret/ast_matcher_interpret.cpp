@@ -16,8 +16,9 @@ using namespace antlr4;
 
 namespace cedilla
 {
-	fn AstMatcherTrackingErrorListener::syntaxError(Recognizer *recognizer, Token *offendingSymbol, size_t line, size_t charPositionInLine,
-											const string &msg, exception_ptr e) -> void
+	fn AstMatcherTrackingErrorListener::syntaxError(Recognizer *recognizer, Token *offendingSymbol,
+									size_t line, size_t charPositionInLine, const string &msg, exception_ptr e)
+		 -> void
 	{
 		println(cerr, "line {}:{} {}", line, charPositionInLine, msg);
 		error = true;

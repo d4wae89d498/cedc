@@ -62,7 +62,8 @@ namespace cedilla
 		}
 	}
 
-	fn InterpretReverseVisitor::visitAstPatternDescription(AstMatcherParser::AstPatternDescriptionContext *context) -> any
+	fn InterpretReverseVisitor::visitAstPatternDescription(AstMatcherParser::AstPatternDescriptionContext *context)
+		-> any
 	{
 		println("Visiting visitAstPatternDescription in reverse order");
 		AstMatcherVisitorOutput out = {unordered_map<string, AstNode*>(), true};
@@ -80,7 +81,8 @@ namespace cedilla
 		return out;
 	}
 
-	fn InterpretReverseVisitor::visitNodeType(AstMatcherParser::NodeTypeContext *context) -> any
+	fn InterpretReverseVisitor::visitNodeType(AstMatcherParser::NodeTypeContext *context)
+		-> any
 	{
 		println("Visiting visitNodeType: {}", context->getText());
 		AstMatcherVisitorOutput out = {unordered_map<string, AstNode*>(), true};
@@ -134,7 +136,8 @@ namespace cedilla
 		return out;
 	}
 
-	fn InterpretReverseVisitor::visitNodeProperty(AstMatcherParser::NodePropertyContext *context) -> any
+	fn InterpretReverseVisitor::visitNodeProperty(AstMatcherParser::NodePropertyContext *context)
+		-> any
 	{
 		println("Visiting visitNodeProperty: {}", context->getText());
 
@@ -171,7 +174,7 @@ namespace cedilla
 	}
 
 	fn InterpretReverseVisitor::visitNodeTypeSequence(AstMatcherParser::NodeTypeSequenceContext *context)
-	-> any
+		-> any
 	{
 		println("Visiting visitNodeTypeSequence: {}", context->getText());
 		AstMatcherVisitorOutput out = {unordered_map<string, AstNode*>(), true};
@@ -361,9 +364,6 @@ namespace cedilla
 			}
 
 			out.matches.insert(resultMap.matches.begin(), resultMap.matches.end());
-
-
-
 		}
 
 		println("visitNodePropertyElement end.");
