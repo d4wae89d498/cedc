@@ -1,45 +1,59 @@
 grammar AstMatcher;
 
 astPatternDescription:
-    nodeTypeOr+;
+    astRoot=nodeTypeSequence
+    ;
 
 nodeType:
-	(IDENTIFIER (AS IDENTIFIER)?)
-	('[' nodePropertiesDescriptionOr* ']')?
-	('{' nodeTypeOr* '}')?
-	SCOL*;
+    IDENTIFIER
+        (AS IDENTIFIER)?
+    ('[' nodePropertySequence ']')?
+    ('{' nodeTypeSequence '}')?
+    ';'*
+    ;
 
-nodePropertiesDescription:
-    (IDENTIFIER EQUAL STRING)
+nodeProperty:
+    STRING EQUAL STRING
     |
-	(IDENTIFIER IDENTIFIER '(' STRING ')')
-	|
-	(IDENTIFIER '{' nodeType* '}')
-	;
+    IDENTIFIER EQUAL STRING
+    |
+    IDENTIFIER IDENTIFIER '(' STRING ')'
+    |
+    IDENTIFIER '{' nodeTypeSequence '}'
+    ;
 
-nodePropertiesDescriptionOr:
-	('(' nodePropertiesDescription+ (OR nodePropertiesDescriptionOr)? ')')
-	|
-	(nodePropertiesDescription+ (OR nodePropertiesDescriptionOr)?);
+nodePropertySequence:
+    nodePropertyElement (OR? nodePropertyElement)*
+    ;
 
-nodeTypeOr:
-	('(' nodeType+ (OR nodeTypeOr)? ')')
-	|
-	nodeType+ (OR nodeTypeOr)?;
+nodePropertyElement:
+    nodeProperty
+    |
+    '(' nodePropertySequence ')'
+    |
+    NOT nodePropertyElement
+    ;
+
+nodeTypeSequence:
+    nodeTypeElement (OR? nodeTypeElement)*
+    ;
+
+nodeTypeElement:
+    nodeType
+    |
+    '(' nodeTypeSequence ')'
+    |
+    NOT nodeTypeElement
+    ;
 
 // Lexer rules
-OR: ('|' | 'OR' | 'or');
-AS: 'as';
-LPARENTHESE: '(';
-RPARENTHESE: ')';
-LBRACKET: '[';
-RBRACKET: ']';
-LBRACE: '{';
-RBRACE: '}';
 EQUAL: '=';
-SCOL: ';';
+OR: ('|' | 'OR' | 'or');
+NOT: ('!' | 'NOT' | 'not');
+AS: 'as';
 IDENTIFIER: [a-zA-Z_][a-zA-Z_0-9]*;
 STRING: '"' (ESC | ~["\\])* '"';
 fragment ESC: '\\' .;
 COMMENT: '#' ~[\r\n]* -> skip;
 WHITESPACE: [ \t\r\n]+ -> skip;
+AND: 'and' -> skip;

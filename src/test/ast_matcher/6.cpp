@@ -4,13 +4,13 @@ fn main() -> int
 {
 	auto test_ast = Ast({
 		{Word(
-			StateMap({{"test", StringState("yoo")}}),
+			StateMap({{"test", StringState("yoo3")}}),
 			Ast({
 				Word(StateMap({{"test2", StringState("yoo2")}}))
 			})
 		)},
 		{Word(
-			StateMap(),
+			StateMap({{"test", StringState("yoo")}}),
 			Ast()
 		)},
 	});
@@ -18,27 +18,13 @@ fn main() -> int
 	auto out = ast_matcher_interpret(R"(
 ########################################################
 
-not not (
-				NonExists as id1 [
-					test = "yoo"
+		Word as id1 [ test = "yoo" ] {
+			Word as id1child [ test2 = "yoo2" ]
+		}
 
-				] {
-					Word as id1_child
-				}
+		and
 
-				or
-
-				(
-					Word as id1
-
-					and # optional
-
-					Word as id2
-				)
-
-				not Nothin
-
-	) or Nothin
+		Word as id2
 
 
 ########################################################
@@ -50,8 +36,14 @@ not not (
 
 	println("out.size() == {}", out.size());
 
+
+	return 1;
 	assert(out["id1"]->type == "Word");
+	assert(out["id1_child"]->type == "Word");
+
+	assert(any_cast<string>(out["id1"]->states["test"]->value) == "yoo2");
+	assert(any_cast<string>(out["id1_child"]->states["test2"]->value) == "yoo2");
+
 	assert(out["id2"]->type == "Word");
 
-	println("hello\n");
 }

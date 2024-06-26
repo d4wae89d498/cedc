@@ -29,9 +29,11 @@ export namespace cedilla
 
 		fn visitAstPatternDescription(AstMatcherParser::AstPatternDescriptionContext *context) -> any override;
 		fn visitNodeType(AstMatcherParser::NodeTypeContext *context) -> any override;
-		fn visitNodeTypeOr(AstMatcherParser::NodeTypeOrContext *context) -> any override;
-		fn visitNodePropertiesDescription(AstMatcherParser::NodePropertiesDescriptionContext *context) -> any override;
-		fn visitNodePropertiesDescriptionOr(AstMatcherParser::NodePropertiesDescriptionOrContext *context) -> any override;
+		fn visitNodeTypeSequence(AstMatcherParser::NodeTypeSequenceContext *context) -> any override;
+		fn visitNodeProperty(AstMatcherParser::NodePropertyContext *context) -> any override;
+		fn visitNodePropertySequence(AstMatcherParser::NodePropertySequenceContext *context) -> any override;
+		fn visitNodePropertyElement(AstMatcherParser::NodePropertyElementContext *context) -> any override;
+		fn visitNodeTypeElement(AstMatcherParser::NodeTypeElementContext *context) -> any override;
 
 	};
 }
