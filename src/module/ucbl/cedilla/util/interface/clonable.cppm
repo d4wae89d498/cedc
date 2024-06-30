@@ -1,8 +1,8 @@
-export module ucbl.cedilla:clonable;
+export module ucbl.cedilla:util.interface.clonable;
 
 import :common;
 
-export namespace cedilla {
+export namespace ucbl::cedilla {
 	template <typename T>
 	struct Clonable
 	{

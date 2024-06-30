@@ -1,7 +1,9 @@
 
 import ucbl.cedilla;
+import std.compat;
 
-using namespace cedilla;
+using namespace ucbl::cedilla;
+using namespace std;
 
 /*
 		Usage : cedc -DVAR=value c.so foo.ç

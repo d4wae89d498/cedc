@@ -18,18 +18,20 @@ MODULES := $(shell find src/module -type f -name "*.cppm")
 VOID := $(shell make -C ./third-party/cppmodsort/ \
 			&& mkdir -p $(DEP_DIR) \
 			&& ./third-party/cppmodsort/cppmodsort \
-			-m --src-dir src/ --pcm-dir tmp/pcm/ $(MODULES) > tmp/dep/modules.d)
-include tmp/dep/modules.d
+			-m --src-dir src/module/ --pcm-dir tmp/pcm/ $(MODULES) > tmp/dep/module.d)
+include tmp/dep/module.d
 
 # Project sources
 IMPLS :=	$(shell find src/module -type f -name "*.cpp")
 
 # Project objects
-OBJS := 	$(MODULES:$(SRC_DIR)/%.cppm=$(OBJ_DIR)/%.cppm.o)\
-			$(IMPLS:$(SRC_DIR)/%.cpp=$(OBJ_DIR)/%.cpp.o)
+OBJS := 	$(MODULES:$(SRC_MOD_DIR)/%.cppm=$(OBJ_MOD_DIR)/%.cppm.o)\
+			$(IMPLS:$(SRC_DIR)/%.cpp=$(OBJ_DIR)/%.cpp.o)\
+			$(OBJ_MOD_DIR)/std.compat.cppm.o\
+			$(OBJ_MOD_DIR)/std.cppm.o
 
 # Project pre-compiled modules
-PCMS := 	$(MODULES:$(SRC_DIR)/%.cppm=$(PCM_DIR)/%.pcm)
+PCMS := 	$(MODULES:$(SRC_MOD_DIR)/%.cppm=$(PCM_DIR)/%.pcm)
 
 # Project library
 NAME :=		$(LIB_DIR)/libcedilla.a
@@ -75,30 +77,31 @@ $(PCH_DIR)/%.pch: $(SRC_DIR)/%.hpp makefile third-party/makefile
 
 -include $(DEPS)
 
-$(PCM_DIR)/%.pcm: $(SRC_DIR)/%.cppm $(PCHS)
+debug:
+	echo $(MODULES)
+	echo "-----"
+	echo $(OBJS)
+	echo "-----"
+	echo $(PCMS)
+
+$(PCM_DIR)/%.pcm: $(SRC_MOD_DIR)/%.cppm $(PCHS)
 	@mkdir -p $(@D)
 	@mkdir -p $(shell dirname $(patsubst $(PCM_DIR)/%.pcm,$(DEP_DIR)/%.cppm.d,$(@)))
 	$(CXX) $(CXXFLAGS) -MMD -MF $(patsubst $(PCM_DIR)/%.pcm,$(DEP_DIR)/%.cppm.d,$(@)) --precompile $< -o $@ $(INCPCHS)
-	@case "$<" in \
-		$(MOD_DIR)/*)\
-			path="$<"; \
-			prefix="$(MOD_DIR)/"; \
-			stripped_path=$${path#$${prefix}}; \
-			vendor_name=$$(echo "$$stripped_path" | cut -d'/' -f1); \
-			num_folders=$$(echo "$$stripped_path" | tr -cd '/' | wc -c); \
-			if test $$num_folders = 1 ; then \
-				cp -f $@ $(PCM_DIR)/$$vendor_name.$(notdir $@); \
-			else \
-				project_name=$$(echo "$$stripped_path" | cut -d'/' -f2); \
-				cp -f $@ $(PCM_DIR)/$$vendor_name.$$project_name-$(notdir $@);  \
-			fi; \
-		;;\
-		*)\
-			echo "Warning: Unknown module file location '$<'"; \
-		;;\
-	esac
+	@path="$@"; \
+	prefix="$(PCM_DIR)/"; \
+	stripped_path=$${path#$${prefix}}; \
+	vendor_name=$$(echo "$$stripped_path" | cut -d'/' -f1); \
+	package_name=$$(echo "$$stripped_path" | cut -d'/' -f2); \
+	module_name=$$(echo "$$stripped_path" | cut -d'/' -f3- | tr '/' '.'); \
+	if test "$$module_name"; then\
+		dest_pcm=$(PCM_DIR)/$$vendor_name.$$package_name-$$module_name;\
+	else\
+		dest_pcm=$(PCM_DIR)/$$vendor_name.$$package_name;\
+	fi;\
+	cp -f $@ "$$dest_pcm"
 
-$(OBJ_DIR)/%.cppm.o: $(PCM_DIR)/%.pcm
+$(OBJ_MOD_DIR)/%.cppm.o: $(PCM_DIR)/%.pcm
 	@mkdir -p $(@D)
 	$(CXX) $(CXXFLAGS)  -c $< -o $@
 

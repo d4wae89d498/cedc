@@ -1,8 +1,8 @@
-export module ucbl.cedilla:_uint;
+export module ucbl.cedilla:util.data_type._uint;
 
 import :common;
 
-export namespace cedilla {
+export namespace ucbl::cedilla {
 	struct UInt {
 		// Constructors
 		UInt() : value(0) {}

@@ -1,8 +1,8 @@
-export module ucbl.cedilla:serializable;
+export module ucbl.cedilla:util.interface.serializable;
 
 import :common;
 
-export namespace cedilla {
+export namespace ucbl::cedilla {
 	struct Serializable
 	{
 		virtual fn serialize() -> string = 0;

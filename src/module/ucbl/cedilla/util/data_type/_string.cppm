@@ -1,8 +1,8 @@
-export module ucbl.cedilla:_string;
+export module ucbl.cedilla:util.data_type._string;
 
 import :common;
 
-export namespace cedilla
+export namespace ucbl::cedilla
 {
 	struct String : public string
 	{
@@ -39,7 +39,7 @@ export namespace cedilla
 				return true;
 			}
 			else if constexpr (is_same_v<T, float> || is_same_v<T, double>)
-			{ // TODO : wait std c++ from_chars to support float and double.
+			{ // TODO  : wait std c++ from_chars to support float and double.
 			// or check for errono bellow as errno is currently not visible with LIBCXX PCM modules
 				char* end;
 				if constexpr (is_same_v<T, float>)

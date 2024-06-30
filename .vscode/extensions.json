@@ -1,6 +1,7 @@
 {
 	"recommendations": [
 		"llvm-vs-code-extensions.vscode-clangd",
-		"editorconfig.editorconfig"
+		"editorconfig.editorconfig",
+		"Gruntfuggly.todo-tree"
 	]
 }

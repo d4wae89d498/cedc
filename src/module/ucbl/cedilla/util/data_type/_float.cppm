@@ -1,8 +1,8 @@
-export module ucbl.cedilla:_float;
+export module ucbl.cedilla:util.data_type._float;
 
 import :common;
 
-export namespace cedilla {
+export namespace ucbl::cedilla {
 	class Float {
 		// Constructors
 		Float() : value(0.0) {}

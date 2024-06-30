@@ -1,8 +1,10 @@
 #include "assert.h"
 
 import ucbl.cedilla;
+import std.compat;
 
-using namespace cedilla;
+using namespace ucbl::cedilla;
+using namespace std;
 
 struct Identifier final : public AstNode
 {

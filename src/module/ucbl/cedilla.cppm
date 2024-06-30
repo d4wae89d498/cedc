@@ -2,32 +2,31 @@ export module ucbl.cedilla;
 
 // Core
 
-export import :common;
 export import :util;
-export import :linked_list_node;
+export import :linked_list.node;
 export import :linked_list;
-export import :tree_node;
+export import :tree.node;
 export import :state;
 export import :class_registry;
-export import :ast_node;
-export import :ast_node_registry;
-export import :state_registry;
-export import :state_array;
-export import :state_map;
+export import :ast.node;
+export import :ast.node.registry;
+export import :state.registry;
+export import :state.array;
+export import :state.map;
 export import :tree;
 export import :ast;
 export import :context;
 
 // STD states
 
-export import :ast_node_state;
-export import :float_state;
-export import :int_state;
-export import :uint_state;
-export import :string_state;
+export import :std.int_state;
+export import :std.uint_state;
+export import :std.float_state;
+export import :std.string_state;
+export import :std.ast_node_state;
 
 // Ast matcher DSL
 
-export import :ast_matcher_reverse_visitor;
-export import :ast_matcher_interpret;
+export import :ast.matcher.reverse_visitor;
+export import :ast.matcher.interpret;
 

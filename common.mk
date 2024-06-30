@@ -5,13 +5,12 @@ PROJECT_DIR := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
 BIN_DIR := bin
 LIB_DIR := lib
 SRC_DIR := src
+SRC_MOD_DIR := $(SRC_DIR)/module
 TMP_DIR := tmp
-
-# Src subdirs
-MOD_DIR := $(SRC_DIR)/module
 
 # Tmp subdirs
 OBJ_DIR := $(TMP_DIR)/obj
+OBJ_MOD_DIR := $(OBJ_DIR)/module
 PCM_DIR := $(TMP_DIR)/pcm
 PCH_DIR := $(TMP_DIR)/pch
 DEP_DIR := $(TMP_DIR)/dep

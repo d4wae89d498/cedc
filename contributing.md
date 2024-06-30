@@ -1,80 +1,128 @@
+# Contributing Guidelines
+
+Thank you for considering contributing to our project! Here are some guidelines and best practices to help you get started and ensure a smooth collaboration process.
+
+## Table of Contents
+
+1. [Coding Style](#coding-style)
+2. [Editor Configuration](#editor-configuration)
+3. [Code Formatting and Linting](#code-formatting-and-linting)
+4. [Modules and Modern C++ Practices](#modules-and-modern-cpp-practices)
+5. [Commit Messages](#commit-messages)
+6. [Pull Requests](#pull-requests)
+
 ## Coding Style
 
-## Naming
+### Naming Conventions
 
-Cases :
+#### Cases
 
-- UPPER_SNAKE_CASE for macros, enum items, and constexpr names.
-- lower_snake_case for var names (prefer one letter where applicable), function names, namespaces and module partition names.
-- PascalCase for user-defined class names and templates arguments (prefer one letter where applicable),
-- modules names should be defined as organisation_name.module_name
-- use all needed namespace instead of prefixing it on each calls
+- **UPPER_SNAKE_CASE**: Macros, enum items, `constexpr` names.
+- **lower_snake_case**: Variable names (prefer one letter where applicable), function names, namespaces, module partition names.
+- **PascalCase**: User-defined class names, template arguments (prefer one letter where applicable).
+- **Module Names**: Defined as `organisation_name.module_name` reflecting the structure in the `src/module` folder.
+- **Module Partition Names**: Reflect the folder structure. For example, `src/module/vendor1/package1/some/file.cppm` corresponds to `vendor1.package1:some.file`.
+- **Namespaces**: Always use `vendor::package`, with no nested namespaces except in rare cases.
 
-Prefixes :
-- only g_ for global and s_ for static. None for members nor types.
+#### Prefixes
 
-Braces :
-Always use ANSI C++ style.
+- **Global variables**: `g_`
+- **Static variables**: `s_`
+- **No prefixes** for members or types.
 
-Modules :
-Dont use private fragments. use a separate impl file for easier build system that uses timestamp. Implementation module ext shall be a  `.cpp`.  `.cppm` for interfaces.
-One class per module (or one function and its primitives is acceptable). Group impl and intrfaces within a dir named according class name but in snake case. If interface only, file goes at root of project without a directory.
+### Braces
 
-classes :
-constructor shall be explicit
+- Always use ANSI C++ style.
 
-```C++
-export module vendor_name.module_name:partition_name;
+### Function Keyword
 
-#define SOME_MACRO_CONST 21
+- Use the `fn` keyword (C++ `auto` alias) everywhere to allow proper alignment of function names.
 
-typedef enum
-{
-	SOME_ENUM_CONST1 = 0,
-	SOME_ENUM_CONST2 = 1
-}	my_enum;
+## Editor Configuration
 
-constexpr float MY_PI = 3.14;
-constexpr float MY_EXP(float x, int n)
-{
-    return n == 0 ? 1 :
-        n % 2 == 0 ? MY_EXP(x * x, n / 2) :
-        MY_EXP(x * x, (n - 1) / 2) * x;
-}
+To maintain consistency across different editors and IDEs, we use the following tools and extensions:
 
+### VS Code Extensions
 
-int g_myint = 0;
+We recommend the following VS Code extensions:
 
-namespace namespace_name
-{
-	template <typename T>
-	class ClassName
-	{
-		int 	member_var;
-
-		fn	some_func()
-		{
-			static int	s_local_var;
-			int			local_var;
-
-			const mylocalconst = this->member_var + 3; // note the this->
-
-			while (cond1)
-			{
-				if (cond2)
-				{
-	...
-				}
-				else
-				{
-	...
-				}
-			}
-		}
-	}
-}
+```json
+"recommendations": [
+    "llvm-vs-code-extensions.vscode-clangd",
+    "editorconfig.editorconfig",
+    "Gruntfuggly.todo-tree"
+]
 ```
 
-## VS Code configuration
+#### Extensions Usage
 
-we provided .vscode/extension file to suggest you to install clangd ext.
+- **clangd**: Provides smart code completion, diagnostics, formatting, and linting (including `clang-tidy` and `clang-format`) based on the Clang compiler.
+- **EditorConfig**: Maintains consistent coding styles between different editors and IDEs.
+- **TODO Tree**: Highlights TODO comments, making it easier to track and manage tasks directly within your codebase.
+
+### EditorConfig Rules
+
+Our project uses `.editorconfig` to define rules such as UTF-8 charset, tabs with a width of 4 spaces for indentation, trimming trailing whitespace, and inserting a final newline for specific file types.
+
+## Code Formatting and Linting
+
+We follow specific rules to ensure consistency and modern C++ practices across the codebase. These rules are enforced and applied using `clangd` tools, which provide integrated support for `clang-format` and `clang-tidy`.
+
+## Modules and Modern C++ Practices
+
+### Module Structure
+
+- Use modules by default and the most modern C++ features wherever possible.
+- Exceptions are made for specific cases like integration with ANTLR for our pattern matching domain-specific language.
+- Module names and partition names must reflect the folder structure. For example, `src/module/vendor1/package1/some/file.cppm` corresponds to `vendor1.package1:some.file`.
+- Implementation files (`.cpp`) should be placed next to their interfaces (`.cppm`).
+
+### Implementation Guidelines
+
+- Do not use private fragments; instead, use a separate implementation file for easier build system integration that uses timestamps.
+- Use `.cpp` for implementation modules and `.cppm` for interfaces.
+- Keep one class per module (or one function and its primitives is acceptable).
+
+## Commit Messages
+
+Write clear, concise commit messages that describe the changes made. Commit messages should include one of the following keywords to clearly indicate the nature of the change:
+
+- **Create**: For adding new features or files.
+- **Read**: For adding or updating read operations or documentation.
+- **Update**: For updating existing features or files.
+- **Delete**: For removing features or files.
+- **Fix**: For bug fixes.
+- **WIP**: For work-in-progress commits.
+
+Format:
+```
+Keyword: Short description of the change
+
+Detailed description of the change if necessary.
+References issue #XYZ if applicable.
+```
+
+Examples:
+```
+Create: Add new logging functionality
+
+This adds a new logging utility to help track application events.
+References issue #123.
+```
+
+```
+Fix: Resolve crash when loading configuration
+
+Fixed a null pointer exception that caused a crash when loading configuration files.
+```
+
+## Pull Requests
+
+When submitting a pull request, please ensure:
+
+1. Your code adheres to our coding style guidelines.
+2. You have tested your changes thoroughly.
+3. You have updated or added documentation if necessary.
+4. Your commit messages are clear and follow the specified format.
+
+We appreciate your contributions and are here to help you succeed in making valuable improvements to our project! If you have any questions, feel free to reach out to the maintainers.
