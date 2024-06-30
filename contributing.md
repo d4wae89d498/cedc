@@ -46,13 +46,9 @@ To maintain consistency across different editors and IDEs, we use the following 
 
 We recommend the following VS Code extensions:
 
-```json
-"recommendations": [
-    "llvm-vs-code-extensions.vscode-clangd",
-    "editorconfig.editorconfig",
-    "Gruntfuggly.todo-tree"
-]
-```
+- clangd
+- EditorConfig
+- TODO Tree
 
 #### Extensions Usage
 
@@ -63,6 +59,13 @@ We recommend the following VS Code extensions:
 ### EditorConfig Rules
 
 Our project uses `.editorconfig` to define rules such as UTF-8 charset, tabs with a width of 4 spaces for indentation, trimming trailing whitespace, and inserting a final newline for specific file types.
+
+### VS Code Usage Tips
+
+After running `make` in VS Code, users should run the following command to ensure IntelliSense is working properly:
+
+1. Press `F1`.
+2. Select `clangd: Restart language server`.
 
 ## Code Formatting and Linting
 
@@ -85,7 +88,7 @@ We follow specific rules to ensure consistency and modern C++ practices across t
 
 ## Commit Messages
 
-Write clear, concise commit messages that describe the changes made. Commit messages should include one of the following keywords to clearly indicate the nature of the change:
+Write clear, concise commit messages that describe the changes made. Commit messages should include keywords that clearly indicate the nature of the change. Examples of useful keywords include:
 
 - **Create**: For adding new features or files.
 - **Read**: For adding or updating read operations or documentation.
@@ -94,24 +97,18 @@ Write clear, concise commit messages that describe the changes made. Commit mess
 - **Fix**: For bug fixes.
 - **WIP**: For work-in-progress commits.
 
-Format:
-```
-Keyword: Short description of the change
-
-Detailed description of the change if necessary.
-References issue #XYZ if applicable.
-```
+Synonyms of these words can also be used, and their placement in the commit message is flexible.
 
 Examples:
 ```
-Create: Add new logging functionality
+Add new logging functionality
 
 This adds a new logging utility to help track application events.
 References issue #123.
 ```
 
 ```
-Fix: Resolve crash when loading configuration
+Resolve crash when loading configuration
 
 Fixed a null pointer exception that caused a crash when loading configuration files.
 ```
