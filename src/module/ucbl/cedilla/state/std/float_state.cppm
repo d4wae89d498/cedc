@@ -1,4 +1,4 @@
-export module ucbl.cedilla:std.float_state;
+export module ucbl.cedilla:state.std.float_state;
 
 import :common;
 import :state;

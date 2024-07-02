@@ -1,4 +1,4 @@
-export module ucbl.cedilla:std.uint_state;
+export module ucbl.cedilla:state.std.uint_state;
 
 import :common;
 import :state;

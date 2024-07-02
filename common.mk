@@ -33,3 +33,10 @@ CXXFLAGS := $(CXXDBGFLAGS) -O0 \
 ifeq ($(shell uname -s), Darwin)
 	CXXFLAGS += -target x86_64-apple-macos10.9
 endif
+
+# Color codes
+RESET := \033[0m
+BOLD := \033[1m
+CYAN := \033[1;36m
+GREEN := \033[1;32m
+BLUE := \033[1;34m

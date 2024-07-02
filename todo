@@ -1,6 +1,0 @@
-
-- [x] Makefile: Add in module generation path prefix to avoid name collision.
-- [ ] AST Matcher DSL: robust testing
-- [ ] AST Matcher DSL: add a replace_with() on ast node function to facilitate ast manupaltion.
-- [ ] Implement basic C FE / BE
-- [ ] Choose a backend IR (decide if it should or should or not be SSA at this stage. maybe later stage..)

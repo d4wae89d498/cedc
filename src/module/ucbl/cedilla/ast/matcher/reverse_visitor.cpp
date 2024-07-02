@@ -11,29 +11,12 @@ module;
 module ucbl.cedilla;
 
 import :common;
+import :util;
 import :ast;
 import :ast.node;
 
 namespace ucbl::cedilla
 {
-	static fn extractAndReplaceEscapedQuotes(const string& input) -> string
-	{
-		if (input.front() != '"' || input.back() != '"') {
-			throw invalid_argument("Input string must start and end with a quote.");
-		}
-		auto extracted = input.substr(1, input.length() - 2);
-		auto result = string("");
-		for (u64 i = 0; i < extracted.length(); i += 1) {
-			if (extracted[i] == '\\' && (i + 1 < extracted.length()) && extracted[i + 1] == '"') {
-				result += '"';
-				i += 1;
-			} else {
-				result += extracted[i];
-			}
-		}
-		return result;
-	}
-
 	InterpretReverseVisitor::InterpretReverseVisitor(Ast& ast, unordered_map<string, StateChecker> checkers)
 		: StateCheckers(move(checkers))
 	{

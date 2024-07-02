@@ -27,6 +27,7 @@ Imagine a world where you can bend the syntax to your will—no limits, just pur
 ## Documentations
 
 - [AST Matcher DSL](third-party/libastmatcher-parser/readme.md): Documentation for the AST pattern matching tool DSL.
+- [TODO List](todo.md): Detailed task list and project roadmap.
 
 ## Building and running the project with Docker
 

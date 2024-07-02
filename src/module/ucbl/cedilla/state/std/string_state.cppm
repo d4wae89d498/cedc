@@ -1,4 +1,4 @@
-export module ucbl.cedilla:std.string_state;
+export module ucbl.cedilla:state.std.string_state;
 
 import :common;
 import :state;

@@ -1,4 +1,4 @@
-export module ucbl.cedilla:std.ast_node_state;
+export module ucbl.cedilla:state.std.ast_node_state;
 
 import :common;
 import :state;
