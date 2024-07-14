@@ -68,8 +68,6 @@ jobs:
           dockerignore: .dockerignore
           push: true
           tags: whitehat101/cedc-system:latest
-          cache-from: type=registry,ref=whitehat101/cedc-system:cache
-          cache-to: type=registry,ref=whitehat101/cedc-system:cache,mode=max
 
   app:
     runs-on: ubuntu-latest
@@ -97,13 +95,6 @@ jobs:
         run: |
           docker pull whitehat101/cedc-system:latest || echo "System image not available"
 
-      - name: Load Docker cache from Docker Hub (App)
-        uses: docker/build-push-action@v3
-        with:
-          context: .
-          cache-from: type=registry,ref=whitehat101/cedc:cache
-          cache-to: type=registry,ref=whitehat101/cedc:cache,mode=max
-
       - name: Build and push Docker image (App)
         uses: docker/build-push-action@v3
         with:
@@ -111,8 +102,6 @@ jobs:
           file: dockerfile
           push: true
           tags: whitehat101/cedc:latest
-          cache-from: type=registry,ref=whitehat101/cedc:cache
-          cache-to: type=registry,ref=whitehat101/cedc:cache,mode=max
 
       - name: Minimize Docker image size
         run: docker image prune -f
