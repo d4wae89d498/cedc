@@ -22,7 +22,7 @@ namespace ucbl::cedilla
 	{
 		it = ast.last; // Start from the end of the AST
 		if (!it) {
-			throw runtime_error("Trying to match ast with an empty string.");
+			throw runtime_error("Trying to match an empty ast with an ast matcher pattern.");
 		}
 	}
 
@@ -361,7 +361,7 @@ namespace ucbl::cedilla
 		auto prev = it;  // Store current iterator position
 
 		if (context->NOT()) {
-			auto not_out = any_cast<AstMatcherVisitorOutput>(visit(context->nodeTypeElement()));
+			auto not_out = any_cast<AstMatcherVisitorOutput>(visit(context->nodeTypeElement(0)));
 			not_out.success = !not_out.success;
 		//	it = prev;  // Reset iterator after NOT operation (not needed for properties?)
 			return not_out;

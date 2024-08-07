@@ -5,7 +5,7 @@ astPatternDescription:
     ;
 
 nodeType:
-    IDENTIFIER
+    (IDENTIFIER | ANY)
         (AS IDENTIFIER)?
     ('[' nodePropertySequence ']')?
     ('{' nodeTypeSequence '}')?
@@ -50,15 +50,26 @@ nodeTypeElement:
     '(' nodeTypeSequence ')'
     |
     NOT nodeTypeElement
+	|
+	nodeTypeElement UNTIL nodeTypeElement?
+	|
+	nodeTypeElement REPEAT nodeTypeElement?
+	|
+	nodeTypeElement OPT
     ;
 
 // Lexer rules
-EQUAL: '=';
-OR: ('|' | 'OR' | 'or');
-NOT: ('!' | 'NOT' | 'not');
-AS: 'as';
-IDENTIFIER: [a-zA-Z_][a-zA-Z_0-9]*;
-STRING: '"' (ESC | ~["\\])* '"';
-fragment ESC: '\\' .;
-COMMENT: '#' ~[\r\n]* -> skip;
-WHITESPACE: [ \t\r\n]+ -> skip;
+BEEING:			'BEEING' | 'beeing';
+OPT:			'?' 	| (BEEING? 'OPTIONAL') 	| (BEEING? 'optional');
+ANY:			'.' 	| 'ANY' 		| 'any';
+REPEAT:			'+' 	| 'REPEAT'		| 'repeat';
+UNTIL: 			'*' 	| 'UNTIL' 		| 'until';
+EQUAL: 			'='		| 'IS' 			| 'is';
+OR: 			'|' 	| 'OR' 			| 'or';
+NOT: 			'!' 	| 'NOT' 		| 'not';
+AS: 			'=>'  	| 'AS'			| 'as';
+IDENTIFIER: 	[a-zA-Z_][a-zA-Z_0-9]*;
+STRING: 		'"' (ESC | ~["\\])* '"';
+fragment ESC: 	'\\' .;
+COMMENT: 		'#' ~[\r\n]* -> skip;
+WHITESPACE: 	[ \t\r\n]+ -> skip;

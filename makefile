@@ -76,7 +76,8 @@ default:
 .PRECIOUS: 	$(PCHS) $(PCMS) $(LIBS)
 .PHONY: 	default all test clean fclean re
 
-all: $(THIRD_PARTY_BUILT_MARKER) $(EXECS) $(CXXDB)
+all: 	$(THIRD_PARTY_BUILT_MARKER) $(EXECS) $(CXXDB)
+re: 	clean all
 
 $(THIRD_PARTY_LIBS): $(THIRD_PARTY_BUILT_MARKER)
 
@@ -141,11 +142,19 @@ $(BIN_DIR)/%.out: $(SRC_DIR)/%.cpp $(PCHS) $(STATIC_LIBS) $(THIRD_PARTY_LIBS)
 	@mkdir -p $(@D)
 	$(CXX) $(CXXFLAGS) $< -o $@ $(INCPCHS) $(STATIC_LIBS) $(THIRD_PARTY_LIBS) -w
 
+#
+#	Compilation database
+#
+
 $(CXXDB): $(EXECS)
 	@make --always-make --dry-run \
 	| grep -wE 'clang\+\+' \
 	| jq -nR '[inputs | {directory: env.PWD, command: (. + " -DCLANGD") , file: (match("\\S+\\.(cpp|cppm|hpp)(?=\\s|$$)").string)}]' \
 	> $(CXXDB)
+
+#
+#	Unit tests
+#
 
 define run-and-check
 	output=$$($1 2>&1); \
@@ -160,6 +169,10 @@ endef
 test:	$(TESTS_OUT)
 	@$(foreach file,$(TESTS_OUT),$(call run-and-check,$(file)))
 
+#
+#	Cleaning
+#
+
 clean:
 	rm -f $(DEPS) $(OBJS) $(CXXDB)
 
@@ -168,9 +181,6 @@ fclean: clean
 	rm -f $(EXECS)
 	rm -f $(PCMS)
 	rm -f $(PCHS)
-
-re: clean all
-
 
 #################################################
 #############|    D E B U G      |###############
