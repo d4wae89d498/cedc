@@ -23,6 +23,9 @@ export namespace ucbl::cedilla
 		}
 	};
 
+	fn merge_ast_matches(AstMatch& mainMap, const AstMatch& auxMap) -> void;
+
+
 	struct InterpretReverseVisitor : public AstMatcherVisitor
 	{
 		using StateChecker = function<bool(const string&, const string&)>;

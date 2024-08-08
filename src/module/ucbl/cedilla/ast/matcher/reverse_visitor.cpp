@@ -17,7 +17,7 @@ import :ast.node;
 
 namespace ucbl::cedilla
 {
-	fn _merge_ast_matches(AstMatch& mainMap, const AstMatch& auxMap) -> void {
+	fn merge_ast_matches(AstMatch& mainMap, const AstMatch& auxMap) -> void {
 		for (const auto& [key, vec] : auxMap) {
 			// If the key exists in mainMap, append to the vector
 			if (mainMap.find(key) != mainMap.end()) {
@@ -96,7 +96,7 @@ namespace ucbl::cedilla
 				if (!result.success) {
 					AST_MATCHER_FAILURE(out, "Node properties sequence does not match.");
 				}
-				_merge_ast_matches(out.matches, result.matches);
+				merge_ast_matches(out.matches, result.matches);
 			}
 
 			DEBUG_LOG("Checking childs...");
@@ -108,7 +108,7 @@ namespace ucbl::cedilla
 				if (!result.success) {
 					AST_MATCHER_FAILURE(out, "Node child sequence does not match.");
 				}
-				_merge_ast_matches(out.matches, result.matches);
+				merge_ast_matches(out.matches, result.matches);
 			}
 		} else {
 			AST_MATCHER_FAILURE(out, "Wrong node type, expected '{}' got '{}'.", expectedType, it->type);
@@ -174,7 +174,7 @@ namespace ucbl::cedilla
 				it = it_bkp;  // Reset iterator if match fails
 				AST_MATCHER_FAILURE(out, "Node failed in a single node sequence.");
 			}
-			_merge_ast_matches(out.matches, result.matches);
+			merge_ast_matches(out.matches, result.matches);
 			DEBUG_LOG("Single node sequence matched.");
 		} else if (context->nodeTypeSequence().size() > 1) {
 			// Handle recursive nodeTypeSequence
@@ -189,10 +189,10 @@ namespace ucbl::cedilla
 				auto result2 = any_cast<AstMatcherVisitorOutput>(visit(context->nodeTypeSequence(0)));
 
 				if (result1.success) {
-					_merge_ast_matches(out.matches, result1.matches);
+					merge_ast_matches(out.matches, result1.matches);
 					out.success = true;
 				} else if (result2.success) {
-					_merge_ast_matches(out.matches, result2.matches);
+					merge_ast_matches(out.matches, result2.matches);
 					out.success = true;
 				} else {
 					it = it_bkp;  // Reset iterator if neither alternative matched
@@ -208,7 +208,7 @@ namespace ucbl::cedilla
 					AST_MATCHER_FAILURE(out, "Node failed in a node sequence.");
 				}
 
-				_merge_ast_matches(out.matches, result.matches);
+				merge_ast_matches(out.matches, result.matches);
 
 				// Move to the next element in the sequence
 				it = it->prev;
@@ -219,7 +219,7 @@ namespace ucbl::cedilla
 					AST_MATCHER_FAILURE(out, "Node failed in a node sequence.");
 				}
 				DEBUG_LOG("Sequence matched.");
-				_merge_ast_matches(out.matches, result.matches);
+				merge_ast_matches(out.matches, result.matches);
 
 			}
 		}
@@ -238,15 +238,13 @@ namespace ucbl::cedilla
 
 		if (context->elem) {
 			// Single nodePropertyElement
-			auto result = visit(context->elem);
-			auto resultMap = any_cast<AstMatcherVisitorOutput>(result);
+			auto result = any_cast<AstMatcherVisitorOutput>(visit(context->elem));
 
-			if (!resultMap.success) {
+			if (!result.success) {
 				it = it_bkp;  // Reset iterator if match fails
 				AST_MATCHER_FAILURE(out, "Single property Node Property Sequence failed.");
 			}
-
-			out.matches.insert(resultMap.matches.begin(), resultMap.matches.end());
+			merge_ast_matches(out.matches, result.matches);
 
 		} else if (context->nodePropertySequence().size() > 1) {
 			// Handle recursive nodePropertySequence
@@ -261,11 +259,11 @@ namespace ucbl::cedilla
 				auto result2 = any_cast<AstMatcherVisitorOutput>(visit(context->nodePropertySequence(1)));
 
 				if (result1.success) {
-					_merge_ast_matches(out.matches, result1.matches);
+					merge_ast_matches(out.matches, result1.matches);
 
 					out.success = true;
 				} else if (result2.success) {
-					_merge_ast_matches(out.matches, result2.matches);
+					merge_ast_matches(out.matches, result2.matches);
 					out.success = true;
 				} else {
 					it = it_bkp;  // Reset iterator if neither alternative matched
@@ -280,7 +278,7 @@ namespace ucbl::cedilla
 					AST_MATCHER_FAILURE(out, "Node property sequence failed.");
 				}
 
-				_merge_ast_matches(out.matches, result.matches);
+				merge_ast_matches(out.matches, result.matches);
 
 
 				// Move to the next element in the sequence
@@ -293,7 +291,7 @@ namespace ucbl::cedilla
 					AST_MATCHER_FAILURE(out, "Node property sequence failed.");
 				}
 
-				_merge_ast_matches(out.matches, result.matches);
+				merge_ast_matches(out.matches, result.matches);
 			}
 		}
 
@@ -337,7 +335,7 @@ namespace ucbl::cedilla
 				AST_MATCHER_FAILURE(out, "Node property sequence does not match.");
 			}
 
-			_merge_ast_matches(out.matches, result.matches);
+			merge_ast_matches(out.matches, result.matches);
 		}
 
 		println("visitNodePropertyElement end.");
@@ -376,7 +374,7 @@ namespace ucbl::cedilla
 					it = it_bkp;
 					break;
 				}
-				_merge_ast_matches(out.matches, result.matches);
+				merge_ast_matches(out.matches, result.matches);
 			}
 		} else if (context->STAR()) {
 			while (it)
@@ -387,7 +385,7 @@ namespace ucbl::cedilla
 					it = it_bkp;
 					break;
 				}
-				_merge_ast_matches(out.matches, result.matches);
+				merge_ast_matches(out.matches, result.matches);
 			}
 		} else if (context->QUESTION_MARK()) {
 			it_bkp = it;
@@ -403,7 +401,7 @@ namespace ucbl::cedilla
 				it = it_bkp;  // Reset iterator if match fails
 				AST_MATCHER_FAILURE(out, "Node does not match the pattern.");
 			}
-			_merge_ast_matches(out.matches, result.matches);
+			merge_ast_matches(out.matches, result.matches);
 		} else {
 			NOT_IMPLEMENTED_LOG("Unknow logic pattern");
 		}
