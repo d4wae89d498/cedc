@@ -1,6 +1,6 @@
 ---
 CompileFlags:
-  Compiler: 'clang'
+  Compiler: '/usr/local/opt/llvm/bin/clang'
   Add:
     - '-std=c++26'
   CompilationDatabase: './tmp'

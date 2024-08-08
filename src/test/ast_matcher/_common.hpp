@@ -1,8 +1,4 @@
-
-#include <cassert>
-
-import ucbl.cedilla;
-import std.compat;
+#include "assert.h"
 
 using namespace ucbl::cedilla;
 using namespace std;
