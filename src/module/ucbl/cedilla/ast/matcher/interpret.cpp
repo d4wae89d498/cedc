@@ -24,7 +24,7 @@ namespace ucbl::cedilla
 		error = true;
 	}
 
-	fn ast_matcher_interpret(const string& pattern, Ast& ast) -> unordered_map<string, AstNode*>
+	fn ast_matcher_interpret(const string& pattern, Ast& ast) -> AstMatch
 	{
 		// Lexing
 		println("Input: [{}]", pattern);

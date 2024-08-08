@@ -44,12 +44,13 @@ fn main() -> int
 	)", test_ast);
 
 //	out["id1"]->replace_with(stuff)
+// output should be : vector of nodes ?
 
-	assert(out["id1"]->type == "Word");
-	assert(out["id2"]->type == "Word");
-	assert(any_cast<string>(out["id1"]->states["test"]->value) == "yoo");
-	assert(any_cast<string>(out["id1_child"]->states["test2"]->value) == "yoo2");
-	assert(any_cast<string>(out["id2"]->states["test21"]->value) == "yoo21");
+	assert(out["id1"][0]->type == "Word");
+	assert(out["id2"][0]->type == "Word");
+	assert(any_cast<string>(out["id1"][0]->states["test"]->value) == "yoo");
+	assert(any_cast<string>(out["id1_child"][0]->states["test2"]->value) == "yoo2");
+	assert(any_cast<string>(out["id2"][0]->states["test21"]->value) == "yoo21");
 
 
 	return 0;

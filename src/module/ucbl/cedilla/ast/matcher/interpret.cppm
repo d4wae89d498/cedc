@@ -24,5 +24,5 @@ export namespace ucbl::cedilla
 										const string &msg, exception_ptr e) -> void override;
 	};
 
-	fn ast_matcher_interpret(const string& pattern, Ast& ast) -> unordered_map<string, AstNode*>;
+	fn ast_matcher_interpret(const string& pattern, Ast& ast) -> AstMatch;
 }

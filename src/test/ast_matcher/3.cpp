@@ -26,11 +26,11 @@ fn main() -> int
 
 	assert(out.size() != 0);
 	assert(out.contains("id1"));
-	assert(out["id1"]->states.contains("test"));
-	assert(any_cast<string>(out["id1"]->states["test"]->value) == "yoo");
+	assert(out["id1"][0]->states.contains("test"));
+	assert(any_cast<string>(out["id1"][0]->states["test"]->value) == "yoo");
 
 	assert(out.contains("id1_child"));
-	assert(out["id1_child"]->states.contains("test2"));
-	assert(any_cast<string>(out["id1_child"]->states["test2"]->value) == "yoo2");
+	assert(out["id1_child"][0]->states.contains("test2"));
+	assert(any_cast<string>(out["id1_child"][0]->states["test2"]->value) == "yoo2");
 
 }

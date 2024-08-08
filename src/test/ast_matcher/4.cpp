@@ -24,6 +24,6 @@ fn main() -> int
 	)", test_ast);
 
 	assert(out.size() == 1);
-	assert(out["id1"]->type == "Word");
+	assert(out["id1"][0]->type == "Word");
 
 }

@@ -70,10 +70,13 @@ default:
 # Generated dependencies
 -include $(DEPS)
 
+# Additional flags
+CXXFLAGS := $(CXXFLAGS) -DDEBUG
+
 #-------------------------------------------------#
 
 .SUFFIXES:
-.PRECIOUS: 	$(PCHS) $(PCMS) $(LIBS)
+.PRECIOUS: 	$(PCHS) $(PCMS) $(LIBS) $(OBJS)
 .PHONY: 	default all test clean fclean re
 
 all: 	$(THIRD_PARTY_BUILT_MARKER) $(EXECS) $(CXXDB)
@@ -128,10 +131,12 @@ $(OBJ_DIR)/%.cpp.o: $(SRC_DIR)/%.cpp $(PCHS) $(PCMS) $(THIRD_PARTY_BUILT_MARKER)
 
 $(LIB_DIR)/%.a: $(filter $(OBJ_MOD_DIR)/%,$(OBJS)) $(OBJ_MOD_DIR)/%.cppm.o
 	@mkdir -p $(@D)
+	rm -f $@
 	ar -rcs $@ $^
 
 $(LIB_DIR)/%.so: $(STATIC_LIBS) $(THIRD_PARTY_LIBS)
 	@mkdir -p $(@D)
+	rm -f $@
 	$(CXX) -shared -o $@ $^
 
 #
@@ -147,7 +152,7 @@ $(BIN_DIR)/%.out: $(SRC_DIR)/%.cpp $(PCHS) $(STATIC_LIBS) $(THIRD_PARTY_LIBS)
 #
 
 $(CXXDB): $(EXECS)
-	@make --always-make --dry-run \
+	@make all --always-make --dry-run \
 	| grep -wE 'clang\+\+' \
 	| jq -nR '[inputs | {directory: env.PWD, command: (. + " -DCLANGD") , file: (match("\\S+\\.(cpp|cppm|hpp)(?=\\s|$$)").string)}]' \
 	> $(CXXDB)
@@ -166,7 +171,7 @@ define run-and-check
 		echo "$(GREEN)$1 OK$(RESET)"; \
 	fi;
 endef
-test:	$(TESTS_OUT)
+test:	$(CXXDB) $(TESTS_OUT)
 	@$(foreach file,$(TESTS_OUT),$(call run-and-check,$(file)))
 
 #

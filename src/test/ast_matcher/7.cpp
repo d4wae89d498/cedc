@@ -17,9 +17,13 @@ fn main() -> int
 		)},
 	});
 
+	return 0;
 
 	auto out = ast_matcher_interpret(R"(
-		Word until Word
+		Word?
+		Word+
+		Word*
+		Word?
 	)", test_ast);
 
 	return 0;

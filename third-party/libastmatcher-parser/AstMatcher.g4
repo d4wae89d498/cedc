@@ -4,6 +4,7 @@ astPatternDescription:
     astRoot=nodeTypeSequence
     ;
 
+// Should as be on nodeTypeElement instead ?
 nodeType:
     (IDENTIFIER | ANY)
         (AS IDENTIFIER)?
@@ -45,25 +46,24 @@ nodeTypeSequence:
     ;
 
 nodeTypeElement:
-    nodeType
+    node=nodeType
     |
     '(' nodeTypeSequence ')'
     |
     NOT nodeTypeElement
 	|
-	nodeTypeElement UNTIL nodeTypeElement?
+	nodeTypeElement PLUS
 	|
-	nodeTypeElement REPEAT nodeTypeElement?
+	nodeTypeElement STAR
 	|
-	nodeTypeElement OPT
+	nodeTypeElement QUESTION_MARK
     ;
 
 // Lexer rules
-BEEING:			'BEEING' | 'beeing';
-OPT:			'?' 	| (BEEING? 'OPTIONAL') 	| (BEEING? 'optional');
-ANY:			'.' 	| 'ANY' 		| 'any';
-REPEAT:			'+' 	| 'REPEAT'		| 'repeat';
-UNTIL: 			'*' 	| 'UNTIL' 		| 'until';
+QUESTION_MARK:	'?';
+ANY:			'.' 	| 'ANY' 		| 'any' 	| 'Any';
+PLUS:			'+';
+STAR: 			'*';
 EQUAL: 			'='		| 'IS' 			| 'is';
 OR: 			'|' 	| 'OR' 			| 'or';
 NOT: 			'!' 	| 'NOT' 		| 'not';

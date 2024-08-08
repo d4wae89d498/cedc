@@ -22,11 +22,11 @@ fn main() -> int
 		Word as id2
 	)", test_ast);
 
-	assert(out["id1"]->type == "Word");
-	assert(out["id1child"]->type == "Word");
-	assert(any_cast<string>(out["id1"]->states["test"]->value) == "yoo3");
-	assert(any_cast<string>(out["id1child"]->states["test2"]->value) == "yoo2");
-	assert(out["id2"]->type == "Word");
+	assert(out["id1"][0]->type == "Word");
+	assert(out["id1child"][0]->type == "Word");
+	assert(any_cast<string>(out["id1"][0]->states["test"]->value) == "yoo3");
+	assert(any_cast<string>(out["id1child"][0]->states["test2"]->value) == "yoo2");
+	assert(out["id2"][0]->type == "Word");
 
 
 	return 0;

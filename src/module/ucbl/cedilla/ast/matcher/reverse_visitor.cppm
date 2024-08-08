@@ -10,10 +10,17 @@ import :ast.node;
 
 export namespace ucbl::cedilla
 {
+	using AstMatch = unordered_map<string, vector<AstNode*>>;
 	struct AstMatcherVisitorOutput
 	{
-		unordered_map<string, AstNode*> matches;
-		bool success;
+		bool		success;
+		AstMatch 	matches;
+
+		AstMatcherVisitorOutput(bool success = true, AstMatch matches = AstMatch())
+			: success(success), matches(matches)
+		{
+
+		}
 	};
 
 	struct InterpretReverseVisitor : public AstMatcherVisitor

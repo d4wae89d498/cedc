@@ -1,9 +1,9 @@
 module;
 
 #include "AstMatcherVisitor.h"
-#define AST_MATCHER_FAILURE(N) \
+#define AST_MATCHER_FAILURE(N, MSG, ...) \
 	{\
-		println("ASTMatcher failure. Exit point: {}:{} ({}) ", __FILE__, __LINE__, __func__);\
+		DEBUG_LOG("ASTMatcher dit not succeed, reason -> [" MSG "] trying to continue...", ##__VA_ARGS__);\
 		N.success = false;\
 		return N;\
 	}
@@ -48,32 +48,25 @@ namespace ucbl::cedilla
 	fn InterpretReverseVisitor::visitAstPatternDescription(AstMatcherParser::AstPatternDescriptionContext *context)
 		-> any
 	{
-		println("Visiting visitAstPatternDescription in reverse order");
-		AstMatcherVisitorOutput out = {unordered_map<string, AstNode*>(), true};
-
+		DEBUG_LOG("Visiting visitAstPatternDescription in reverse order");
+		auto out = AstMatcherVisitorOutput();
 		if (!it)
-			AST_MATCHER_FAILURE(out)
-
-		auto result = visit(context->astRoot);
-		auto resultMap = any_cast<AstMatcherVisitorOutput>(result);
-		if (!resultMap.success)
-			AST_MATCHER_FAILURE(out)
-
-		out.matches.insert(resultMap.matches.begin(), resultMap.matches.end());
-
+			AST_MATCHER_FAILURE(out, "Empty ast tree.");
+		out = any_cast<AstMatcherVisitorOutput>(visit(context->astRoot));
+		if (!out.success)
+			AST_MATCHER_FAILURE(out, "The AST tree definitely does not match the pattern.");
+		DEBUG_LOG("visitAstPatternDescription ended properly.");
 		return out;
 	}
 
 	fn InterpretReverseVisitor::visitNodeType(AstMatcherParser::NodeTypeContext *context)
 		-> any
 	{
-		println("Visiting visitNodeType: {}", context->getText());
-		AstMatcherVisitorOutput out = {unordered_map<string, AstNode*>(), true};
-
+		DEBUG_LOG("Visiting visitNodeType: {}", context->getText());
+		auto out = AstMatcherVisitorOutput();
 		if (!it)
-			AST_MATCHER_FAILURE(out)
-
-		auto expectedType = context->IDENTIFIER(0)->getText();
+			AST_MATCHER_FAILURE(out, "End of tree reached.");
+		auto expectedType = context->ANY() ? it->type : context->IDENTIFIER(0)->getText();
 		string alias;
 		if (context->AS()) {
 			alias = context->IDENTIFIER(1)->getText();
@@ -81,7 +74,7 @@ namespace ucbl::cedilla
 		auto prev = it->prev;
 		if (it->type == expectedType) {
 			if (!alias.empty()) {
-				out.matches[alias] = it;
+				out.matches[alias] = {it};
 			}
 
 			println("Checking states...");
@@ -89,8 +82,7 @@ namespace ucbl::cedilla
 				auto result = visit(context->nodePropertySequence());
 				auto resultMap = any_cast<AstMatcherVisitorOutput>(result);
 				if (!resultMap.success) {
-					out.success = false;
-					return out;
+					AST_MATCHER_FAILURE(out, "Node properties sequence does not match.");
 				}
 				out.matches.insert(resultMap.matches.begin(), resultMap.matches.end());
 			}
@@ -103,18 +95,16 @@ namespace ucbl::cedilla
 				auto resultMap = any_cast<AstMatcherVisitorOutput>(result);
 				it = prev;  // Reset iterator after processing child nodes
 				if (!resultMap.success) {
-					out.success = false;
-					return out;
+					AST_MATCHER_FAILURE(out, "Node child sequence does not match.");
 				}
 				out.matches.insert(resultMap.matches.begin(), resultMap.matches.end());
 			}
 		} else {
-			println("EXPECTED NODE TYPE: {} GOT {}", expectedType, it->type);
-			AST_MATCHER_FAILURE(out)
+			AST_MATCHER_FAILURE(out, "Wrong node type, expected '{}' got '{}'.", expectedType, it->type);
 		}
 
 		it = prev;  // Ensure iterator is reset
-		println("visitNodeType end.");
+		DEBUG_LOG("visitNodeType ended properly.");
 
 		return out;
 	}
@@ -122,122 +112,115 @@ namespace ucbl::cedilla
 	fn InterpretReverseVisitor::visitNodeProperty(AstMatcherParser::NodePropertyContext *context)
 		-> any
 	{
-		println("Visiting visitNodeProperty: {}", context->getText());
+		DEBUG_LOG("Visiting visitNodeProperty: {}", context->getText());
 
 		auto state_key = context->IDENTIFIER(0)->getText();
 
-		auto out = (AstMatcherVisitorOutput){unordered_map<string, AstNode*>(), true};
+		auto out = (AstMatcherVisitorOutput){true, AstMatch()};
 
 		if (!it)
-			AST_MATCHER_FAILURE(out)
+			AST_MATCHER_FAILURE(out, "End of tree reached.");
 
 		if (!it->states.contains(state_key)) {
-			println("ITM [{}] does not contain key", it->serialize());
-			out.success = false;
-			return out;
+			AST_MATCHER_FAILURE(out, "Node '{}' does not contain property '{}'.", it->serialize(), state_key);
 		}
 		if (!context->EQUAL() && context->IDENTIFIER(1)) {
 			// FuncCall
 			auto state_key = extractAndReplaceEscapedQuotes(context->IDENTIFIER(1)->getText());
-			throw runtime_error(format("{}:{} Not implemented", __FILE__, __LINE__));
+			NOT_IMPLEMENTED_LOG("FuncCall in node property");
 		} else if (context->nodeTypeSequence()) {
-			// AstNode as property
-			throw runtime_error(format("{}:{} Not implemented", __FILE__, __LINE__));
+			NOT_IMPLEMENTED_LOG("AstNode as node property");
 		} else {
 			// TODO: also support string instead of identifier
 			auto state_value = extractAndReplaceEscapedQuotes(context->STRING(0)->getText());
 			if (it->states[state_key]->serialize() != format("StringState({})", state_value)) {
-				AST_MATCHER_FAILURE(out)
+				AST_MATCHER_FAILURE(
+					out,
+					"Node property '{}' mismatch, expected value '{}' but got value '{}'.",
+					state_key,
+					format("StringState({})", state_value),
+					it->states[state_key]->serialize()
+				);
 			} else {
-				println("property match\n");
-				out.matches[state_key] = it;
+				DEBUG_LOG("Property match.");
 			}
 		}
+		DEBUG_LOG("visitNodeProperty ended properly.");
 		return out;
 	}
 
 	fn InterpretReverseVisitor::visitNodeTypeSequence(AstMatcherParser::NodeTypeSequenceContext *context)
 		-> any
 	{
-		println("Visiting visitNodeTypeSequence: {}", context->getText());
-		AstMatcherVisitorOutput out = {unordered_map<string, AstNode*>(), true};
-
+		DEBUG_LOG("Visiting visitNodeTypeSequence: {}", context->getText());
+		auto out = AstMatcherVisitorOutput();
 		auto prev = it;  // Store current iterator position
-
 		if (context->elem) {
 			// Single nodeTypeElement
-			auto result = visit(context->elem);
-			auto resultMap = any_cast<AstMatcherVisitorOutput>(result);
-
-			if (!resultMap.success) {
+			auto result = any_cast<AstMatcherVisitorOutput>(visit(context->elem));
+			if (!result.success) {
 				it = prev;  // Reset iterator if match fails
-				AST_MATCHER_FAILURE(out)
+				AST_MATCHER_FAILURE(out, "Node failed in a single node sequence.");
 			}
-
-			out.matches.insert(resultMap.matches.begin(), resultMap.matches.end());
-
+			out.matches.insert(result.matches.begin(), result.matches.end());
+			DEBUG_LOG("Single node sequence matched.");
 		} else if (context->nodeTypeSequence().size() > 1) {
 			// Handle recursive nodeTypeSequence
 			if (context->isor) {
 				// Handle OR logic by trying each side separately
-				println("Handling OR operation in NodeTypeSequence");
+				DEBUG_LOG("Handling OR operation in NodeTypeSequence");
 
-				auto result1 = visit(context->nodeTypeSequence(1));
-				auto resultMap1 = any_cast<AstMatcherVisitorOutput>(result1);
+				auto result1 = any_cast<AstMatcherVisitorOutput>(visit(context->nodeTypeSequence(1)));
 
 				it = prev;  // Reset iterator for the second alternative
 
-				auto result2 = visit(context->nodeTypeSequence(0));
-				auto resultMap2 = any_cast<AstMatcherVisitorOutput>(result2);
+				auto result2 = any_cast<AstMatcherVisitorOutput>(visit(context->nodeTypeSequence(0)));
 
-				if (resultMap1.success) {
-					out.matches.insert(resultMap1.matches.begin(), resultMap1.matches.end());
+				if (result1.success) {
+					out.matches.insert(result1.matches.begin(), result1.matches.end());
 					out.success = true;
-				} else if (resultMap2.success) {
-					out.matches.insert(resultMap2.matches.begin(), resultMap2.matches.end());
+				} else if (result2.success) {
+					out.matches.insert(result2.matches.begin(), result2.matches.end());
 					out.success = true;
 				} else {
 					it = prev;  // Reset iterator if neither alternative matched
-					AST_MATCHER_FAILURE(out)
+					AST_MATCHER_FAILURE(out, "Neither alternative matched using the OR operator in the node pattern sequence.");
 				}
+				DEBUG_LOG("Sequence matched using the OR operator.");
 			} else {
 				// Handle consecutive elements
-				auto result = visit(context->nodeTypeSequence(1));
-				auto resultMap = any_cast<AstMatcherVisitorOutput>(result);
+				auto result = any_cast<AstMatcherVisitorOutput>(visit(context->nodeTypeSequence(1)));
 
-				if (!resultMap.success) {
+				if (!result.success) {
 					it = prev;  // Reset iterator if match fails
-					AST_MATCHER_FAILURE(out)
+					AST_MATCHER_FAILURE(out, "Node failed in a node sequence.");
 				}
 
-				out.matches.insert(resultMap.matches.begin(), resultMap.matches.end());
+				out.matches.insert(result.matches.begin(), result.matches.end());
 
 				// Move to the next element in the sequence
 				auto next_iteration = it->prev;
 				it = next_iteration;
-				result = visit(context->nodeTypeSequence(0));
-				resultMap = any_cast<AstMatcherVisitorOutput>(result);
+				result = any_cast<AstMatcherVisitorOutput>(visit(context->nodeTypeSequence(0)));
 
-				if (!resultMap.success) {
+				if (!result.success) {
 					it = prev;  // Reset iterator if match fails
-					AST_MATCHER_FAILURE(out)
+					AST_MATCHER_FAILURE(out, "Node failed in a node sequence.");
 				}
-
-				out.matches.insert(resultMap.matches.begin(), resultMap.matches.end());
+				DEBUG_LOG("Sequence matched.");
+				out.matches.insert(result.matches.begin(), result.matches.end());
 			}
 		}
-
 		it = prev;  // Reset iterator to original position after sequence processing
-
-		println("visitNodeTypeSequence end.");
+		DEBUG_LOG("visitNodeTypeSequence ended properly.");
 		return out;
 	}
 
 	fn InterpretReverseVisitor::visitNodePropertySequence(AstMatcherParser::NodePropertySequenceContext *context)
 		-> any
 	{
-		println("Visiting visitNodePropertySequence: {}", context->getText());
-		AstMatcherVisitorOutput out = {unordered_map<string, AstNode*>(), true};
+		DEBUG_LOG("Visiting visitNodePropertySequence: {}", context->getText());
+		auto out = AstMatcherVisitorOutput();
 
 		auto prev = it;  // Store current iterator position
 
@@ -248,7 +231,7 @@ namespace ucbl::cedilla
 
 			if (!resultMap.success) {
 				it = prev;  // Reset iterator if match fails
-				AST_MATCHER_FAILURE(out)
+				AST_MATCHER_FAILURE(out, "Single property Node Property Sequence failed.");
 			}
 
 			out.matches.insert(resultMap.matches.begin(), resultMap.matches.end());
@@ -257,56 +240,52 @@ namespace ucbl::cedilla
 			// Handle recursive nodePropertySequence
 			if (context->isor) {
 				// Handle OR logic by trying each side separately
-				println("Handling OR operation in NodePropertySequence");
+				DEBUG_LOG("Handling OR operation in Node Property Sequence");
 
-				auto result1 = visit(context->nodePropertySequence(0));
-				auto resultMap1 = any_cast<AstMatcherVisitorOutput>(result1);
+				auto result1 = any_cast<AstMatcherVisitorOutput>(visit(context->nodePropertySequence(0)));
 
 				it = prev;  // Reset iterator for the second alternative
 
-				auto result2 = visit(context->nodePropertySequence(1));
-				auto resultMap2 = any_cast<AstMatcherVisitorOutput>(result2);
+				auto result2 = any_cast<AstMatcherVisitorOutput>(visit(context->nodePropertySequence(1)));
 
-				if (resultMap1.success) {
-					out.matches.insert(resultMap1.matches.begin(), resultMap1.matches.end());
+				if (result1.success) {
+					out.matches.insert(result1.matches.begin(), result1.matches.end());
 					out.success = true;
-				} else if (resultMap2.success) {
-					out.matches.insert(resultMap2.matches.begin(), resultMap2.matches.end());
+				} else if (result2.success) {
+					out.matches.insert(result2.matches.begin(), result2.matches.end());
 					out.success = true;
 				} else {
 					it = prev;  // Reset iterator if neither alternative matched
-					AST_MATCHER_FAILURE(out)
+					AST_MATCHER_FAILURE(out, "Node property sequence failed using the OR operator.");
 				}
 			} else {
 				// Handle consecutive elements
-				auto result = visit(context->nodePropertySequence(0));
-				auto resultMap = any_cast<AstMatcherVisitorOutput>(result);
+				auto result = any_cast<AstMatcherVisitorOutput>(visit(context->nodePropertySequence(0)));
 
-				if (!resultMap.success) {
+				if (!result.success) {
 					it = prev;  // Reset iterator if match fails
-					AST_MATCHER_FAILURE(out)
+					AST_MATCHER_FAILURE(out, "Node property sequence failed.");
 				}
 
-				out.matches.insert(resultMap.matches.begin(), resultMap.matches.end());
+				out.matches.insert(result.matches.begin(), result.matches.end());
 
 				// Move to the next element in the sequence
 				auto next_iteration = it->prev;
 				it = next_iteration;
-				result = visit(context->nodePropertySequence(1));
-				resultMap = any_cast<AstMatcherVisitorOutput>(result);
+				result = any_cast<AstMatcherVisitorOutput>(visit(context->nodePropertySequence(1)));
 
-				if (!resultMap.success) {
+				if (!result.success) {
 					it = prev;  // Reset iterator if match fails
-					AST_MATCHER_FAILURE(out)
+					AST_MATCHER_FAILURE(out, "Node property sequence failed.");
 				}
 
-				out.matches.insert(resultMap.matches.begin(), resultMap.matches.end());
+				out.matches.insert(result.matches.begin(), result.matches.end());
 			}
 		}
 
 		it = prev;  // Reset iterator to original position after sequence processing
 
-		println("visitNodePropertySequence end.");
+		DEBUG_LOG("visitNodePropertySequence ended properly.");
 		return out;
 	}
 
@@ -315,7 +294,7 @@ namespace ucbl::cedilla
 		-> any
 	{
 		println("Visiting visitNodePropertyElement: {}", context->getText());
-		AstMatcherVisitorOutput out = {unordered_map<string, AstNode*>(), true};
+		auto out = AstMatcherVisitorOutput();
 
 		auto prev = it;  // Store current iterator position
 
@@ -327,26 +306,24 @@ namespace ucbl::cedilla
 		}
 
 		if (context->nodeProperty()) {
-			auto result = visit(context->nodeProperty());
-			auto resultMap = any_cast<AstMatcherVisitorOutput>(result);
-			if (!resultMap.success) {
+			auto result = any_cast<AstMatcherVisitorOutput>(visit(context->nodeProperty()));
+			if (!result.success) {
 				it = prev;  // Reset iterator if match fails
-				AST_MATCHER_FAILURE(out)
+				AST_MATCHER_FAILURE(out, "Node property does not match.");
 			}
 
-			out.matches.insert(resultMap.matches.begin(), resultMap.matches.end());
+			out.matches.insert(result.matches.begin(), result.matches.end());
 		} else if (context->nodePropertySequence()) {
 
 			// Handle consecutive elements
-			auto result = visit(context->nodePropertySequence());
-			auto resultMap = any_cast<AstMatcherVisitorOutput>(result);
+			auto result = any_cast<AstMatcherVisitorOutput>(visit(context->nodePropertySequence()));
 
-			if (!resultMap.success) {
+			if (!result.success) {
 				it = prev;  // Reset iterator if match fails
-				AST_MATCHER_FAILURE(out)
+				AST_MATCHER_FAILURE(out, "Node property sequence does not match.");
 			}
 
-			out.matches.insert(resultMap.matches.begin(), resultMap.matches.end());
+			out.matches.insert(result.matches.begin(), result.matches.end());
 		}
 
 		println("visitNodePropertyElement end.");
@@ -355,39 +332,58 @@ namespace ucbl::cedilla
 
 	fn InterpretReverseVisitor::visitNodeTypeElement(AstMatcherParser::NodeTypeElementContext *context) -> any
 	{
-		println("Visiting visitNodeTypeElement: {}", context->getText());
-		AstMatcherVisitorOutput out = {unordered_map<string, AstNode*>(), true};
-
+		DEBUG_LOG("Visiting visitNodeTypeElement: {}", context->getText());
+		auto out = AstMatcherVisitorOutput();
 		auto prev = it;  // Store current iterator position
 
 		if (context->NOT()) {
-			auto not_out = any_cast<AstMatcherVisitorOutput>(visit(context->nodeTypeElement(0)));
-			not_out.success = !not_out.success;
+			out = any_cast<AstMatcherVisitorOutput>(visit(context->nodeTypeElement()));
+			out.success = !out.success;
 		//	it = prev;  // Reset iterator after NOT operation (not needed for properties?)
-			return not_out;
-		}
-
-		if (context->nodeType()) {
-			auto result = visit(context->nodeType());
-			auto resultMap = any_cast<AstMatcherVisitorOutput>(result);
-			if (!resultMap.success) {
-				it = prev;  // Reset iterator if match fails
-				AST_MATCHER_FAILURE(out)
-			}
-
-			out.matches.insert(resultMap.matches.begin(), resultMap.matches.end());
 		} else if (context->nodeTypeSequence()) {
-			auto result = visit(context->nodeTypeSequence());
-			auto resultMap = any_cast<AstMatcherVisitorOutput>(result);
-			if (!resultMap.success) {
+			auto result = any_cast<AstMatcherVisitorOutput>(visit(context->nodeTypeSequence()));
+			if (!result.success) {
 				it = prev;  // Reset iterator if match fails
-				AST_MATCHER_FAILURE(out)
+				AST_MATCHER_FAILURE(out, "Node seuquence does not match.");
 			}
-
-			out.matches.insert(resultMap.matches.begin(), resultMap.matches.end());
+			out.matches.insert(result.matches.begin(), result.matches.end());
+		} else if (context->PLUS()) {
+			out = any_cast<AstMatcherVisitorOutput>(visit(context->nodeTypeElement()));
+			if (!out.success) {
+				it = prev;  // Reset iterator if match fails // TODO: is that needed ?
+				AST_MATCHER_FAILURE(out, "Node one or more ('+' symbol) was not respected.");
+			}
+			while (out.success)
+			{
+				out = any_cast<AstMatcherVisitorOutput>(visit(context->nodeTypeElement()));
+			}
+			// todo : merge matches
+			NOT_IMPLEMENTED_LOG("Plus '+'");
+		} else if (context->STAR()) {
+			do
+			{
+				out = any_cast<AstMatcherVisitorOutput>(visit(context->nodeTypeElement()));
+			}
+			while (out.success);
+			// todo : merge matches
+			NOT_IMPLEMENTED_LOG("Star '*'");
+		} else if (context->QUESTION_MARK()) {
+			out = any_cast<AstMatcherVisitorOutput>(visit(context->nodeTypeElement()));
+			if (out.success) {
+				// iterator ??
+			}
+			NOT_IMPLEMENTED_LOG("Question mark");
+		} else if (context->node) {
+			auto result = any_cast<AstMatcherVisitorOutput>(visit(context->node));
+			if (!result.success) {
+				it = prev;  // Reset iterator if match fails
+				AST_MATCHER_FAILURE(out, "Node does not match the pattern.");
+			}
+			out.matches.insert(result.matches.begin(), result.matches.end());
+		} else {
+			NOT_IMPLEMENTED_LOG("Unknow logic pattern");
 		}
-
-		println("visitNodeTypeElement end.");
+		DEBUG_LOG("visitNodeTypeElement ended properly.");
 		return out;
 	}
 

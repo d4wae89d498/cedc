@@ -19,6 +19,6 @@ fn main() -> int
 	)", test_ast);
 
 	assert(out.contains("id1"));
-	assert(any_cast<string>(out["id1"]->states["test"]->value) == "yoo");
+	assert(any_cast<string>(out["id1"][0]->states["test"]->value) == "yoo");
 
 }
