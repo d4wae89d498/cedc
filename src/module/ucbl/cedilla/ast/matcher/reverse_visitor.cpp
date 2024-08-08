@@ -17,6 +17,19 @@ import :ast.node;
 
 namespace ucbl::cedilla
 {
+	fn _merge_ast_matches(AstMatch& mainMap, const AstMatch& auxMap) -> void {
+		for (const auto& [key, vec] : auxMap) {
+			// If the key exists in mainMap, append to the vector
+			if (mainMap.find(key) != mainMap.end()) {
+				mainMap[key].insert(mainMap[key].end(), vec.begin(), vec.end());
+			} else {
+				// If the key doesn't exist, create a new vector
+				mainMap[key] = vec;
+			}
+		}
+	}
+
+
 	InterpretReverseVisitor::InterpretReverseVisitor(Ast& ast, unordered_map<string, StateChecker> checkers)
 		: StateCheckers(move(checkers))
 	{
@@ -71,39 +84,38 @@ namespace ucbl::cedilla
 		if (context->AS()) {
 			alias = context->IDENTIFIER(1)->getText();
 		}
-		auto prev = it->prev;
+		auto it_bkp = it->prev;
 		if (it->type == expectedType) {
 			if (!alias.empty()) {
 				out.matches[alias] = {it};
 			}
 
-			println("Checking states...");
+			DEBUG_LOG("Checking states...");
 			if (context->nodePropertySequence()) {
-				auto result = visit(context->nodePropertySequence());
-				auto resultMap = any_cast<AstMatcherVisitorOutput>(result);
-				if (!resultMap.success) {
+				auto result = any_cast<AstMatcherVisitorOutput>(visit(context->nodePropertySequence()));
+				if (!result.success) {
 					AST_MATCHER_FAILURE(out, "Node properties sequence does not match.");
 				}
-				out.matches.insert(resultMap.matches.begin(), resultMap.matches.end());
+				_merge_ast_matches(out.matches, result.matches);
 			}
 
-			println("Checking childs...");
+			DEBUG_LOG("Checking childs...");
 			if (context->nodeTypeSequence()) {
 				auto child_it = it->childs.first->last();
 				it = child_it;
-				auto result = visit(context->nodeTypeSequence());
-				auto resultMap = any_cast<AstMatcherVisitorOutput>(result);
-				it = prev;  // Reset iterator after processing child nodes
-				if (!resultMap.success) {
+				auto result = any_cast<AstMatcherVisitorOutput>(visit(context->nodeTypeSequence()));
+				it = it_bkp;  // Reset iterator after processing child nodes
+				if (!result.success) {
 					AST_MATCHER_FAILURE(out, "Node child sequence does not match.");
 				}
-				out.matches.insert(resultMap.matches.begin(), resultMap.matches.end());
+				_merge_ast_matches(out.matches, result.matches);
 			}
 		} else {
 			AST_MATCHER_FAILURE(out, "Wrong node type, expected '{}' got '{}'.", expectedType, it->type);
 		}
 
-		it = prev;  // Ensure iterator is reset
+		it = it_bkp;  // Ensure iterator is reset
+		DEBUG_LOG("AstNode matched.");
 		DEBUG_LOG("visitNodeType ended properly.");
 
 		return out;
@@ -154,15 +166,15 @@ namespace ucbl::cedilla
 	{
 		DEBUG_LOG("Visiting visitNodeTypeSequence: {}", context->getText());
 		auto out = AstMatcherVisitorOutput();
-		auto prev = it;  // Store current iterator position
+		auto it_bkp = it;  // Store current iterator position
 		if (context->elem) {
 			// Single nodeTypeElement
 			auto result = any_cast<AstMatcherVisitorOutput>(visit(context->elem));
 			if (!result.success) {
-				it = prev;  // Reset iterator if match fails
+				it = it_bkp;  // Reset iterator if match fails
 				AST_MATCHER_FAILURE(out, "Node failed in a single node sequence.");
 			}
-			out.matches.insert(result.matches.begin(), result.matches.end());
+			_merge_ast_matches(out.matches, result.matches);
 			DEBUG_LOG("Single node sequence matched.");
 		} else if (context->nodeTypeSequence().size() > 1) {
 			// Handle recursive nodeTypeSequence
@@ -172,18 +184,18 @@ namespace ucbl::cedilla
 
 				auto result1 = any_cast<AstMatcherVisitorOutput>(visit(context->nodeTypeSequence(1)));
 
-				it = prev;  // Reset iterator for the second alternative
+				it = it_bkp;  // Reset iterator for the second alternative
 
 				auto result2 = any_cast<AstMatcherVisitorOutput>(visit(context->nodeTypeSequence(0)));
 
 				if (result1.success) {
-					out.matches.insert(result1.matches.begin(), result1.matches.end());
+					_merge_ast_matches(out.matches, result1.matches);
 					out.success = true;
 				} else if (result2.success) {
-					out.matches.insert(result2.matches.begin(), result2.matches.end());
+					_merge_ast_matches(out.matches, result2.matches);
 					out.success = true;
 				} else {
-					it = prev;  // Reset iterator if neither alternative matched
+					it = it_bkp;  // Reset iterator if neither alternative matched
 					AST_MATCHER_FAILURE(out, "Neither alternative matched using the OR operator in the node pattern sequence.");
 				}
 				DEBUG_LOG("Sequence matched using the OR operator.");
@@ -192,26 +204,26 @@ namespace ucbl::cedilla
 				auto result = any_cast<AstMatcherVisitorOutput>(visit(context->nodeTypeSequence(1)));
 
 				if (!result.success) {
-					it = prev;  // Reset iterator if match fails
+					it = it_bkp;  // Reset iterator if match fails
 					AST_MATCHER_FAILURE(out, "Node failed in a node sequence.");
 				}
 
-				out.matches.insert(result.matches.begin(), result.matches.end());
+				_merge_ast_matches(out.matches, result.matches);
 
 				// Move to the next element in the sequence
-				auto next_iteration = it->prev;
-				it = next_iteration;
+				it = it->prev;
 				result = any_cast<AstMatcherVisitorOutput>(visit(context->nodeTypeSequence(0)));
 
 				if (!result.success) {
-					it = prev;  // Reset iterator if match fails
+					it = it_bkp;  // Reset iterator if match fails
 					AST_MATCHER_FAILURE(out, "Node failed in a node sequence.");
 				}
 				DEBUG_LOG("Sequence matched.");
-				out.matches.insert(result.matches.begin(), result.matches.end());
+				_merge_ast_matches(out.matches, result.matches);
+
 			}
 		}
-		it = prev;  // Reset iterator to original position after sequence processing
+		it = it_bkp;  // Reset iterator to original position after sequence processing
 		DEBUG_LOG("visitNodeTypeSequence ended properly.");
 		return out;
 	}
@@ -222,7 +234,7 @@ namespace ucbl::cedilla
 		DEBUG_LOG("Visiting visitNodePropertySequence: {}", context->getText());
 		auto out = AstMatcherVisitorOutput();
 
-		auto prev = it;  // Store current iterator position
+		auto it_bkp = it;  // Store current iterator position
 
 		if (context->elem) {
 			// Single nodePropertyElement
@@ -230,7 +242,7 @@ namespace ucbl::cedilla
 			auto resultMap = any_cast<AstMatcherVisitorOutput>(result);
 
 			if (!resultMap.success) {
-				it = prev;  // Reset iterator if match fails
+				it = it_bkp;  // Reset iterator if match fails
 				AST_MATCHER_FAILURE(out, "Single property Node Property Sequence failed.");
 			}
 
@@ -244,18 +256,19 @@ namespace ucbl::cedilla
 
 				auto result1 = any_cast<AstMatcherVisitorOutput>(visit(context->nodePropertySequence(0)));
 
-				it = prev;  // Reset iterator for the second alternative
+				it = it_bkp;  // Reset iterator for the second alternative
 
 				auto result2 = any_cast<AstMatcherVisitorOutput>(visit(context->nodePropertySequence(1)));
 
 				if (result1.success) {
-					out.matches.insert(result1.matches.begin(), result1.matches.end());
+					_merge_ast_matches(out.matches, result1.matches);
+
 					out.success = true;
 				} else if (result2.success) {
-					out.matches.insert(result2.matches.begin(), result2.matches.end());
+					_merge_ast_matches(out.matches, result2.matches);
 					out.success = true;
 				} else {
-					it = prev;  // Reset iterator if neither alternative matched
+					it = it_bkp;  // Reset iterator if neither alternative matched
 					AST_MATCHER_FAILURE(out, "Node property sequence failed using the OR operator.");
 				}
 			} else {
@@ -263,11 +276,12 @@ namespace ucbl::cedilla
 				auto result = any_cast<AstMatcherVisitorOutput>(visit(context->nodePropertySequence(0)));
 
 				if (!result.success) {
-					it = prev;  // Reset iterator if match fails
+					it = it_bkp;  // Reset iterator if match fails
 					AST_MATCHER_FAILURE(out, "Node property sequence failed.");
 				}
 
-				out.matches.insert(result.matches.begin(), result.matches.end());
+				_merge_ast_matches(out.matches, result.matches);
+
 
 				// Move to the next element in the sequence
 				auto next_iteration = it->prev;
@@ -275,15 +289,15 @@ namespace ucbl::cedilla
 				result = any_cast<AstMatcherVisitorOutput>(visit(context->nodePropertySequence(1)));
 
 				if (!result.success) {
-					it = prev;  // Reset iterator if match fails
+					it = it_bkp;  // Reset iterator if match fails
 					AST_MATCHER_FAILURE(out, "Node property sequence failed.");
 				}
 
-				out.matches.insert(result.matches.begin(), result.matches.end());
+				_merge_ast_matches(out.matches, result.matches);
 			}
 		}
 
-		it = prev;  // Reset iterator to original position after sequence processing
+		it = it_bkp;  // Reset iterator to original position after sequence processing
 
 		DEBUG_LOG("visitNodePropertySequence ended properly.");
 		return out;
@@ -296,19 +310,19 @@ namespace ucbl::cedilla
 		println("Visiting visitNodePropertyElement: {}", context->getText());
 		auto out = AstMatcherVisitorOutput();
 
-		auto prev = it;  // Store current iterator position
+		auto it_bkp = it;  // Store current iterator position
 
 		if (context->NOT()) {
 			auto not_out = any_cast<AstMatcherVisitorOutput>(visit(context->nodePropertyElement()));
 			not_out.success = !not_out.success;
-			it = prev;  // Reset iterator after NOT operation
+			it = it_bkp;  // Reset iterator after NOT operation
 			return not_out;
 		}
 
 		if (context->nodeProperty()) {
 			auto result = any_cast<AstMatcherVisitorOutput>(visit(context->nodeProperty()));
 			if (!result.success) {
-				it = prev;  // Reset iterator if match fails
+				it = it_bkp;  // Reset iterator if match fails
 				AST_MATCHER_FAILURE(out, "Node property does not match.");
 			}
 
@@ -319,11 +333,11 @@ namespace ucbl::cedilla
 			auto result = any_cast<AstMatcherVisitorOutput>(visit(context->nodePropertySequence()));
 
 			if (!result.success) {
-				it = prev;  // Reset iterator if match fails
+				it = it_bkp;  // Reset iterator if match fails
 				AST_MATCHER_FAILURE(out, "Node property sequence does not match.");
 			}
 
-			out.matches.insert(result.matches.begin(), result.matches.end());
+			_merge_ast_matches(out.matches, result.matches);
 		}
 
 		println("visitNodePropertyElement end.");
@@ -334,52 +348,62 @@ namespace ucbl::cedilla
 	{
 		DEBUG_LOG("Visiting visitNodeTypeElement: {}", context->getText());
 		auto out = AstMatcherVisitorOutput();
-		auto prev = it;  // Store current iterator position
+		auto it_bkp = it;  // Store current iterator position
 
 		if (context->NOT()) {
 			out = any_cast<AstMatcherVisitorOutput>(visit(context->nodeTypeElement()));
 			out.success = !out.success;
-		//	it = prev;  // Reset iterator after NOT operation (not needed for properties?)
+		//	it = it_bkp;  // Reset iterator after NOT operation (not needed for properties?)
 		} else if (context->nodeTypeSequence()) {
-			auto result = any_cast<AstMatcherVisitorOutput>(visit(context->nodeTypeSequence()));
-			if (!result.success) {
-				it = prev;  // Reset iterator if match fails
+			out = any_cast<AstMatcherVisitorOutput>(visit(context->nodeTypeSequence()));
+			if (!out.success) {
+				it = it_bkp;  // Reset iterator if match fails
 				AST_MATCHER_FAILURE(out, "Node seuquence does not match.");
 			}
-			out.matches.insert(result.matches.begin(), result.matches.end());
 		} else if (context->PLUS()) {
+			if (!it)
+				AST_MATCHER_FAILURE(out, "Node one or more ('+' symbol) was not respected.");
 			out = any_cast<AstMatcherVisitorOutput>(visit(context->nodeTypeElement()));
 			if (!out.success) {
-				it = prev;  // Reset iterator if match fails // TODO: is that needed ?
+				it = it_bkp;  // Reset iterator if match fails // TODO: is that needed ?
 				AST_MATCHER_FAILURE(out, "Node one or more ('+' symbol) was not respected.");
 			}
-			while (out.success)
+			while (it)
 			{
-				out = any_cast<AstMatcherVisitorOutput>(visit(context->nodeTypeElement()));
+				it_bkp = it;
+				auto result = any_cast<AstMatcherVisitorOutput>(visit(context->nodeTypeElement()));
+				if (!result.success) {
+					it = it_bkp;
+					break;
+				}
+				_merge_ast_matches(out.matches, result.matches);
 			}
-			// todo : merge matches
-			NOT_IMPLEMENTED_LOG("Plus '+'");
 		} else if (context->STAR()) {
-			do
+			while (it)
 			{
-				out = any_cast<AstMatcherVisitorOutput>(visit(context->nodeTypeElement()));
+				it_bkp = it;
+				auto result = any_cast<AstMatcherVisitorOutput>(visit(context->nodeTypeElement()));
+				if (!result.success) {
+					it = it_bkp;
+					break;
+				}
+				_merge_ast_matches(out.matches, result.matches);
 			}
-			while (out.success);
-			// todo : merge matches
-			NOT_IMPLEMENTED_LOG("Star '*'");
 		} else if (context->QUESTION_MARK()) {
+			it_bkp = it;
 			out = any_cast<AstMatcherVisitorOutput>(visit(context->nodeTypeElement()));
 			if (out.success) {
-				// iterator ??
+				it = it->prev;
+			} else {
+				it = it_bkp;
 			}
-			NOT_IMPLEMENTED_LOG("Question mark");
 		} else if (context->node) {
 			auto result = any_cast<AstMatcherVisitorOutput>(visit(context->node));
 			if (!result.success) {
-				it = prev;  // Reset iterator if match fails
+				it = it_bkp;  // Reset iterator if match fails
 				AST_MATCHER_FAILURE(out, "Node does not match the pattern.");
 			}
-			out.matches.insert(result.matches.begin(), result.matches.end());
+			_merge_ast_matches(out.matches, result.matches);
 		} else {
 			NOT_IMPLEMENTED_LOG("Unknow logic pattern");
 		}
