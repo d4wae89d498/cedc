@@ -32,6 +32,7 @@ fn main() -> int
 		Word  as m2 [test = "yoo"]+
 		Word as m3 [test2 = "yoo"]*
 		Word
+		IDontCare?
 	)", test_ast);
 
 	assert(!out.contains("m1"));

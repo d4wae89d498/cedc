@@ -1,42 +1,24 @@
 grammar AstMatcher;
 
+// -------------------------------------------------------
+// 		R O O T
+// -------------------------------------------------------
+
 astPatternDescription:
     astRoot=nodeTypeSequence
     ;
 
-// Should as be on nodeTypeElement instead ?
+// -------------------------------------------------------
+// 		N O D E    T Y P E
+// -------------------------------------------------------
+// TODO: merge elements and seq ?
+
 nodeType:
     (IDENTIFIER | ANY)
         (AS IDENTIFIER)?
     ('[' nodePropertySequence ']')?
     ('{' nodeTypeSequence '}')?
     ';'*
-    ;
-
-nodeProperty:
-    STRING EQUAL STRING
-    |
-    IDENTIFIER EQUAL STRING
-    |
-    IDENTIFIER IDENTIFIER '(' STRING ')'
-    |
-    IDENTIFIER '{' nodeTypeSequence '}'
-    ;
-
-nodePropertySequence:
-    elem=nodePropertyElement
-    |
-	nodePropertySequence isor=OR nodePropertySequence
-    |
-	nodePropertySequence nodePropertySequence
-    ;
-
-nodePropertyElement:
-    nodeProperty
-    |
-    '(' nodePropertySequence ')'
-    |
-    NOT nodePropertyElement
     ;
 
 nodeTypeSequence:
@@ -59,7 +41,41 @@ nodeTypeElement:
 	nodeTypeElement QUESTION_MARK
     ;
 
-// Lexer rules
+// -------------------------------------------------------
+// 		N O D E    P R O P E R T I E S
+// -------------------------------------------------------
+
+nodeProperty:
+    STRING EQUAL STRING
+    |
+    IDENTIFIER EQUAL STRING
+    |
+    IDENTIFIER IDENTIFIER '(' STRING ')'
+    |
+    IDENTIFIER '{' nodeTypeSequence '}'
+    ;
+
+nodePropertyElement:
+    nodeProperty
+    |
+    '(' nodePropertySequence ')'
+    |
+    NOT nodePropertyElement
+    ;
+
+nodePropertySequence:
+    elem=nodePropertyElement
+    |
+	nodePropertySequence isor=OR nodePropertySequence
+    |
+	nodePropertySequence nodePropertySequence
+    ;
+
+
+// -------------------------------------------------------
+// 		L E X E R       R U L E S
+// -------------------------------------------------------
+
 QUESTION_MARK:	'?';
 ANY:			'.' 	| 'ANY' 		| 'any' 	| 'Any';
 PLUS:			'+';
