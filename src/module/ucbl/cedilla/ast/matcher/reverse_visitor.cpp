@@ -1,6 +1,11 @@
 module;
 
 #include "AstMatcherVisitor.h"
+
+
+#define BACKUP_ITERATOR(BACKUP, ITERATOR)   auto BACKUP = ITERATOR;
+#define RESTORE_ITERATOR(ITERATOR, BACKUP)  ITERATOR = BACKUP;
+#define ADVANCE_ITERATOR(ITERATOR)    		ITERATOR = ITERATOR ->prev;
 #define AST_MATCHER_FAILURE(N, MSG, ...) \
 	{\
 		DEBUG_LOG("ASTMatcher dit not succeed, reason -> [" MSG "] trying to continue...", ##__VA_ARGS__);\
@@ -8,9 +13,6 @@ module;
 		return N;\
 	}
 
-#define BACKUP_ITERATOR(BACKUP, ITERATOR)   auto BACKUP = ITERATOR;
-#define RESTORE_ITERATOR(ITERATOR, BACKUP)  ITERATOR = BACKUP;
-#define ADVANCE_ITERATOR(ITERATOR)    		ITERATOR = ITERATOR ->prev;
 
 module ucbl.cedilla;
 

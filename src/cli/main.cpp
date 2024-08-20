@@ -11,6 +11,6 @@ using namespace std;
 
 fn main() -> int
 {
-	throw runtime_error("Main CLI: Not implemented");
+	NOT_IMPLEMENTED_LOG("Main CLI");
 	return 0;
 }

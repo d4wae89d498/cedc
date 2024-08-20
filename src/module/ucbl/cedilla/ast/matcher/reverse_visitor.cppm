@@ -42,8 +42,6 @@ export namespace ucbl::cedilla
 		fn visitNodeTypeSequence(AstMatcherParser::NodeTypeSequenceContext *context) -> any override;
 		fn visitNodeProperty(AstMatcherParser::NodePropertyContext *context) -> any override;
 		fn visitNodePropertySequence(AstMatcherParser::NodePropertySequenceContext *context) -> any override;
-		fn visitNodePropertyElement(AstMatcherParser::NodePropertyElementContext *context) -> any override;
-		fn visitNodeTypeElement(AstMatcherParser::NodeTypeElementContext *context) -> any override;
 
 	};
 }
