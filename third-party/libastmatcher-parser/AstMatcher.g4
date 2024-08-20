@@ -5,68 +5,68 @@ grammar AstMatcher;
 // -------------------------------------------------------
 
 astPatternDescription:
-    astRoot=nodeTypeSequence
-    ;
+	astRoot=nodeTypeSequence
+	;
 
 // -------------------------------------------------------
-// 		N O D E    T Y P E
+// 		N O D E	T Y P E
 // -------------------------------------------------------
 
 nodeType:
-    (IDENTIFIER | ANY)
-        (AS IDENTIFIER)?
-    ('[' nodePropertySequence ']')?
-    ('{' nodeTypeSequence '}')?
-    ';'*
-    ;
+	(IDENTIFIER | ANY)
+		(AS IDENTIFIER)?
+	('[' nodePropertySequence ']')?
+	('{' nodeTypeSequence '}')?
+	';'*
+	;
 
 nodeTypeSequence:
-    node=nodeType
-    |
-    '(' nodeTypeSequence ')'
-    |
-    NOT nodeTypeSequence
+	node=nodeType
+	|
+	'(' nodeTypeSequence ')'
+	|
+	NOT nodeTypeSequence
 	|
 	nodeTypeSequence PLUS
 	|
 	nodeTypeSequence STAR
 	|
 	nodeTypeSequence QUESTION_MARK
-    |
+	|
 	nodeTypeSequence isor=OR nodeTypeSequence
-    |
+	|
 	nodeTypeSequence nodeTypeSequence
-    ;
+	;
 
 // -------------------------------------------------------
-// 		N O D E    P R O P E R T I E S
+// 		N O D E	P R O P E R T I E S
 // -------------------------------------------------------
 
 nodeProperty:
-    STRING EQUAL STRING
-    |
-    IDENTIFIER EQUAL STRING
-    |
-    IDENTIFIER IDENTIFIER '(' STRING ')'
-    |
-    IDENTIFIER '{' nodeTypeSequence '}'
-    ;
+	STRING EQUAL STRING
+	|
+	IDENTIFIER EQUAL STRING
+	|
+	IDENTIFIER IDENTIFIER '(' STRING ')'
+	|
+	IDENTIFIER '{' nodeTypeSequence '}'
+	;
 
 nodePropertySequence:
-    nodeProperty
-    |
-    '(' nodePropertySequence ')'
-    |
-    NOT nodePropertySequence
-    |
+	nodeProperty
+	|
+	'(' nodePropertySequence ')'
+	|
+	NOT nodePropertySequence
+	|
 	nodePropertySequence isor=OR nodePropertySequence
-    |
+	|
 	nodePropertySequence nodePropertySequence
-    ;
+	;
 
 
 // -------------------------------------------------------
-// 		L E X E R       R U L E S
+// 		L E X E R	   R U L E S
 // -------------------------------------------------------
 
 QUESTION_MARK:	'?';
@@ -80,5 +80,13 @@ AS: 			'=>'  	| 'AS'			| 'as';
 IDENTIFIER: 	[a-zA-Z_][a-zA-Z_0-9]*;
 STRING: 		'"' (ESC | ~["\\])* '"';
 fragment ESC: 	'\\' .;
-COMMENT: 		'#' ~[\r\n]* -> skip;
 WHITESPACE: 	[ \t\r\n]+ -> skip;
+COMMENT:
+	(
+		('#' ~[\r\n]*)
+		|
+		('//' ~[\r\n]*)
+		|
+		('/*' .*? '*/')
+	) -> skip
+	;
