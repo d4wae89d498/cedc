@@ -40,14 +40,13 @@ fn main() -> int
 							Word as id1_child [ test2 = "yoo2" ]
 						}
 						Word as id2
+						Word
 						NOT Poo
 					)
 		)
 
 	)", test_ast);
 
-//	out["id1"]->replace_with(stuff)
-// output should be : vector of nodes ?
 
 	assert(out["id1"][0]->type == "Word");
 	assert(out["id2"][0]->type == "Word");

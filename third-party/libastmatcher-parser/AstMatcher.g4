@@ -11,7 +11,6 @@ astPatternDescription:
 // -------------------------------------------------------
 // 		N O D E    T Y P E
 // -------------------------------------------------------
-// TODO: merge elements and seq ?
 
 nodeType:
     (IDENTIFIER | ANY)
@@ -22,23 +21,21 @@ nodeType:
     ;
 
 nodeTypeSequence:
-    elem=nodeTypeElement
-    | nodeTypeSequence isor=OR nodeTypeSequence
-    | nodeTypeSequence nodeTypeSequence
-    ;
-
-nodeTypeElement:
     node=nodeType
     |
     '(' nodeTypeSequence ')'
     |
-    NOT nodeTypeElement
+    NOT nodeTypeSequence
 	|
-	nodeTypeElement PLUS
+	nodeTypeSequence PLUS
 	|
-	nodeTypeElement STAR
+	nodeTypeSequence STAR
 	|
-	nodeTypeElement QUESTION_MARK
+	nodeTypeSequence QUESTION_MARK
+    |
+	nodeTypeSequence isor=OR nodeTypeSequence
+    |
+	nodeTypeSequence nodeTypeSequence
     ;
 
 // -------------------------------------------------------
@@ -55,16 +52,12 @@ nodeProperty:
     IDENTIFIER '{' nodeTypeSequence '}'
     ;
 
-nodePropertyElement:
+nodePropertySequence:
     nodeProperty
     |
     '(' nodePropertySequence ')'
     |
-    NOT nodePropertyElement
-    ;
-
-nodePropertySequence:
-    elem=nodePropertyElement
+    NOT nodePropertySequence
     |
 	nodePropertySequence isor=OR nodePropertySequence
     |

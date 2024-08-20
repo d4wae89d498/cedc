@@ -137,43 +137,37 @@ namespace ucbl::cedilla
 		return out;
 	}
 
-	fn InterpretReverseVisitor::visitNodePropertyElement(AstMatcherParser::NodePropertyElementContext *context)
+	fn InterpretReverseVisitor::visitNodePropertySequence(AstMatcherParser::NodePropertySequenceContext *context)
 		-> any
 	{
 		println("Visiting visitNodePropertyElement: {}", context->getText());
 		auto out = AstMatcherVisitorOutput();
 
+		// NOT should not advance iterator ? or should ? harder if should => need to count all the tree...
 		if (context->NOT()) {
-			out = any_cast<AstMatcherVisitorOutput>(visit(context->nodePropertyElement()));
+			if (context->nodePropertySequence().size() != 1) {
+				NOT_IMPLEMENTED_LOG("Unknow logic pattern");
+			}
+			out = any_cast<AstMatcherVisitorOutput>(visit(context->nodePropertySequence()[0]));
 			out.success = !out.success;
 		} else if (context->nodeProperty()) {
 			out = any_cast<AstMatcherVisitorOutput>(visit(context->nodeProperty()));
 			if (!out.success) {
 				AST_MATCHER_FAILURE(out, "Node property does not match.");
 			}
-		} else if (context->nodePropertySequence()) {
-			out = any_cast<AstMatcherVisitorOutput>(visit(context->nodePropertySequence()));
+		} /*else if (context->nodePropertySequence().size() == 1) {
+			out = any_cast<AstMatcherVisitorOutput>(visit(context->nodePropertySequence()[0]));
 			if (!out.success) {
 				AST_MATCHER_FAILURE(out, "Node property sequence does not match.");
 			}
-		}
-		println("visitNodePropertyElement end.");
-		return out;
-	}
-
-	fn InterpretReverseVisitor::visitNodePropertySequence(AstMatcherParser::NodePropertySequenceContext *context)
-		-> any
-	{
-		DEBUG_LOG("Visiting visitNodePropertySequence: {}", context->getText());
-		auto out = AstMatcherVisitorOutput();
-		if (context->elem) {
+		} else if (context->elem) {
 			// Single nodePropertyElement
 			auto result = any_cast<AstMatcherVisitorOutput>(visit(context->elem));
 			if (!result.success) {
 				AST_MATCHER_FAILURE(out, "Single property Node Property Sequence failed.");
 			}
 			merge_ast_matches(out.matches, result.matches);
-		} else if (context->nodePropertySequence().size() > 1) {
+		}*/ else if (context->nodePropertySequence().size() > 1) {
 			// Handle recursive nodePropertySequence
 			if (context->isor) {
 				// Handle OR logic by trying each side separately
@@ -204,10 +198,16 @@ namespace ucbl::cedilla
 				}
 				merge_ast_matches(out.matches, result.matches);
 			}
+		} /* else if (context->nodePropertySequence().size() == 1) {
+
+		} */ else {
+			NOT_IMPLEMENTED_LOG("Unknow logic pattern");
 		}
-		DEBUG_LOG("visitNodePropertySequence ended properly.");
+
+		println("visitNodePropertyElement end.");
 		return out;
 	}
+
 
 	/*\
 	 *
@@ -241,15 +241,17 @@ namespace ucbl::cedilla
 			}
 			DEBUG_LOG("Checking childs...");
 			if (context->nodeTypeSequence()) {
-				BACKUP_ITERATOR(it_bkp, it);
+				BACKUP_ITERATOR(current_node, it);
 				RESTORE_ITERATOR(it, it->childs.first->last());
+				BACKUP_ITERATOR(node_childs, it);
 				auto result = any_cast<AstMatcherVisitorOutput>(visit(context->nodeTypeSequence()));
-				RESTORE_ITERATOR(it, it_bkp);
+				RESTORE_ITERATOR(it, current_node);
 				if (!result.success) {
 					AST_MATCHER_FAILURE(out, "Node child sequence does not match.");
-				} else {
-					ADVANCE_ITERATOR(it);
-				}
+				}/* else {
+					DEBUG_LOG("ADV ---------- 1");
+					//ADVANCE_ITERATOR(it);
+				}*/
 				merge_ast_matches(out.matches, result.matches);
 			}
 		} else {
@@ -260,54 +262,66 @@ namespace ucbl::cedilla
 		return out;
 	}
 
-	fn InterpretReverseVisitor::visitNodeTypeElement(AstMatcherParser::NodeTypeElementContext *context) -> any
+	fn InterpretReverseVisitor::visitNodeTypeSequence(AstMatcherParser::NodeTypeSequenceContext *context) -> any
 	{
 		DEBUG_LOG("Visiting visitNodeTypeElement: {}", context->getText());
 		auto out = AstMatcherVisitorOutput();
 
 		if (context->NOT()) {
+			if (context->nodeTypeSequence().size() != 1) {
+				NOT_IMPLEMENTED_LOG("Unknow logic pattern");
+			}
 			// TODO: comment avance l'iterator ici ? si debut sequence vrai, reste fausse etc..
 			// -----> devrait avancer de la taille de la sequence.
 			// Implementer la logique avec une pile et des modification dqns le code.
 			// ou penser a une autre logique....
-			out = any_cast<AstMatcherVisitorOutput>(visit(context->nodeTypeElement()));
+			out = any_cast<AstMatcherVisitorOutput>(visit(context->nodeTypeSequence()[0]));
 			out.success = !out.success;
-		} else if (context->nodeTypeSequence()) {
+		} /*else if (context->nodeTypeSequence().size() == 1) {
 			BACKUP_ITERATOR(it_bkp, it);
-			out = any_cast<AstMatcherVisitorOutput>(visit(context->nodeTypeSequence()));
+			out = any_cast<AstMatcherVisitorOutput>(visit(context->nodeTypeSequence()[0]));
 			if (!out.success) {
 				RESTORE_ITERATOR(it, it_bkp);
 				AST_MATCHER_FAILURE(out, "Node seuquence does not match.");
 			}
-		} else if (context->PLUS()) {
+		}*/ else if (context->PLUS()) {
+			if (context->nodeTypeSequence().size() != 1) {
+				NOT_IMPLEMENTED_LOG("Unknow logic pattern");
+			}
 			BACKUP_ITERATOR(it_bkp, it);
 			if (!it)
 				AST_MATCHER_FAILURE(out, "Node one or more ('+' symbol) was not respected.");
-			out = any_cast<AstMatcherVisitorOutput>(visit(context->nodeTypeElement()));
+			out = any_cast<AstMatcherVisitorOutput>(visit(context->nodeTypeSequence()[0]));
 			if (!out.success) {
 				RESTORE_ITERATOR(it, it_bkp);
 				AST_MATCHER_FAILURE(out, "Node one or more ('+' symbol) was not respected.");
 			}
 			while (it)
 			{
-				auto result = any_cast<AstMatcherVisitorOutput>(visit(context->nodeTypeElement()));
+				auto result = any_cast<AstMatcherVisitorOutput>(visit(context->nodeTypeSequence()[0]));
 				if (!result.success) {
 					break;
 				}
 				merge_ast_matches(out.matches, result.matches);
 			}
 		} else if (context->STAR()) {
+			if (context->nodeTypeSequence().size() != 1) {
+				NOT_IMPLEMENTED_LOG("Unknow logic pattern");
+			}
 			while (it)
 			{
-				auto result = any_cast<AstMatcherVisitorOutput>(visit(context->nodeTypeElement()));
+				auto result = any_cast<AstMatcherVisitorOutput>(visit(context->nodeTypeSequence()[0]));
 				if (!result.success) {
 					break;
 				}
 				merge_ast_matches(out.matches, result.matches);
 			}
 		} else if (context->QUESTION_MARK()) {
+			if (context->nodeTypeSequence().size() != 1) {
+				NOT_IMPLEMENTED_LOG("Unknow logic pattern");
+			}
 			BACKUP_ITERATOR(it_bkp, it);
-			out = any_cast<AstMatcherVisitorOutput>(visit(context->nodeTypeElement()));
+			out = any_cast<AstMatcherVisitorOutput>(visit(context->nodeTypeSequence()[0]));
 			if (out.success) {
 				DEBUG_LOG("QUESTION_MARK SUCCESS");
 			} else {
@@ -324,19 +338,7 @@ namespace ucbl::cedilla
 			}
 			ADVANCE_ITERATOR(it);
 			merge_ast_matches(out.matches, result.matches);
-		} else {
-			NOT_IMPLEMENTED_LOG("Unknow logic pattern");
-		}
-		DEBUG_LOG("visitNodeTypeElement ended properly.");
-		return out;
-	}
-
-	fn InterpretReverseVisitor::visitNodeTypeSequence(AstMatcherParser::NodeTypeSequenceContext *context)
-		-> any
-	{
-		DEBUG_LOG("Visiting visitNodeTypeSequence: {}", context->getText());
-		auto out = AstMatcherVisitorOutput();
-		if (context->elem) {
+		} /*else if (context->elem) {
 			// Single nodeTypeElement
 			auto result = any_cast<AstMatcherVisitorOutput>(visit(context->elem));
 			if (!result.success) {
@@ -344,7 +346,7 @@ namespace ucbl::cedilla
 			}
 			merge_ast_matches(out.matches, result.matches);
 			DEBUG_LOG("Single node sequence matched.");
-		} else if (context->nodeTypeSequence().size() > 1) {
+		}*/ else if (context->nodeTypeSequence().size() > 1) {
 			// Handle recursive nodeTypeSequence
 			if (context->isor) {
 				// Handle OR logic by trying each side separately
@@ -383,8 +385,21 @@ namespace ucbl::cedilla
 				merge_ast_matches(out.matches, result1.matches);
 				merge_ast_matches(out.matches, result2.matches);
 			}
+		} else if (context->nodeTypeSequence().size() == 1) {
+			BACKUP_ITERATOR(it_bkp, it);
+			auto result = any_cast<AstMatcherVisitorOutput>(visit(context->nodeTypeSequence(0)));
+			if (!result.success) {
+				RESTORE_ITERATOR(it, it_bkp);
+				AST_MATCHER_FAILURE(out, "Node does not match the pattern.");
+			}
+			merge_ast_matches(out.matches, result.matches);
+		} else {
+		//	DEBUG_LOG("context->nodeTypeSequence().size() = {}", 	context->nodeTypeSequence().size());
+		//	DEBUG_LOG("context->isor = {}",							context->isor ? 1 : 0);
+
+			NOT_IMPLEMENTED_LOG("Unknow logic pattern");
 		}
-		DEBUG_LOG("visitNodeTypeSequence ended properly.");
+		DEBUG_LOG("visitNodeTypeElement ended properly.");
 		return out;
 	}
 

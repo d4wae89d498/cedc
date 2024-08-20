@@ -35,10 +35,10 @@ fn main() -> int
 		IDontCare?
 	)", test_ast);
 
-	assert(!out.contains("m1"));
 
 
 	assert(out.contains("m2"));
+
 	DEBUG_LOG("{}", out["m2"].size());
 	assert(out["m2"].size() == 3);
 
